@@ -15,19 +15,22 @@ class User extends Authenticatable
     protected $guarded=[];
 
     public function branches(){
-         return $this->belongsTo(Branch::class);
+         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
     public function departments(){
-         return $this->belongsTo(Department::class);
+         return $this->belongsTo(Department::class, 'department_id');
     }
 
     public function positions(){
-        return $this->belongsTo(Position::class);
+        return $this->belongsTo(Position::class , 'position_id');
     }
 
-    public function submissions(){
-        return $this->hasMany(Submission::class);
+    public function submissions_employee(){
+        return $this->hasMany(UsersEvaluaion::class, 'employee_id');
     }
 
+    public function submissions_evaluator(){
+        return $this->hasMany(UsersEvaluaion::class, 'evaluator_id');
+    }
 }

@@ -9,6 +9,6 @@ class Department extends Model
      protected $guarded=[];
 
     public function users(){
-         return $this->hasMany(User::class);
+         return $this->hasMany(User::class, 'department_id');
     }
 }

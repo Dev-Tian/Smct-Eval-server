@@ -48,7 +48,7 @@ class UserController extends Controller
             return response()->json([
                 "status" => true,
                 "message" => "Login successfully. Redirecting you to Dashboard"
-            ]); 
+            ]);
          }catch (Exception $e) {
                 return response()->json([
                     'errors' => $e->getMessage()

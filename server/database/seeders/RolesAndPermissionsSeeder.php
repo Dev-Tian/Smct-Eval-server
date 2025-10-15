@@ -6,11 +6,14 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
     public function run()
     {
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+
         // Create permissions
         //employee role
         Permission::create(['name' => 'view_own_profile']);
@@ -44,42 +47,43 @@ class RolesAndPermissionsSeeder extends Seeder
 
 
         // Create roles and assign created permissions
-        $role = Role::create(['name' => 'employee']);
-        $role->givePermissionTo('view_own_profile');
-        $role->givePermissionTo('view_own_evaluations');
-        $role->givePermissionTo('submit_self_assessment');
+        $role_employee = Role::create(['name' => 'employee']);
+        $role_employee->givePermissionTo('view_own_profile');
+        $role_employee->givePermissionTo('view_own_evaluations');
+        $role_employee->givePermissionTo('submit_self_assessment');
 
-        $role = Role::create(['name' => 'manager']);
-        $role->givePermissionTo('view_team_profiles');
-        $role->givePermissionTo('conduct_evaluations');
-        $role->givePermissionTo('view_team_reports');
-        $role->givePermissionTo('approve_goals');
+        $role_manager = Role::create(['name' => 'manager']);
+        $role_manager->givePermissionTo('view_team_profiles');
+        $role_manager->givePermissionTo('conduct_evaluations');
+        $role_manager->givePermissionTo('view_team_reports');
+        $role_manager->givePermissionTo('approve_goals');
 
-        $role = Role::create(['name' => 'hr']);
-        $role->givePermissionTo('view_all_profiles');
-        $role->givePermissionTo('manage_evaluations');
-        $role->givePermissionTo('generate_reports');
-        $role->givePermissionTo('manage_users');
-        $role->givePermissionTo('view_hr_reports');
+        $role_hr = Role::create(['name' => 'hr']);
+        $role_hr->givePermissionTo('view_all_profiles');
+        $role_hr->givePermissionTo('manage_evaluations');
+        $role_hr->givePermissionTo('generate_reports');
+        $role_hr->givePermissionTo('manage_users');
+        $role_hr->givePermissionTo('view_hr_reports');
 
-        $role = Role::create(['name' => 'hr manager']);
-        $role->givePermissionTo('view_all_profiles');
-        $role->givePermissionTo('manage_evaluations');
-        $role->givePermissionTo('generate_reports');
-        $role->givePermissionTo('manage_users');
-        $role->givePermissionTo('view_hr_reports');
-        $role->givePermissionTo('approve_hr_actions');
-        $role->givePermissionTo('manage_hr_policies');
+        $role_hr_manager = Role::create(['name' => 'hr manager']);
+        $role_hr_manager->givePermissionTo('view_all_profiles');
+        $role_hr_manager->givePermissionTo('manage_evaluations');
+        $role_hr_manager->givePermissionTo('generate_reports');
+        $role_hr_manager->givePermissionTo('manage_users');
+        $role_hr_manager->givePermissionTo('view_hr_reports');
+        $role_hr_manager->givePermissionTo('approve_hr_actions');
+        $role_hr_manager->givePermissionTo('manage_hr_policies');
 
-        $role = Role::create(['name' => 'evaluator']);
-        $role->givePermissionTo('conduct_evaluations');
-        $role->givePermissionTo('view_evaluation_reports');
-        $role->givePermissionTo('manage_evaluation_templates');
+        $role_evaluator = Role::create(['name' => 'evaluator']);
+        $role_evaluator->givePermissionTo('conduct_evaluations');
+        $role_evaluator->givePermissionTo('view_evaluation_reports');
+        $role_evaluator->givePermissionTo('manage_evaluation_templates');
 
-        $role = Role::create(['name' => 'admin']);
-        $role->givePermissionTo(Permission::all());
-        $role->givePermissionTo('system_administration');
-        $role->givePermissionTo('user_management');
+        $role_admin = Role::create(['name' => 'admin']);
+        $role_admin->givePermissionTo(Permission::all());
+        $role_admin->givePermissionTo('system_administration');
+        $role_admin->givePermissionTo('user_management');
+
     }
 }
 

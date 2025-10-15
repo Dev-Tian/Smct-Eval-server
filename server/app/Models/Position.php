@@ -9,6 +9,6 @@ class Position extends Model
      protected $guarded=[];
 
     public function users(){
-         return $this->hasMany(User::class);
+         return $this->hasMany(User::class, 'position_id');
     }
 }

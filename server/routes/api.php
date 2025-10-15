@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(
 );
 
 Route::controller(UserController::class)->group(function () {
-    Route::get('users', 'index');
+    Route::get('users', 'user_index');
     Route::post('login', 'login');
     Route::post('register', 'register');
     Route::put('update', 'update_user');
