@@ -26,11 +26,11 @@ class User extends Authenticatable
         return $this->belongsTo(Position::class , 'position_id');
     }
 
-    public function submissions_employee(){
-        return $this->hasMany(UsersEvaluaion::class, 'employee_id');
+    public function evaluations(){
+        return $this->hasMany(UsersEvaluation::class, 'employee_id');
     }
 
-    public function submissions_evaluator(){
-        return $this->hasMany(UsersEvaluaion::class, 'evaluator_id');
+    public function doesEvaluated(){
+        return $this->hasMany(UsersEvaluation::class, 'evaluator_id');
     }
 }

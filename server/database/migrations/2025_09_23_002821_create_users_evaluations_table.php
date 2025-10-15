@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\QuarterUsersEvaluaion;
+use App\Models\QuarterUsersEvaluation;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -13,11 +14,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users_evaluaions', function (Blueprint $table) {
+        Schema::create('users_evaluations', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class, 'employee_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(User::class, 'evaluator_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignIdFor(QuarterUsersEvaluaion::class, 'quarter_of_submission_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignIdFor(QuarterUsersEvaluation::class, 'quarter_of_submission_id')->nullable()->constrained()->nullOnDelete();
             $table->string("category");
             $table->integer("rating");
             $table->string("status");
@@ -45,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users_evaluaions');
+        Schema::dropIfExists('users_evaluations');
     }
 };

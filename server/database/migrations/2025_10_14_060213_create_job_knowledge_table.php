@@ -2,6 +2,7 @@
 
 use App\Models\Submission;
 use App\Models\UsersEvaluaion;
+use App\Models\UsersEvaluation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('job_knowledge', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(UsersEvaluaion::class, 'users_evalution_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(UsersEvaluation::class, 'users_evaluation_id')->constrained()->cascadeOnDelete();
             $table->integer('question_number');
             $table->integer('score');
             $table->string('comment');

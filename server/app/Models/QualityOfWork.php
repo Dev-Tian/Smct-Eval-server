@@ -8,8 +8,8 @@ class QualityOfWork extends Model
 {
      protected $guarded=[];
 
-          public function usersEvaluaions(){
-            return $this->belongsTo(UsersEvaluaion::class, 'users_evalution_id');
+     public function usersEvaluation(){
+            return $this->belongsTo(UsersEvaluation::class, 'users_evaluation_id');
         }
 
 
