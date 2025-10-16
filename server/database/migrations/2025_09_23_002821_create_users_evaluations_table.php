@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\QuarterUsersEvaluaion;
 use App\Models\QuarterUsersEvaluation;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
