@@ -7,15 +7,26 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
 
-     public function register_user(Request $request){
-        try{
+    public function register_user(Request $request)
+    {
+        try {
             $validate = $request->validate([
-                'fname'=>"required"
+                'fname'             => ['required', 'string'],
+                'lname'             => ['required', 'string'],
+                'email'             => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+                'position_id'       => ['required', Rule::exists('positions', 'id')],
+                'branch_id'         => ['required', Rule::exists('branches', 'id')],
+                'department_id'     => ['required', Rule::exists('departments', 'id')],
+                'hireDate'          => ['required', 'string'],
+                'signature'         => ['required', 'string'],
+                'username'          => ['required', 'string', 'lowercase'],
+                'contact'           => ['required', 'string'],
+                'password'          => ['required', 'string', 'confirmed', 'min:6', 'max:20'],
             ]);
 
             $user = User::create($validate);
@@ -25,17 +36,18 @@ class UserController extends Controller
                 "message" => "Registered Successfully",
             ]);
         } catch (Exception $e) {
-                return response()->json([
-                    'errors' => $e->getMessage()
+            return response()->json([
+                'errors' => $e->getMessage()
             ]);
         }
-}
+    }
 
-    public function user_login(Request $request){
-        try{
+    public function user_login(Request $request)
+    {
+        try {
             $request->validate([
-                'email'=>'required|email',
-                'password'=>'required'
+                'email' => 'required|email',
+                'password' => 'required'
             ]);
 
             if (!Auth::attempt($request->only("email", "password"))) {
@@ -49,9 +61,9 @@ class UserController extends Controller
                 "status" => true,
                 "message" => "Login successfully. Redirecting you to Dashboard"
             ]);
-         }catch (Exception $e) {
-                return response()->json([
-                    'errors' => $e->getMessage()
+        } catch (Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
             ]);
         }
     }
@@ -60,8 +72,8 @@ class UserController extends Controller
     {
         $users  = User::all();
         return response()->json([
-            'message'=>'ok',
-            'users'=>$users
+            'message' => 'ok',
+            'users' => $users
         ]);
     }
 
@@ -70,18 +82,17 @@ class UserController extends Controller
      */
     public function show_user(string $id)
     {
-        try{
+        try {
             $user = User::findOrFail($id);
 
             return response()->json([
-                'data'=>$user
+                'data' => $user
             ]);
-       }catch (Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
             ]);
         }
-
     }
 
     /**
@@ -89,9 +100,9 @@ class UserController extends Controller
      */
     public function update_user(Request $request, string $id)
     {
-        try{
+        try {
             $validate = $request->validate([
-                'data'=>'required'
+                'data' => 'required'
             ]);
 
             $user = User::findOrFail(Auth::id());
@@ -99,10 +110,9 @@ class UserController extends Controller
             $user->update($validate);
 
             return response()->json([
-                'message'=>'Updated Successfully'
+                'message' => 'Updated Successfully'
             ]);
-
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
             ]);
@@ -111,19 +121,18 @@ class UserController extends Controller
 
     /**
      * Remove the specified resource from storage.
-    */
+     */
     public function delete_user(string $id)
     {
-        try{
+        try {
             $user = User::findOrFail($id);
 
             $user->delete();
 
             return response()->json([
-                'message'=>'Updated Successfully'
+                'message' => 'Updated Successfully'
             ]);
-
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'errors' => $e->getMessage()
             ]);

@@ -6,7 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class QuarterUsersEvaluaionsSeeder extends Seeder
+class QuarterUsersEvaluationsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -19,6 +19,6 @@ class QuarterUsersEvaluaionsSeeder extends Seeder
             ['title'=>'Quarter 3'],
             ['title'=>'Quarter 4'],
         ];
-            DB::table('quarter_users_evaluaions')->insert($quarter);
+            DB::table('quarter_users_evaluations')->insert($quarter);
     }
 }
