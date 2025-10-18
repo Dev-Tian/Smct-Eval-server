@@ -10,27 +10,32 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-      use HasFactory, HasRoles;
+    use HasFactory, HasRoles;
 
-    protected $guarded=[];
+    protected $guarded = [];
 
-    public function branches(){
-         return $this->belongsTo(Branch::class, 'branch_id');
+    public function branches()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function departments(){
-         return $this->belongsTo(Department::class, 'department_id');
+    public function departments()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
-    public function positions(){
-        return $this->belongsTo(Position::class , 'position_id');
+    public function positions()
+    {
+        return $this->belongsTo(Position::class, 'position_id');
     }
 
-    public function evaluations(){
+    public function evaluations()
+    {
         return $this->hasMany(UsersEvaluation::class, 'employee_id');
     }
 
-    public function doesEvaluated(){
+    public function doesEvaluated()
+    {
         return $this->hasMany(UsersEvaluation::class, 'evaluator_id');
     }
 }

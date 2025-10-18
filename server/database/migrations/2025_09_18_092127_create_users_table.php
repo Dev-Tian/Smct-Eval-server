@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-           $table->foreignIdFor(Position::class, 'position_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignIdFor(Position::class, 'position_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(Branch::class, 'branch_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(Department::class, 'department_id')->nullable()->constrained()->nullOnDelete();
             $table->string("username");
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string("contact");
             $table->string("password");
             $table->boolean('is_active')->default(false);
-            $table->date("date_hired");
+            $table->date("date_hired")->nullable();
             $table->date("employeeSignatureDate");
             $table->longText("signature");
             $table->string("avatar")->nullable();

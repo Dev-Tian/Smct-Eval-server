@@ -8,38 +8,55 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
 
     public function register_user(Request $request)
     {
-        try {
-            $validate = $request->validate([
-                'fname'             => ['required', 'string'],
-                'lname'             => ['required', 'string'],
-                'email'             => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
-                'position_id'       => ['required', Rule::exists('positions', 'id')],
-                'branch_id'         => ['required', Rule::exists('branches', 'id')],
-                'department_id'     => ['required', Rule::exists('departments', 'id')],
-                'hireDate'          => ['required', 'string'],
-                'signature'         => ['required', 'string'],
-                'username'          => ['required', 'string', 'lowercase'],
-                'contact'           => ['required', 'string'],
-                'password'          => ['required', 'string', 'confirmed', 'min:6', 'max:20'],
-            ]);
+        $validate = $request->validate([
+            'fname'                     => ['required', 'string'],
+            'lname'                     => ['required', 'string'],
+            'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+            'position_id'               => ['required', Rule::exists('positions', 'id')],
+            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
+            'department_id'             => ['required', Rule::exists('departments', 'id')],
+            'signature'                 => ['required'],
+            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
+            'contact'                   => ['required', 'string'],
+            'password'                  => ['required', 'string', 'min: 8', 'max:20']
+        ]);
 
-            $user = User::create($validate);
+        if ($request->file('signature')) {
+            $signature = $validate['signature'];
 
+            $name = time() . '-' . $validate['username'] . '.' . $signature->getClientOriginalExtension();
+
+            $path = $signature->storeAs('user-signatures', $name, 'public');
+        } else {
             return response()->json([
-                "status" => true,
-                "message" => "Registered Successfully",
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'errors' => $e->getMessage()
-            ]);
+                'message'       => 'Signature not found or invalid file.'
+            ], 400);
         }
+
+        $user = User::create([
+            'fname'                     => $validate['fname'],
+            'lname'                     => $validate['lname'],
+            'email'                     => $validate['email'],
+            'position_id'               => $validate['position_id'],
+            'branch_id'                 => $validate['branch_id'],
+            'department_id'             => $validate['department_id'],
+            'signature'                 => $path,
+            'username'                  => $validate['username'],
+            'contact'                   => $validate['contact'],
+            'password'                  => $validate['password']
+        ]);
+
+        return response()->json([
+            "status" => true,
+            "message" => "Registered Successfully",
+        ], 201);
     }
 
     public function user_login(Request $request)
