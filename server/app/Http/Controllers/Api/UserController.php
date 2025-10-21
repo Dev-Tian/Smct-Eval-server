@@ -21,7 +21,7 @@ class UserController extends Controller
             'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
-            'department_id'             => ['required', Rule::exists('departments', 'id')],
+            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
             'signature'                 => ['required'],
             'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
             'contact'                   => ['required', 'string'],
