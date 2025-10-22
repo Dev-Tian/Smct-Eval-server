@@ -8,6 +8,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
@@ -28,6 +29,7 @@ class UserController extends Controller
             'password'                  => ['required', 'string', 'min: 8', 'max:20']
         ]);
 
+        //file handling | storing
         if ($request->file('signature')) {
             $signature = $validate['signature'];
 
@@ -47,11 +49,13 @@ class UserController extends Controller
             'position_id'               => $validate['position_id'],
             'branch_id'                 => $validate['branch_id'],
             'department_id'             => $validate['department_id'],
-            'signature'                 => $path,
+            'signature'                 => $path ?? null,
             'username'                  => $validate['username'],
             'contact'                   => $validate['contact'],
             'password'                  => $validate['password']
         ]);
+
+        $user->assignRole('employee');
 
         return response()->json([
             "status" => true,
@@ -59,30 +63,37 @@ class UserController extends Controller
         ], 201);
     }
 
-    public function user_login(Request $request)
-    {
-        try {
-            $request->validate([
-                'email' => 'required|email',
-                'password' => 'required'
-            ]);
-
-            if (!Auth::attempt($request->only("email", "password"))) {
-                return response()->json([
-                    "status" => false,
-                    "message" => "Emails and password does not matched with our records"
+   public function user_login(Request $request){
+            try {
+                $validate = $request->validate([
+                    'username' => ['required', 'string', 'lowercase'],
+                    'password' => ['required', 'string'],
+                    'remember' => ['nullable', 'boolean']
                 ]);
-            }
 
-            return response()->json([
-                "status" => true,
-                "message" => "Login successfully. Redirecting you to Dashboard"
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'errors' => $e->getMessage()
-            ]);
-        }
+                $credentials = $request->only('username', 'password');
+                $remember = $request->boolean('remember', false);
+
+                if (!Auth::attempt($credentials, $remember)) {
+                    return response()->json([
+                        "status" => false,
+                        "message" => "Email and password do not match our records"
+                    ], 401);
+                }
+                $user  = Auth::user();
+                $role = $user->getRoleNames();
+                return response()->json([
+                    "role"=>$role,
+                    "status" => true,
+                    "message" => "Login successful. Redirecting you to Dashboard"
+                ], 200);
+
+            } catch (Exception $e) {
+                return response()->json([
+                    'status' => false,
+                    'error' => $e->getMessage()
+                ], 500);
+            }
     }
 
     public function user_index()

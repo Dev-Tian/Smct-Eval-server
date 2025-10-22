@@ -19,7 +19,7 @@ Route::get('/profile', function (Request $request) {
 //public routes
 Route::controller(UserController::class)->group(function () {
     Route::get('users', 'user_index');
-    Route::post('login', 'login');
+    Route::post('login', 'user_login');
     Route::post('register', 'register_user');
     Route::put('update', 'update_user');
 });
@@ -28,6 +28,9 @@ Route::get('positions',[PositionController::class,'index']);
 Route::get('branches',[BranchController::class,'index']);
 Route::get('departments',[DepartmentController::class,'index']);
 
+
+
+//sanctum routes
 Route::middleware('auth:sanctum')->group(
     function (){
         // Route::controller(UserController::class)->group(function () {

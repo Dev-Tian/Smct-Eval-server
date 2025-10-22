@@ -27,11 +27,11 @@ return new class extends Migration
             $table->string("password");
             $table->boolean('is_active')->default(false);
             $table->date("date_hired")->nullable();
-            $table->date("employeeSignatureDate");
+            $table->date("employeeSignatureDate")->nullable();
             $table->longText("signature");
             $table->string("avatar")->nullable();
             $table->string('bio')->nullable();
-
+            $table->rememberToken();
             $table->timestamps();
         });
 
