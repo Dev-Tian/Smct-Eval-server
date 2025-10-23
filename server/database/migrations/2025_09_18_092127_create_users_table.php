@@ -29,11 +29,15 @@ return new class extends Migration
             $table->date("date_hired")->nullable();
             $table->date("employeeSignatureDate")->nullable();
             $table->longText("signature");
+            $table->boolean ('reinstated')->default(false);
+            $table->date ('reinstated_date')->nullable();
+            $table->boolean ('suspension')->default(false);
             $table->string("avatar")->nullable();
             $table->string('bio')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

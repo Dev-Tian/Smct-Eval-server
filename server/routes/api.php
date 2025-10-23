@@ -6,33 +6,37 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PositionController;
-use App\Models\Branch;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
 
-Route::get('/profile', function (Request $request) {
-    return $request->user();
+Route::get('/current_user', function (Request $request) {
+    return response()->json([
+        'current_user'=> $request->user()
+    ]);
 })->middleware('auth:sanctum');
 
 //public routes
 Route::controller(UserController::class)->group(function () {
-    Route::get('users', 'user_index');
     Route::post('login', 'user_login');
     Route::post('register', 'register_user');
-    Route::put('update', 'update_user');
 });
 
 Route::get('positions',[PositionController::class,'index']);
 Route::get('branches',[BranchController::class,'index']);
 Route::get('departments',[DepartmentController::class,'index']);
 
-
+Route::get('getAll_Pending_users', [UserController::class, 'getAll_Pending_users']);
+Route::get('getAll_Active_users', [UserController::class, 'getAll_Active_users']);
+Route::get('users', [UserController::class, 'getAllUsers']);
 
 //sanctum routes
 Route::middleware('auth:sanctum')->group(
     function (){
+        Route::get('profile', [UserController::class, 'getCurrentUser']);
+        Route::get('show_user', [UserController::class, 'show_user']);
+        Route::get('update', [UserController::class, 'update_user']);
         // Route::controller(UserController::class)->group(function () {
         //     Route::get('users', 'index');
         //     Route::post('login', 'login');

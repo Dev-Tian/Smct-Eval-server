@@ -96,7 +96,7 @@ class UserController extends Controller
             }
     }
 
-    public function user_index()
+    public function getAllUsers()
     {
         $users  = User::all();
         return response()->json([
@@ -105,10 +105,42 @@ class UserController extends Controller
         ]);
     }
 
+    public function getAll_Pending_users()
+    {
+        $pending_users  = User::where('is_active',0)->get();
+        return response()->json([
+            'message' => 'ok',
+            'users' => $pending_users
+        ]);
+    }
+
+    public function getAll_Active_users()
+    {
+        $active_users  = User::where('is_active',1)->get();
+        return response()->json([
+            'message' => 'ok',
+            'users' => $active_users
+        ]);
+    }
     /**
      * Display the specified resource.
      */
-    public function show_user(string $id)
+    public function getCurrentUser()
+    {
+        try {
+            $user = User::findOrFail(Auth::id());
+
+            return response()->json([
+                'data' => $user
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function show_user($id)
     {
         try {
             $user = User::findOrFail($id);
@@ -122,6 +154,7 @@ class UserController extends Controller
             ]);
         }
     }
+
 
     /**
      * Update the specified resource in storage.
