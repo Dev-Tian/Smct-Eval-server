@@ -62,7 +62,6 @@ class User extends Authenticatable
     }
 
     public function doesEvaluated()
-    
     {
         return $this->hasMany(UsersEvaluation::class, 'evaluator_id');
     }

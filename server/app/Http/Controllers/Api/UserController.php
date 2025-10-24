@@ -107,7 +107,7 @@ class UserController extends Controller
 
     public function getAll_Pending_users()
     {
-        $pending_users  = User::where('is_active',0)->get();
+        $pending_users  = User::where('is_active',"pending")->get();
         return response()->json([
             'message' => 'ok',
             'users' => $pending_users
@@ -116,7 +116,7 @@ class UserController extends Controller
 
     public function getAll_Active_users()
     {
-        $active_users  = User::where('is_active',1)->get();
+        $active_users  = User::where('is_active',"active")->get();
         return response()->json([
             'message' => 'ok',
             'users' => $active_users

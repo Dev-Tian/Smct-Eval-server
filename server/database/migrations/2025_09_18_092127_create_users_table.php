@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string("email");
             $table->string("contact");
             $table->string("password");
-            $table->boolean('is_active')->default(false);
+            $table->enum('is_active', ["pending", "active","declined" ])->default('pending');
             $table->date("date_hired")->nullable();
             $table->date("employeeSignatureDate")->nullable();
             $table->longText("signature");

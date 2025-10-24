@@ -27,21 +27,16 @@ Route::get('positions',[PositionController::class,'index']);
 Route::get('branches',[BranchController::class,'index']);
 Route::get('departments',[DepartmentController::class,'index']);
 
-Route::get('getAll_Pending_users', [UserController::class, 'getAll_Pending_users']);
 Route::get('getAll_Active_users', [UserController::class, 'getAll_Active_users']);
-Route::get('users', [UserController::class, 'getAllUsers']);
+Route::get('getAll_Pending_users', [UserController::class, 'getAll_Pending_users']);
 
 //sanctum routes
 Route::middleware('auth:sanctum')->group(
     function (){
+        Route::get('users', [UserController::class, 'getAllUsers']);
         Route::get('profile', [UserController::class, 'getCurrentUser']);
         Route::get('show_user', [UserController::class, 'show_user']);
         Route::get('update', [UserController::class, 'update_user']);
-        // Route::controller(UserController::class)->group(function () {
-        //     Route::get('users', 'index');
-        //     Route::post('login', 'login');
-        //     Route::post('register', 'register');
-        // });
     }
 );
 
