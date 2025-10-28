@@ -78,7 +78,7 @@ class UserController extends Controller
                     return response()->json([
                         "status" => false,
                         "message" => "Email and password do not match our records"
-                    ], 401);
+                    ], 400);
                 }
                 $user  = Auth::user();
                 $role = $user->getRoleNames();

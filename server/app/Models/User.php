@@ -28,6 +28,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $appends = [
+        'full_name'
+    ];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -64,5 +68,10 @@ class User extends Authenticatable
     public function doesEvaluated()
     {
         return $this->hasMany(UsersEvaluation::class, 'evaluator_id');
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->fname . $this->lname;
     }
 }
