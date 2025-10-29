@@ -8,8 +8,6 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use Spatie\Permission\Models\Role;
-use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -129,6 +127,15 @@ class UserController extends Controller
             'users' => $active_users
         ]);
     }
+
+    public function getAll_rejected_users()
+    {
+        $rejected_users  = User::where('is_active', "declined")->get();
+        return response()->json([
+            'message' => 'ok',
+            'users' => $rejected_users
+        ]);
+    }
     /**
      * Display the specified resource.
      */
@@ -163,9 +170,6 @@ class UserController extends Controller
     }
 
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update_user(Request $request, string $id)
     {
         try {
@@ -222,22 +226,18 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function delete_user(string $id)
+    public function delete_user($id)
     {
-        try {
             $user = User::findOrFail($id);
+
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
 
             $user->delete();
 
             return response()->json([
-                'message' => 'Updated Successfully'
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'errors' => $e->getMessage()
-            ]);
+                'message' => 'Deleted Successfully'
+            ], 200);
         }
-    }
-
-
 }
