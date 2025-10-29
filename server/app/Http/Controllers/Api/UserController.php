@@ -112,7 +112,7 @@ class UserController extends Controller
 
     public function getAll_Pending_users()
     {
-        $pending_users  = User::where('is_active', "pending")->get();
+        $pending_users  = User::with('positions','branches','departments')->where('is_active', "pending")->get();
         return response()->json([
             'message' => 'ok',
             'users' => $pending_users
@@ -121,7 +121,7 @@ class UserController extends Controller
 
     public function getAll_Active_users()
     {
-        $active_users  = User::where('is_active', "active")->get();
+        $active_users  = User::with('positions','branches','departments','roles')->where('is_active', "active")->get();
         return response()->json([
             'message' => 'ok',
             'users' => $active_users
@@ -218,6 +218,54 @@ class UserController extends Controller
 
         return response()->json([
             "img_url"=>$name,
+            "status" => true,
+            "message" => "Uploaded Successfully",
+        ], 201);
+    }
+
+    public function update_employee_auth(Request $request)
+    {
+        $user = Auth::user();
+        if($request->email === $user->email){
+            $validated = $request->validate([
+                'fname'                     => ['required', 'string'],
+                'lname'                     => ['required', 'string'],
+                'email'                     => ['required', 'email', 'string', 'lowercase'],
+                'signature'                 => ['required'],
+            ]);
+        }else{
+            $validated = $request->validate([
+                'fname'                     => ['required', 'string'],
+                'lname'                     => ['required', 'string'],
+                'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+                'signature'                 => ['required'],
+            ]);
+        }
+
+        //file handling | storing
+            if ($request->file('signature')) {
+                $signature = $validated['signature'];
+
+                $name = time() . '-' .  $user->username . '.' . $signature->getClientOriginalExtension();
+
+                $path = $signature->storeAs('user-signatures', $name, 'public');
+            } elseif(is_string($request->signature)) {
+                $path  = $request->signature;
+            }else{
+                return response()->json([
+                    'message'       => 'Image not found or invalid file.'
+                ], 400);
+            }
+
+            $user->update([
+                'fname'                     => $validated['fname'],
+                'lname'                     => $validated['lname'],
+                'email'                     => $validated['email'],
+                'bio'                       => $request->bio?? "",
+                'signature'                 => $path ,
+            ]);
+        return response()->json([
+            "img_url"=>$path,
             "status" => true,
             "message" => "Uploaded Successfully",
         ], 201);
