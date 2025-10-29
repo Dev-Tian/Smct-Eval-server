@@ -16,84 +16,91 @@ class UserController extends Controller
 
     public function register_user(Request $request)
     {
-        $validate = $request->validate([
-            'fname'                     => ['required', 'string'],
-            'lname'                     => ['required', 'string'],
-            'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
-            'position_id'               => ['required', Rule::exists('positions', 'id')],
-            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
-            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
-            'signature'                 => ['required'],
-            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
-            'contact'                   => ['required', 'string'],
-            'password'                  => ['required', 'string', 'min: 8', 'max:20']
-        ]);
+        try {
+            $validate = $request->validate([
+                'fname'                     => ['required', 'string'],
+                'lname'                     => ['required', 'string'],
+                'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+                'position_id'               => ['required', Rule::exists('positions', 'id')],
+                'branch_id'                 => ['required', Rule::exists('branches', 'id')],
+                'department_id'             => ['nullable', Rule::exists('departments', 'id')],
+                'signature'                 => ['required'],
+                'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
+                'contact'                   => ['required', 'string'],
+                'password'                  => ['required', 'string', 'min: 8', 'max:20']
+            ]);
 
-        //file handling | storing
-        if ($request->file('signature')) {
-            $signature = $validate['signature'];
+            //file handling | storing
+            if ($request->file('signature')) {
+                $signature = $validate['signature'];
 
-            $name = time() . '-' . $validate['username'] . '.' . $signature->getClientOriginalExtension();
+                $name = time() . '-' . $validate['username'] . '.' . $signature->getClientOriginalExtension();
 
-            $path = $signature->storeAs('user-signatures', $name, 'public');
-        } else {
+                $path = $signature->storeAs('user-signatures', $name, 'public');
+            } else {
+                return response()->json([
+                    'message'       => 'Signature not found or invalid file.'
+                ], 400);
+            }
+
+            $user = User::create([
+                'fname'                     => $validate['fname'],
+                'lname'                     => $validate['lname'],
+                'email'                     => $validate['email'],
+                'position_id'               => $validate['position_id'],
+                'branch_id'                 => $validate['branch_id'],
+                'department_id'             => $validate['department_id'],
+                'signature'                 => $path ?? null,
+                'username'                  => $validate['username'],
+                'contact'                   => $validate['contact'],
+                'password'                  => $validate['password']
+            ]);
+
+            $user->assignRole('employee');
+
             return response()->json([
-                'message'       => 'Signature not found or invalid file.'
-            ], 400);
+                "status" => true,
+                "message" => "Registered Successfully",
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $user = User::create([
-            'fname'                     => $validate['fname'],
-            'lname'                     => $validate['lname'],
-            'email'                     => $validate['email'],
-            'position_id'               => $validate['position_id'],
-            'branch_id'                 => $validate['branch_id'],
-            'department_id'             => $validate['department_id'],
-            'signature'                 => $path ?? null,
-            'username'                  => $validate['username'],
-            'contact'                   => $validate['contact'],
-            'password'                  => $validate['password']
-        ]);
-
-        $user->assignRole('employee');
-
-        return response()->json([
-            "status" => true,
-            "message" => "Registered Successfully",
-        ], 201);
     }
 
-   public function user_login(Request $request){
-            try {
-                $validate = $request->validate([
-                    'username' => ['required', 'string', 'lowercase'],
-                    'password' => ['required', 'string'],
-                    'remember' => ['nullable', 'boolean']
-                ]);
+    public function user_login(Request $request)
+    {
+        try {
+            $request->validate([
+                'username' => ['required', 'string', 'lowercase'],
+                'password' => ['required', 'string'],
+                'remember' => ['nullable', 'boolean']
+            ]);
 
-                $credentials = $request->only('username', 'password');
-                $remember = $request->boolean('remember', false);
+            $credentials = $request->only('username', 'password');
+            $remember = $request->boolean('remember', false);
 
-                if (!Auth::attempt($credentials, $remember)) {
-                    return response()->json([
-                        "status" => false,
-                        "message" => "Email and password do not match our records"
-                    ], 400);
-                }
-                $user  = Auth::user();
-                $role = $user->getRoleNames();
+            if (!Auth::attempt($credentials, $remember)) {
                 return response()->json([
-                    "role"=>$role,
-                    "status" => true,
-                    "message" => "Login successful. Redirecting you to Dashboard"
-                ], 200);
-
-            } catch (Exception $e) {
-                return response()->json([
-                    'status' => false,
-                    'error' => $e->getMessage()
-                ], 500);
+                    "status" => false,
+                    "message" => "Email and password do not match our records"
+                ], 400);
             }
+            $user  = Auth::user();
+            $role = $user->getRoleNames();
+            return response()->json([
+                "role" => $role,
+                "status" => true,
+                "message" => "Login successful. Redirecting you to Dashboard"
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function getAllUsers()
@@ -107,7 +114,7 @@ class UserController extends Controller
 
     public function getAll_Pending_users()
     {
-        $pending_users  = User::where('is_active',"pending")->get();
+        $pending_users  = User::where('is_active', "pending")->get();
         return response()->json([
             'message' => 'ok',
             'users' => $pending_users
@@ -116,7 +123,7 @@ class UserController extends Controller
 
     public function getAll_Active_users()
     {
-        $active_users  = User::where('is_active',"active")->get();
+        $active_users  = User::where('is_active', "active")->get();
         return response()->json([
             'message' => 'ok',
             'users' => $active_users
@@ -180,6 +187,38 @@ class UserController extends Controller
         }
     }
 
+    public function upload_Avatar(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'file' => 'required'
+        ]);
+
+        //file handling | storing
+        if ($request->file('file')) {
+            $avatar = $validated['file'];
+
+            $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
+
+            $path = $avatar->storeAs('user-avatars', $name, 'public');
+        } else {
+            return response()->json([
+                'message'       => 'Image not found or invalid file.'
+            ], 400);
+        }
+
+        $user->update([
+            'avatar' => $path ?? null
+        ]);
+
+        return response()->json([
+            "img_url"=>$name,
+            "status" => true,
+            "message" => "Uploaded Successfully",
+        ], 201);
+    }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -199,4 +238,6 @@ class UserController extends Controller
             ]);
         }
     }
+
+
 }

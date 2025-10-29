@@ -12,7 +12,7 @@ use App\Http\Controllers\Api\PositionController;
 // });
 
 Route::get('/profile', function (Request $request) {
-    return $request->user()->load('roles');
+    return $request->user()->load(['roles', 'departments', 'branches', 'positions']);
 })->middleware('auth:sanctum');
 
 //public routes
@@ -22,6 +22,7 @@ Route::controller(UserController::class)->group(function () {
 });
 
 Route::get('positions', [PositionController::class, 'index']);
+
 Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
 
@@ -34,5 +35,15 @@ Route::middleware('auth:sanctum')->group(
         Route::get('users', [UserController::class, 'getAllUsers']);
         Route::get('show_user', [UserController::class, 'show_user']);
         Route::get('update', [UserController::class, 'update_user']);
+        Route::post('upload_avatar', [UserController::class, 'upload_Avatar']);
+
+        Route::post('logout', function (Request $request) {
+            auth()->guard('web')->logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return response()->json(['message' => 'Logged out successfully']);
+        });
     }
 );
