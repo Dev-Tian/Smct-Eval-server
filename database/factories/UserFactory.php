@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Branch;
 use App\Models\Position;
 use App\Models\Department;
+use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -17,6 +18,7 @@ class UserFactory extends Factory
     /**
      * The current password being used by the factory.
      */
+
     protected static ?string $password;
 
     /**
@@ -36,7 +38,7 @@ class UserFactory extends Factory
         'email' => $this->faker->unique()->safeEmail(),
         'contact' => $this->faker->phoneNumber(),
         'password' => Hash::make('password'),
-        'is_active' => $this->faker->boolean(70),
+        'is_active' => fake()->randomElement(["pending", "active","declined" ]),
         'date_hired' => $this->faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
         'employeeSignatureDate' => $this->faker->dateTimeBetween('-1 years', 'now')->format('Y-m-d'),
         'signature' => $this->faker->text(5000),
