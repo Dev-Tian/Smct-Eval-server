@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -74,13 +75,11 @@ class UserController extends Controller
             $request->validate([
                 'username' => ['required', 'string', 'lowercase'],
                 'password' => ['required', 'string'],
-                'remember' => ['nullable', 'boolean']
             ]);
 
             $credentials = $request->only('username', 'password');
-            $remember = $request->boolean('remember', false);
 
-            if (!Auth::attempt($credentials, $remember)) {
+            if (!Auth::attempt($credentials)) {
                 return response()->json([
                     "status" => false,
                     "message" => "Email and password do not match our records"
@@ -89,8 +88,8 @@ class UserController extends Controller
             $user  = Auth::user();
             $role = $user->getRoleNames();
             return response()->json([
-                "role" => $role,
-                "status" => true,
+                "role"    => $role,
+                "status"  => true,
                 "message" => "Login successful. Redirecting you to Dashboard"
             ], 200);
         } catch (Exception $e) {
@@ -103,7 +102,9 @@ class UserController extends Controller
 
     public function getAllUsers()
     {
-        $users  = User::all();
+        $users  = User::whereNot('id','=', Auth::id())
+                      ->get();
+
         return response()->json([
             'message' => 'ok',
             'users' => $users
@@ -112,7 +113,11 @@ class UserController extends Controller
 
     public function getAll_Pending_users()
     {
-        $pending_users  = User::with('positions','branches','departments')->where('is_active', "pending")->get();
+        $pending_users  = User::with('positions','branches','departments')
+                              ->where('is_active', "pending")
+                              ->where('id','!=', Auth::id())
+                              ->get();
+
         return response()->json([
             'message' => 'ok',
             'users' => $pending_users
@@ -121,7 +126,10 @@ class UserController extends Controller
 
     public function getAll_Active_users()
     {
-        $active_users  = User::with('positions','branches','departments','roles')->where('is_active', "active")->get();
+        $active_users  = User::with('positions','branches','departments','roles')
+                             ->where('is_active', "active")
+                             ->whereNot('id','=', Auth::id())
+                             ->get();
         return response()->json([
             'message' => 'ok',
             'users' => $active_users
@@ -130,7 +138,11 @@ class UserController extends Controller
 
     public function getAll_rejected_users()
     {
-        $rejected_users  = User::where('is_active', "declined")->get();
+        $user = Auth::user();
+        $rejected_users  = User::with('positions','branches','departments','roles')
+                               ->where('is_active', "declined")
+                               ->whereNot('id','=', Auth::id())
+                               ->get();
         return response()->json([
             'message' => 'ok',
             'users' => $rejected_users
@@ -199,13 +211,17 @@ class UserController extends Controller
             'file' => 'required'
         ]);
 
+
         //file handling | storing
         if ($request->file('file')) {
             $avatar = $validated['file'];
-
             $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
-
             $path = $avatar->storeAs('user-avatars', $name, 'public');
+
+            if(Storage::disk('public')->exists($user->avatar)){
+                Storage::disk('public')->delete($user->avatar);
+            }
+
         } else {
             return response()->json([
                 'message'       => 'Image not found or invalid file.'
@@ -217,9 +233,9 @@ class UserController extends Controller
         ]);
 
         return response()->json([
-            "img_url"=>$name,
-            "status" => true,
-            "message" => "Uploaded Successfully",
+            "img_url"   =>$name,
+            "status"    => true,
+            "message"   => "Uploaded Successfully",
         ], 201);
     }
 
@@ -242,13 +258,17 @@ class UserController extends Controller
             ]);
         }
 
+
         //file handling | storing
             if ($request->file('signature')) {
                 $signature = $validated['signature'];
-
                 $name = time() . '-' .  $user->username . '.' . $signature->getClientOriginalExtension();
-
                 $path = $signature->storeAs('user-signatures', $name, 'public');
+
+                if(Storage::disk('public')->exists($user->signature)){
+                    Storage::disk('public')->delete($user->signature);
+                }
+
             } elseif(is_string($request->signature)) {
                 $path  = $request->signature;
             }else{
@@ -264,6 +284,7 @@ class UserController extends Controller
                 'bio'                       => $request->bio?? "",
                 'signature'                 => $path ,
             ]);
+
         return response()->json([
             "img_url"=>$path,
             "status" => true,
