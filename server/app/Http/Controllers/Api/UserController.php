@@ -278,11 +278,11 @@ class UserController extends Controller
             }
 
             $user->update([
-                'fname'                     => $validated['fname'],
-                'lname'                     => $validated['lname'],
-                'email'                     => $validated['email'],
-                'bio'                       => $request->bio?? "",
-                'signature'                 => $path ,
+                'fname'                  => $validated['fname'],
+                'lname'                  => $validated['lname'],
+                'email'                  => $validated['email'],
+                'bio'                    => $request->bio?? "",
+                'signature'              => $path
             ]);
 
         return response()->json([
