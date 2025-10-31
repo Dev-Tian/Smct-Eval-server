@@ -181,17 +181,37 @@ class UserController extends Controller
         }
     }
 
-
+// todo partial
     public function update_user(Request $request, string $id)
     {
         try {
+            $user = User::findOrFail($id);
+
             $validate = $request->validate([
-                'data' => 'required'
+                'fname'                     => ['required', 'string'],
+                'lname'                     => ['required', 'string'],
+                'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
+                'position_id'               => ['required', Rule::exists('positions', 'id')],
+                'branch_id'                 => ['required', Rule::exists('branches', 'id')],
+                'department_id'             => ['nullable', Rule::exists('departments', 'id')],
+                'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
+                'contact'                   => ['required', 'string'],
+                'roles'                     => ['required', 'string'],
             ]);
 
-            $user = User::findOrFail(Auth::id());
 
-            $user->update($validate);
+            $user->update([
+                'fname'                     => $validate['fname'],
+                'lname'                     => $validate['lname'],
+                'email'                     => $validate['email'],
+                'position_id'               => $validate['position_id'],
+                'branch_id'                 => $validate['branch_id'],
+                'department_id'             => $validate['department_id'],
+                'signature'                 => $path ?? null,
+                'username'                  => $validate['username'],
+                'contact'                   => $validate['contact'],
+                'roles'
+            ]);
 
             return response()->json([
                 'message' => 'Updated Successfully'
@@ -210,7 +230,6 @@ class UserController extends Controller
         $validated = $request->validate([
             'file' => 'required'
         ]);
-
 
         //file handling | storing
         if ($request->file('file')) {
@@ -249,21 +268,12 @@ class UserController extends Controller
             ], 401);
         }
 
-        if($request->email === $user->email){
             $validated = $request->validate([
                 'fname'                     => ['required', 'string'],
                 'lname'                     => ['required', 'string'],
-                'email'                     => ['required', 'email', 'string', 'lowercase'],
+                'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
                 'signature'                 => ['required'],
             ]);
-        }else{
-            $validated = $request->validate([
-                'fname'                     => ['required', 'string'],
-                'lname'                     => ['required', 'string'],
-                'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
-                'signature'                 => ['required'],
-            ]);
-        }
 
 
         //file handling | storing
@@ -298,15 +308,8 @@ class UserController extends Controller
             "message" => "Uploaded Successfully",
         ], 201);
     }
-    public function bjb(){
 
-        $user = User::find(1);
-        $user->update(['name' => 'Jasper']);
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function delete_user($id)
     {
             $user = User::findOrFail($id);
