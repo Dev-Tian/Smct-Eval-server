@@ -86,7 +86,7 @@ class UserController extends Controller
                 ], 400);
             }
             $user  = Auth::user();
-            $role = $user->getRoleNames();
+            $role = $user->roles->pluck('name');
             return response()->json([
                 "role"    => $role,
                 "status"  => true,
@@ -205,8 +205,8 @@ class UserController extends Controller
 
     public function upload_Avatar(Request $request)
     {
+         /** @var User $user */
         $user = Auth::user();
-
         $validated = $request->validate([
             'file' => 'required'
         ]);
@@ -241,7 +241,14 @@ class UserController extends Controller
 
     public function update_employee_auth(Request $request)
     {
+        /** @var User $user */
         $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthenticated.'
+            ], 401);
+        }
+
         if($request->email === $user->email){
             $validated = $request->validate([
                 'fname'                     => ['required', 'string'],
@@ -290,6 +297,11 @@ class UserController extends Controller
             "status" => true,
             "message" => "Uploaded Successfully",
         ], 201);
+    }
+    public function bjb(){
+
+        $user = User::find(1);
+        $user->update(['name' => 'Jasper']);
     }
 
     /**
