@@ -39,8 +39,8 @@ Route::middleware('auth:sanctum')->group(
             Route::get('show_user/{id}', 'show_user');
             Route::post('update_user/{id}', 'update_user');
             Route::post('upload_avatar', 'upload_Avatar');
-            Route::post('update_employee_auth', 'update_employee_auth');
-            Route::delete('delete_user/{id}', 'delete_user');
+            Route::post('update_employee_auth', 'update_user_auth');
+            Route::post('delete_user/{id}', 'delete_user');
         });
 
         Route::post('logout', function (Request $request) {

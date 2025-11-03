@@ -183,8 +183,6 @@ class UserController extends Controller
         }
     }
 
-// todo partial
-
     public function update_user(Request $request, string $id)
     {
         try {
@@ -200,7 +198,7 @@ class UserController extends Controller
                 'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
                 'contact'                   => ['required', 'string'],
                 'roles'                     => ['required','string', Rule::exists('roles','name')],
-                'password'                  => ['string', 'min: 8', 'max:20']
+                'password'                  => ['nullable', 'string', 'min: 8', 'max:20']
             ]);
 
             $user->syncRoles([$request->roles]);
@@ -266,7 +264,7 @@ class UserController extends Controller
         ], 201);
     }
 
-    public function update_employee_auth(Request $request)
+    public function update_user_auth(Request $request)
     {
         /** @var User $user */
         $user = Auth::user();
