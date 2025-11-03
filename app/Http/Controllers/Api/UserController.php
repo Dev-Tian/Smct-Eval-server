@@ -85,8 +85,10 @@ class UserController extends Controller
                     "message" => "Email and password do not match our records"
                 ], 400);
             }
+            /** @var User $user */
             $user  = Auth::user();
-            $role = $user->roles->pluck('name');
+            $role = $user->getRoleNames();
+
             return response()->json([
                 "role"    => $role,
                 "status"  => true,
@@ -182,6 +184,7 @@ class UserController extends Controller
     }
 
 // todo partial
+
     public function update_user(Request $request, string $id)
     {
         try {
@@ -196,22 +199,27 @@ class UserController extends Controller
                 'department_id'             => ['nullable', Rule::exists('departments', 'id')],
                 'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
                 'contact'                   => ['required', 'string'],
-                'roles'                     => ['required', 'string'],
+                'roles'                     => ['required','string', Rule::exists('roles','name')],
+                'password'                  => ['string', 'min: 8', 'max:20']
             ]);
 
+            $user->syncRoles([$request->roles]);
 
-            $user->update([
+            $updateData =[
                 'fname'                     => $validate['fname'],
                 'lname'                     => $validate['lname'],
                 'email'                     => $validate['email'],
                 'position_id'               => $validate['position_id'],
                 'branch_id'                 => $validate['branch_id'],
                 'department_id'             => $validate['department_id'],
-                'signature'                 => $path ?? null,
                 'username'                  => $validate['username'],
                 'contact'                   => $validate['contact'],
-                'roles'
-            ]);
+            ];
+            if (!empty($validate['password']) && is_string($validate['password'])) {
+                $updateData['password'] = $validate['password'];
+            }
+
+            $user->update($updateData);
 
             return response()->json([
                 'message' => 'Updated Successfully'
