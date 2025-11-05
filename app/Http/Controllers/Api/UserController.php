@@ -121,16 +121,34 @@ class UserController extends Controller{
     }
 
 
-    public function getAll_Pending_users(){
+    public function getAll_Pending_users(Request $request){
         try{
+            $search_filter = $request->input('search');
+            $status_filter = $request->input('status');
+
             $pending_users  = User::with('positions','branches','departments')
                                 ->whereNot('is_active', "active")
-                                ->whereNot('id','=', Auth::id())
-                                ->get();
+                                ->whereNot('id','=', Auth::id());
+
+            if(!empty($search_filter)){
+            $pending_users->where(
+                    function($q) use ($search_filter){
+                        $q->where('fname', 'like', "%{$search_filter}%")
+                            ->orWhere('lname', 'like', "%{$search_filter}%")
+                            ->orWhere('email', 'like', "%{$search_filter}%");
+                    });
+            }
+
+            if(!empty($status_filter)){
+               $pending_users->where('is_active','=', $status_filter);
+           }
+
+            $users = $pending_users->get();
 
             return response()->json([
+                'status' => $status_filter,
                 'message' => 'ok',
-                'users' => $pending_users
+                'users' => $users
             ]);
 
         } catch (Exception $e) {
