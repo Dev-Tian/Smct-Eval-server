@@ -308,30 +308,31 @@ class UserController extends Controller
             'file' => 'required'
         ]);
 
-        //file handling | storing
-        if ($request->file('file')) {
-            $avatar = $validated['file'];
-            $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
-            $path = $avatar->storeAs('user-avatars', $name, 'public');
+        // Early block if no file uploaded
+        if (!$request->file('file')) {
 
-            if (Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            $user->update([
-                'avatar' => $path ?? null
-            ]);
-
-            return response()->json([
-                "img_url"   => $name,
-                "status"    => true,
-                "message"   => "Uploaded Successfully",
-            ], 201);
-        } else {
             return response()->json([
                 'message'       => 'Image not found or invalid file.'
             ], 400);
         }
+
+        $avatar = $validated['file'];
+        $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
+        $path = $avatar->storeAs('user-avatars', $name, 'public');
+
+        if (Storage::disk('public')->exists($user->avatar)) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $user->update([
+            'avatar' => $path ?? null
+        ]);
+
+        return response()->json([
+            "img_url"   => $name,
+            "status"    => true,
+            "message"   => "Uploaded Successfully",
+        ], 201);
     }
 
     public function updateUserAuth(Request $request)
@@ -351,6 +352,13 @@ class UserController extends Controller
                 'signature'                 => ['required'],
             ]);
 
+            $items = [
+                'fname'                     => $validated['fname'],
+                'lname'                     => $validated['lname'],
+                'email'                     => $validated['email'],
+                'bio'                       => $request->bio ?? "",
+            ];
+
             //file handling | storing
             if ($request->file('signature')) {
                 $signature = $validated['signature'];
@@ -362,21 +370,11 @@ class UserController extends Controller
                         Storage::disk('public')->delete($user->signature);
                     }
                 }
-            } elseif (is_string($validated['signature'])) {
-                $path = $validated['signature'];
-            } else {
-                return response()->json([
-                    'message'       => 'Image not found or invalid file.'
-                ], 400);
+
+                $items['signature'] = $path ?? null;
             }
 
-            $user->update([
-                'fname'                     => $validated['fname'],
-                'lname'                     => $validated['lname'],
-                'email'                     => $validated['email'],
-                'bio'                       => $request->bio ?? "",
-                'signature'                 => $path,
-            ]);
+            $user->update($items);
 
 
             return response()->json([
