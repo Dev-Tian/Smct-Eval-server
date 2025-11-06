@@ -37,13 +37,17 @@ class UserFactory extends Factory
         'lname' => $this->faker->lastName(),
         'email' => $this->faker->unique()->safeEmail(),
         'contact' => $this->faker->phoneNumber(),
+        'emp_id' => strtoupper(Str::random(8)),
         'password' => Hash::make('password'),
         'is_active' => fake()->randomElement(["pending", "active","declined" ]),
         'date_hired' => $this->faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
         'employeeSignatureDate' => $this->faker->dateTimeBetween('-1 years', 'now')->format('Y-m-d'),
-        'signature' => $this->faker->text(5000),
+        'signature' => $this->faker->text(200),
+        'reinstated' => $this->faker->boolean(10),
+        'reinstated_date' => $this->faker->optional()->date(),
+        'suspension' => $this->faker->boolean(10),
         'avatar' => $this->faker->optional()->imageUrl(200, 200, 'people'),
-        'bio' => $this->faker->optional()->paragraph()
+        'bio' => $this->faker->optional()->sentence(12),
     ];
 }
 
