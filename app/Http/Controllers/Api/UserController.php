@@ -376,7 +376,6 @@ class UserController extends Controller
 
 
             return response()->json([
-                "img_url"       => $path,
                 "status"        => true,
                 "message"       => "Uploaded Successfully",
             ], 201);
