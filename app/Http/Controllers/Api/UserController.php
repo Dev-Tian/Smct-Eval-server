@@ -22,6 +22,7 @@ class UserController extends Controller{
                 'branch_id'                 => ['required', Rule::exists('branches', 'id')],
                 'department_id'             => ['nullable', Rule::exists('departments', 'id')],
                 'signature'                 => ['required'],
+                'employee_id'               => ['required', Rule::unique('users', 'emp_id')],
                 'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
                 'contact'                   => ['required', 'string'],
                 'password'                  => ['required', 'string', 'min: 8', 'max:20']
@@ -48,6 +49,7 @@ class UserController extends Controller{
                 'branch_id'                 => $validate['branch_id'],
                 'department_id'             => $validate['department_id'],
                 'signature'                 => $path ?? null,
+                'emp_id'                    => $validate['employee_id'],
                 'username'                  => $validate['username'],
                 'contact'                   => $validate['contact'],
                 'password'                  => $validate['password']
@@ -57,7 +59,7 @@ class UserController extends Controller{
 
             return response()->json([
                 "message" => "Registered Successfully",
-            ], 400);
+            ], 200);
 
         } catch (Exception $e) {
             return response()->json([

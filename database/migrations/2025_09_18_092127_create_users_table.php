@@ -23,8 +23,9 @@ return new class extends Migration
             $table->string("fname");
             $table->string("lname");
             $table->string("email");
-            $table->string("contact");
             $table->string("password");
+            $table->string("contact");
+            $table->string("emp_id");
             $table->enum('is_active', ["pending", "active","declined" ])->default('pending');
             $table->date("date_hired")->nullable();
             $table->date("employeeSignatureDate")->nullable();
