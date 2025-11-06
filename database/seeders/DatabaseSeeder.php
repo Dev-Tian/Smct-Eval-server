@@ -25,9 +25,9 @@ class DatabaseSeeder extends Seeder
             BranchSeeder::class,
             DepartmentSeeder::class,
             PositionSeeder::class,
-            UserSeeder::class,
             RolesAndPermissionsSeeder::class,
-            QuarterUsersEvaluationsSeeder::class
+            QuarterUsersEvaluationsSeeder::class,
+            UserSeeder::class
         ]);
     }
 }

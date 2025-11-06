@@ -17,8 +17,8 @@ class UserController extends Controller
     {
         try {
             $validate = $request->validate([
-                'fname'                     => ['required', 'string'],
-                'lname'                     => ['required', 'string'],
+                'fname'                     => ['required', 'string', 'alpha'],
+                'lname'                     => ['required', 'string', 'alpha'],
                 'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
                 'position_id'               => ['required', Rule::exists('positions', 'id')],
                 'branch_id'                 => ['required', Rule::exists('branches', 'id')],
@@ -130,7 +130,7 @@ class UserController extends Controller
                 ->get();
 
             return response()->json([
-                'message' => 'ok',
+                'message' => 'Users fetched successfully',
                 'users' => $users
             ]);
         } catch (Exception $e) {
@@ -188,30 +188,17 @@ class UserController extends Controller
             $role_filter = $request->input('role');
             $search_filter = $request->input('search');
 
-            $active_users  = User::with('positions', 'branches', 'departments', 'roles')
+            $users  = User::with('positions', 'branches', 'departments', 'roles')
                 ->where('is_active', "active")
-                ->whereNot('id', '=', Auth::id());
-
-            if (!empty($role_filter)) {
-                $active_users->whereHas(
-                    'roles',
-                    function ($q) use ($role_filter) {
-                        $q->where('name', $role_filter);
-                    }
-                );
-            }
-
-            if (!empty($search_filter)) {
-                $active_users->where(
-                    function ($q) use ($search_filter) {
-                        $q->where('fname', 'like', "%{$search_filter}%")
-                            ->orWhere('lname', 'like', "%{$search_filter}%")
-                            ->orWhere('email', 'like', "%{$search_filter}%");
-                    }
-                );
-            }
-
-            $users = $active_users->get();
+                ->whereNot('id', '=', Auth::id())
+                ->when(
+                    $role_filter,
+                    fn($role)
+                    =>
+                    $role->whereRelation('roles', 'name', $role_filter)
+                )
+                ->search($search_filter)
+                ->get();
 
             return response()->json([
                 'message' => 'ok',
@@ -278,8 +265,8 @@ class UserController extends Controller
             $user = User::findOrFail($id);
 
             $validate = $request->validate([
-                'fname'                     => ['required', 'string'],
-                'lname'                     => ['required', 'string'],
+                'fname'                     => ['required', 'string', 'alpha'],
+                'lname'                     => ['required', 'string', 'alpha'],
                 'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
                 'position_id'               => ['required', Rule::exists('positions', 'id')],
                 'branch_id'                 => ['required', Rule::exists('branches', 'id')],
@@ -302,7 +289,8 @@ class UserController extends Controller
                 'username'                  => $validate['username'],
                 'contact'                   => $validate['contact'],
             ];
-            if (!empty($validate['password']) && is_string($validate['password'])) {
+
+            if ($request->password) {
                 $updateData['password'] = $validate['password'];
             }
 
@@ -324,6 +312,7 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
+
             $validated = $request->validate([
                 'file' => 'required'
             ]);
@@ -337,17 +326,15 @@ class UserController extends Controller
                 if (Storage::disk('public')->exists($user->avatar)) {
                     Storage::disk('public')->delete($user->avatar);
                 }
-            } elseif (is_string($request->signature)) {
-                $path  = $request->signature;
+
+                $user->update([
+                    'avatar' => $path ?? null
+                ]);
             } else {
                 return response()->json([
                     'message'       => 'Image not found or invalid file.'
                 ], 400);
             }
-
-            $user->update([
-                'avatar' => $path ?? null
-            ]);
 
             return response()->json([
                 "img_url"   => $name,
@@ -374,8 +361,8 @@ class UserController extends Controller
             }
 
             $validated = $request->validate([
-                'fname'                     => ['required', 'string'],
-                'lname'                     => ['required', 'string'],
+                'fname'                     => ['required', 'string', 'alpha'],
+                'lname'                     => ['required', 'string', 'alpha'],
                 'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
                 'signature'                 => ['required'],
             ]);

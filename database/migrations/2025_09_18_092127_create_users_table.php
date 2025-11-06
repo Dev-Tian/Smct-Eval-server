@@ -26,13 +26,13 @@ return new class extends Migration
             $table->string("password");
             $table->string("contact");
             $table->string("emp_id");
-            $table->enum('is_active', ["pending", "active","declined" ])->default('pending');
+            $table->enum('is_active', ["pending", "active", "declined"])->default('pending');
             $table->date("date_hired")->nullable();
             $table->date("employeeSignatureDate")->nullable();
-            $table->longText("signature");
-            $table->boolean ('reinstated')->default(false);
-            $table->date ('reinstated_date')->nullable();
-            $table->boolean ('suspension')->default(false);
+            $table->longText("signature")->nullable();
+            $table->boolean('reinstated')->default(false);
+            $table->date('reinstated_date')->nullable();
+            $table->boolean('suspension')->default(false);
             $table->string("avatar")->nullable();
             $table->string('bio')->nullable();
             $table->rememberToken();

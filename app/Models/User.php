@@ -3,11 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Spatie\Permission\Traits\HasRoles;
+
 /**
  * @method \Illuminate\Support\Collection getRoleNames()
  * @method void assignRole(...$roles)
  */
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -77,5 +81,24 @@ class User extends Authenticatable
     public function getFullNameAttribute()
     {
         return $this->fname . $this->lname;
+    }
+
+    #[Scope]
+    public function search($query, $term)
+    {
+        return $query
+            ->when(
+                $term,
+                fn($filter)
+                =>
+                $filter->where(
+                    fn($user)
+                    =>
+                    $user->whereRaw('CONCAT(fname, " ", lname) LIKE ?', ["%{$term}%"])
+                        ->orWhereRaw('CONCAT(lname, " ", fname) LIKE ?', ["%{$term}%"])
+                        ->orWhere('email', 'like', "%{$term}%")
+                        ->orWhere('username', 'like', "%{$term}%")
+                )
+            );
     }
 }
