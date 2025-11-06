@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
-class UserController extends Controller{
+class UserController extends Controller
+{
 
-    public function register_user(Request $request){
-        try{
+    public function register_user(Request $request)
+    {
+        try {
             $validate = $request->validate([
                 'fname'                     => ['required', 'string'],
                 'lname'                     => ['required', 'string'],
@@ -60,7 +62,6 @@ class UserController extends Controller{
             return response()->json([
                 "message" => "Registered Successfully",
             ], 200);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Registration failed',
@@ -70,14 +71,32 @@ class UserController extends Controller{
     }
 
 
-    public function user_login(Request $request){
-        try{
+    public function user_login(Request $request)
+    {
+        try {
             $request->validate([
                 'username' => ['required', 'string', 'lowercase'],
                 'password' => ['required', 'string'],
             ]);
 
-            $credentials = $request->only('username', 'password');
+            $user = User::where(
+                fn($user)
+                =>
+                $user->where('username', $request->username)
+                    ->orWhere('email', $request->username)
+            )
+                ->first();
+
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Username or email not found'
+                ], 404);
+            }
+
+            $credentials = [
+                'username' => !filter_var($request->username, FILTER_VALIDATE_EMAIL) ? $request->username : $user->username,
+                'password' => $request->password
+            ];
 
             if (!Auth::attempt($credentials)) {
                 return response()->json([
@@ -87,6 +106,7 @@ class UserController extends Controller{
             }
 
             $user  = Auth::user();
+
             $role = $user->getRoleNames();
 
             return response()->json([
@@ -94,7 +114,6 @@ class UserController extends Controller{
                 "status"  => true,
                 "message" => "Login successful. Redirecting you to Dashboard"
             ], 200);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Login failed',
@@ -104,16 +123,16 @@ class UserController extends Controller{
     }
 
 
-    public function getAllUsers(){
-        try{
-            $users  = User::whereNot('id','=', Auth::id())
-                        ->get();
+    public function getAllUsers()
+    {
+        try {
+            $users  = User::whereNot('id', '=', Auth::id())
+                ->get();
 
             return response()->json([
                 'message' => 'ok',
                 'users' => $users
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Fetch all users failed',
@@ -123,27 +142,29 @@ class UserController extends Controller{
     }
 
 
-    public function getAll_Pending_users(Request $request){
-        try{
+    public function getAll_Pending_users(Request $request)
+    {
+        try {
             $search_filter = $request->input('search');
             $status_filter = $request->input('status');
 
-            $pending_users  = User::with('positions','branches','departments')
-                                ->whereNot('is_active', "active")
-                                ->whereNot('id','=', Auth::id());
+            $pending_users  = User::with('positions', 'branches', 'departments')
+                ->whereNot('is_active', "active")
+                ->whereNot('id', '=', Auth::id());
 
-            if(!empty($search_filter)){
-            $pending_users->where(
-                    function($q) use ($search_filter){
+            if (!empty($search_filter)) {
+                $pending_users->where(
+                    function ($q) use ($search_filter) {
                         $q->where('fname', 'like', "%{$search_filter}%")
                             ->orWhere('lname', 'like', "%{$search_filter}%")
                             ->orWhere('email', 'like', "%{$search_filter}%");
-                    });
+                    }
+                );
             }
 
-            if(!empty($status_filter)){
-               $pending_users->where('is_active','=', $status_filter);
-           }
+            if (!empty($status_filter)) {
+                $pending_users->where('is_active', '=', $status_filter);
+            }
 
             $users = $pending_users->get();
 
@@ -152,7 +173,6 @@ class UserController extends Controller{
                 'message' => 'ok',
                 'users' => $users
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Fetch all pending users failed',
@@ -162,29 +182,33 @@ class UserController extends Controller{
     }
 
 
-    public function getAll_Active_users(Request $request){
-        try{
+    public function getAll_Active_users(Request $request)
+    {
+        try {
             $role_filter = $request->input('role');
             $search_filter = $request->input('search');
 
-            $active_users  = User::with('positions','branches','departments','roles')
-                                ->where('is_active', "active")
-                                ->whereNot('id','=', Auth::id());
+            $active_users  = User::with('positions', 'branches', 'departments', 'roles')
+                ->where('is_active', "active")
+                ->whereNot('id', '=', Auth::id());
 
-            if(!empty($role_filter)){
-                 $active_users->whereHas('roles',
-                                    function($q) use ($role_filter) {
-                                        $q->where('name', $role_filter);
-                                });
+            if (!empty($role_filter)) {
+                $active_users->whereHas(
+                    'roles',
+                    function ($q) use ($role_filter) {
+                        $q->where('name', $role_filter);
+                    }
+                );
             }
 
-            if(!empty($search_filter)){
+            if (!empty($search_filter)) {
                 $active_users->where(
-                        function($q) use ($search_filter){
-                            $q->where('fname', 'like', "%{$search_filter}%")
-                              ->orWhere('lname', 'like', "%{$search_filter}%")
-                              ->orWhere('email', 'like', "%{$search_filter}%");
-                        });
+                    function ($q) use ($search_filter) {
+                        $q->where('fname', 'like', "%{$search_filter}%")
+                            ->orWhere('lname', 'like', "%{$search_filter}%")
+                            ->orWhere('email', 'like', "%{$search_filter}%");
+                    }
+                );
             }
 
             $users = $active_users->get();
@@ -193,21 +217,21 @@ class UserController extends Controller{
                 'message' => 'ok',
                 'users' => $users
             ]);
-
         } catch (Exception $e) {
             return response()->json([
-                 'message' => 'Fetch all active users failed',
+                'message' => 'Fetch all active users failed',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
 
 
-    public function getCurrentUser(){
-        try{
+    public function getCurrentUser()
+    {
+        try {
             $user = User::findOrFail(Auth::id());
 
-            if(!$user){
+            if (!$user) {
                 return response()->json([
                     'message'   =>  'User not found'
                 ]);
@@ -216,22 +240,21 @@ class UserController extends Controller{
             return response()->json([
                 'data' => $user
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Fetch current user failed',
                 'error' => $e->getMessage(),
             ], 500);
         }
-
     }
 
 
-    public function show_user($id){
-        try{
+    public function show_user($id)
+    {
+        try {
             $user = User::findOrFail($id);
 
-            if(!$user){
+            if (!$user) {
                 return response()->json([
                     'message'   =>  'User not found'
                 ]);
@@ -240,7 +263,6 @@ class UserController extends Controller{
             return response()->json([
                 'data' => $user
             ]);
-
         } catch (Exception $e) {
             return response()->json([
                 'message' => 'Fetch user failed',
@@ -250,8 +272,9 @@ class UserController extends Controller{
     }
 
 
-    public function update_user(Request $request, string $id){
-        try{
+    public function update_user(Request $request, string $id)
+    {
+        try {
             $user = User::findOrFail($id);
 
             $validate = $request->validate([
@@ -263,13 +286,13 @@ class UserController extends Controller{
                 'department_id'             => ['nullable', Rule::exists('departments', 'id')],
                 'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
                 'contact'                   => ['required', 'string'],
-                'roles'                     => ['required','string', Rule::exists('roles','name')],
+                'roles'                     => ['required', 'string', Rule::exists('roles', 'name')],
                 'password'                  => ['nullable', 'string', 'min: 8', 'max:20']
             ]);
 
             $user->syncRoles([$request->roles]);
 
-            $updateData =[
+            $updateData = [
                 'fname'                     => $validate['fname'],
                 'lname'                     => $validate['lname'],
                 'email'                     => $validate['email'],
@@ -288,18 +311,18 @@ class UserController extends Controller{
             return response()->json([
                 'message' => 'Updated Successfully'
             ]);
-
         } catch (Exception $e) {
             return response()->json([
-            'message' => 'Update failed',
-            'error' => $e->getMessage(),
-        ], 500);
+                'message' => 'Update failed',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
 
-    public function upload_Avatar(Request $request){
-        try{
+    public function upload_Avatar(Request $request)
+    {
+        try {
             $user = Auth::user();
             $validated = $request->validate([
                 'file' => 'required'
@@ -311,10 +334,11 @@ class UserController extends Controller{
                 $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
                 $path = $avatar->storeAs('user-avatars', $name, 'public');
 
-                if(Storage::disk('public')->exists($user->avatar)){
+                if (Storage::disk('public')->exists($user->avatar)) {
                     Storage::disk('public')->delete($user->avatar);
                 }
-
+            } elseif (is_string($request->signature)) {
+                $path  = $request->signature;
             } else {
                 return response()->json([
                     'message'       => 'Image not found or invalid file.'
@@ -326,22 +350,22 @@ class UserController extends Controller{
             ]);
 
             return response()->json([
-                "img_url"   =>$name,
+                "img_url"   => $name,
                 "status"    => true,
                 "message"   => "Uploaded Successfully",
             ], 201);
-
         } catch (Exception $e) {
             return response()->json([
-            'message' => 'Update failed',
-            'error' => $e->getMessage(),
-        ], 500);
+                'message' => 'Update failed',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
 
-    public function update_user_auth(Request $request){
-        try{
+    public function update_user_auth(Request $request)
+    {
+        try {
             $user = Auth::user();
             if (!$user) {
                 return response()->json([
@@ -349,59 +373,58 @@ class UserController extends Controller{
                 ], 401);
             }
 
-                $validated = $request->validate([
-                    'fname'                     => ['required', 'string'],
-                    'lname'                     => ['required', 'string'],
-                    'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
-                    'signature'                 => ['required'],
-                ]);
+            $validated = $request->validate([
+                'fname'                     => ['required', 'string'],
+                'lname'                     => ['required', 'string'],
+                'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
+                'signature'                 => ['required'],
+            ]);
 
             //file handling | storing
-                if ($request->file('signature')) {
-                    $signature = $validated['signature'];
-                    $name = time() . '-' .  $user->username . '.' . $signature->getClientOriginalExtension();
-                    $path = $signature->storeAs('user-signatures', $name, 'public');
+            if ($request->file('signature')) {
+                $signature = $validated['signature'];
+                $name = time() . '-' .  $user->username . '.' . $signature->getClientOriginalExtension();
+                $path = $signature->storeAs('user-signatures', $name, 'public');
 
-                    if(Storage::disk('public')->exists($user->signature)){
-                        Storage::disk('public')->delete($user->signature);
-                    }
-
-                } elseif(is_string($request->signature)) {
-                    $path  = $request->signature;
-                }else{
-                    return response()->json([
-                        'message'       => 'Image not found or invalid file.'
-                    ], 400);
+                if (Storage::disk('public')->exists($user->signature)) {
+                    Storage::disk('public')->delete($user->signature);
                 }
-
-                 $user->update([
-                    'fname'                     => $validated['fname'],
-                    'lname'                     => $validated['lname'],
-                    'email'                     => $validated['email'],
-                    'bio'                       => $request->bio?? "",
-                    'signature'                 => $path ,
-                ]);
-
+            } elseif (is_string($request->signature)) {
+                $path  = $request->signature;
+            } else {
                 return response()->json([
-                    "img_url"=>$path,
-                    "status" => true,
-                    "message" => "Uploaded Successfully",
-                ], 201);
+                    'message'       => 'Image not found or invalid file.'
+                ], 400);
+            }
 
+            $user->update([
+                'fname'                     => $validated['fname'],
+                'lname'                     => $validated['lname'],
+                'email'                     => $validated['email'],
+                'bio'                       => $request->bio ?? "",
+                'signature'                 => $path,
+            ]);
+
+            return response()->json([
+                "img_url" => $path,
+                "status" => true,
+                "message" => "Uploaded Successfully",
+            ], 201);
         } catch (Exception $e) {
             return response()->json([
-            'message' => 'Update failed',
-            'error' => $e->getMessage(),
-        ], 500);
+                'message' => 'Update failed',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
 
-    public function approveRegistration($id){
-        try{
+    public function approveRegistration($id)
+    {
+        try {
             $user = User::findOrFail($id);
 
-            if(!$user){
+            if (!$user) {
                 return response()->json([
                     'message'   => 'User not found'
                 ]);
@@ -414,22 +437,21 @@ class UserController extends Controller{
             return response()->json([
                 'message'       =>  'Approved'
             ]);
-
         } catch (Exception $e) {
             return response()->json([
-            'message' => 'approved failed',
-            'error' => $e->getMessage(),
-        ], 500);
+                'message' => 'approved failed',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
     }
 
 
-    public function rejectRegistration($id){
-        try{
+    public function rejectRegistration($id)
+    {
+        try {
             $user = User::findOrFail($id);
 
-            if(!$user){
+            if (!$user) {
                 return response()->json([
                     'message'   => 'User not found'
                 ]);
@@ -442,19 +464,18 @@ class UserController extends Controller{
             return response()->json([
                 'message'       =>  'Declined successfully'
             ]);
-
         } catch (Exception $e) {
             return response()->json([
-            'message' => 'rejection failed',
-            'error' => $e->getMessage(),
-        ], 500);
+                'message' => 'rejection failed',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
     }
 
 
-    public function delete_user($id){
-        try{
+    public function delete_user($id)
+    {
+        try {
             $user = User::findOrFail($id);
 
             if (!$user) {
@@ -468,12 +489,11 @@ class UserController extends Controller{
             return response()->json([
                 'message' => 'Deleted Successfully'
             ], 200);
-
-          } catch (Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
-            'message' => 'deleting failed',
-            'error' => $e->getMessage(),
-        ], 500);
+                'message' => 'deleting failed',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }
