@@ -45,7 +45,6 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'user_management']);
 
 
-
         // Create roles and assign created permissions
         $role_employee = Role::create(['name' => 'employee']);
         $role_employee->givePermissionTo('view_own_profile');

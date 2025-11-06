@@ -13,7 +13,7 @@ use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
 
-    public function register_user(Request $request)
+    public function registerUser(Request $request)
     {
         try {
             $validate = $request->validate([
@@ -60,18 +60,18 @@ class UserController extends Controller
             $user->assignRole('employee');
 
             return response()->json([
-                "message" => "Registered Successfully",
+                "message"       => "Registered Successfully",
             ], 200);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Registration failed',
-                'error' => $e->getMessage(),
+                'message'       => 'Registration failed',
+                'error'         => $e->getMessage(),
             ], 500);
         }
     }
 
 
-    public function user_login(Request $request)
+    public function userLogin(Request $request)
     {
         try {
             $request->validate([
@@ -100,8 +100,8 @@ class UserController extends Controller
 
             if (!Auth::attempt($credentials)) {
                 return response()->json([
-                    "status" => false,
-                    "message" => "Email and password do not match our records"
+                    "status"    => false,
+                    "message"   => "Email and password do not match our records"
                 ], 400);
             }
 
@@ -116,8 +116,8 @@ class UserController extends Controller
             ], 200);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Login failed',
-                'error' => $e->getMessage(),
+                'message'   => 'Login failed',
+                'error'     => $e->getMessage(),
             ], 500);
         }
     }
@@ -130,19 +130,19 @@ class UserController extends Controller
                 ->get();
 
             return response()->json([
-                'message' => 'Users fetched successfully',
-                'users' => $users
+                'message'       => 'Users fetched successfully',
+                'users'         => $users
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Fetch all users failed',
-                'error' => $e->getMessage(),
+                'message'       => 'Fetch all users failed',
+                'error'         => $e->getMessage(),
             ], 500);
         }
     }
 
 
-    public function getAll_Pending_users(Request $request)
+    public function getAllPendingUsers(Request $request)
     {
         try {
             $search_filter = $request->input('search');
@@ -161,20 +161,20 @@ class UserController extends Controller
                 ->get();
 
             return response()->json([
-                'status' => $status_filter,
-                'message' => 'ok',
-                'users' => $pending_users
+                'status'       => $status_filter,
+                'message'      => 'ok',
+                'users'        => $pending_users
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Fetch all pending users failed',
-                'error' => $e->getMessage(),
+                'message'   => 'Fetch all pending users failed',
+                'error'     => $e->getMessage(),
             ], 500);
         }
     }
 
 
-    public function getAll_Active_users(Request $request)
+    public function getAllActiveUsers(Request $request)
     {
         try {
             $role_filter = $request->input('role');
@@ -193,13 +193,13 @@ class UserController extends Controller
                 ->get();
 
             return response()->json([
-                'message' => 'ok',
-                'users' => $users
+                'message'   => 'ok',
+                'users'     => $users
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Fetch all active users failed',
-                'error' => $e->getMessage(),
+                'message'   => 'Fetch all active users failed',
+                'error'     => $e->getMessage(),
             ], 500);
         }
     }
@@ -217,18 +217,18 @@ class UserController extends Controller
             }
 
             return response()->json([
-                'data' => $user
+                'data'  => $user
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Fetch current user failed',
-                'error' => $e->getMessage(),
+                'message'   => 'Fetch current user failed',
+                'error'     => $e->getMessage(),
             ], 500);
         }
     }
 
 
-    public function show_user($id)
+    public function showUser($id)
     {
         try {
             $user = User::findOrFail($id);
@@ -240,18 +240,18 @@ class UserController extends Controller
             }
 
             return response()->json([
-                'data' => $user
+                'data'  => $user
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Fetch user failed',
-                'error' => $e->getMessage(),
+                'message'   => 'Fetch user failed',
+                'error'     => $e->getMessage(),
             ], 500);
         }
     }
 
 
-    public function update_user(Request $request, string $id)
+    public function updateUser(Request $request, string $id)
     {
         try {
             $user = User::findOrFail($id);
@@ -289,60 +289,52 @@ class UserController extends Controller
             $user->update($updateData);
 
             return response()->json([
-                'message' => 'Updated Successfully'
+                'message'   => 'Updated Successfully'
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Update failed',
-                'error' => $e->getMessage(),
+                'message'   => 'Update failed',
+                'error'     => $e->getMessage(),
             ], 500);
         }
     }
 
 
-    public function upload_Avatar(Request $request)
+    public function uploadAvatar(Request $request)
     {
-        try {
-            $user = Auth::user();
+        $user = Auth::user();
 
-            $validated = $request->validate([
-                'file' => 'required'
-            ]);
+        $validated = $request->validate([
+            'file' => 'required'
+        ]);
 
-            //file handling | storing
-            if ($request->file('file')) {
-                $avatar = $validated['file'];
-                $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
-                $path = $avatar->storeAs('user-avatars', $name, 'public');
+        //file handling | storing
+        if ($request->file('file')) {
+            $avatar = $validated['file'];
+            $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
+            $path = $avatar->storeAs('user-avatars', $name, 'public');
 
-                if (Storage::disk('public')->exists($user->avatar)) {
-                    Storage::disk('public')->delete($user->avatar);
-                }
-
-                $user->update([
-                    'avatar' => $path ?? null
-                ]);
-            } else {
-                return response()->json([
-                    'message'       => 'Image not found or invalid file.'
-                ], 400);
+            if (Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
             }
+
+            $user->update([
+                'avatar' => $path ?? null
+            ]);
 
             return response()->json([
                 "img_url"   => $name,
                 "status"    => true,
                 "message"   => "Uploaded Successfully",
             ], 201);
-        } catch (Exception $e) {
+        } else {
             return response()->json([
-                'message' => 'Update failed',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message'       => 'Image not found or invalid file.'
+            ], 400);
         }
     }
 
-
-    public function update_user_auth(Request $request)
+    public function updateUserAuth(Request $request)
     {
         try {
             $user = Auth::user();
@@ -365,11 +357,13 @@ class UserController extends Controller
                 $name = time() . '-' .  $user->username . '.' . $signature->getClientOriginalExtension();
                 $path = $signature->storeAs('user-signatures', $name, 'public');
 
-                if (Storage::disk('public')->exists($user->signature)) {
-                    Storage::disk('public')->delete($user->signature);
+                if (!empty($user->signature)) {
+                    if (Storage::disk('public')->exists($user->signature)) {
+                        Storage::disk('public')->delete($user->signature);
+                    }
                 }
-            } elseif (is_string($request->signature)) {
-                $path  = $request->signature;
+            } elseif (is_string($validated['signature'])) {
+                $path = $validated['signature'];
             } else {
                 return response()->json([
                     'message'       => 'Image not found or invalid file.'
@@ -384,15 +378,16 @@ class UserController extends Controller
                 'signature'                 => $path,
             ]);
 
+
             return response()->json([
-                "img_url" => $path,
-                "status" => true,
-                "message" => "Uploaded Successfully",
+                "img_url"       => $path,
+                "status"        => true,
+                "message"       => "Uploaded Successfully",
             ], 201);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'Update failed',
-                'error' => $e->getMessage(),
+                'message'       => 'Update failed',
+                'error'         => $e->getMessage(),
             ], 500);
         }
     }
@@ -410,7 +405,7 @@ class UserController extends Controller
             }
 
             $user->update([
-                'is_active'         =>  'active'
+                'is_active'     =>  'active'
             ]);
 
             return response()->json([
@@ -418,8 +413,8 @@ class UserController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'approved failed',
-                'error' => $e->getMessage(),
+                'message'       => 'approved failed',
+                'error'         => $e->getMessage(),
             ], 500);
         }
     }
@@ -437,7 +432,7 @@ class UserController extends Controller
             }
 
             $user->update([
-                'is_active'         =>  'declined'
+                'is_active'      =>  'declined'
             ]);
 
             return response()->json([
@@ -445,14 +440,14 @@ class UserController extends Controller
             ]);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'rejection failed',
-                'error' => $e->getMessage(),
+                'message'       => 'rejection failed',
+                'error'         => $e->getMessage(),
             ], 500);
         }
     }
 
 
-    public function delete_user($id)
+    public function deleteUser($id)
     {
         try {
             $user = User::findOrFail($id);
@@ -466,12 +461,12 @@ class UserController extends Controller
             $user->delete();
 
             return response()->json([
-                'message' => 'Deleted Successfully'
+                'message'       => 'Deleted Successfully'
             ], 200);
         } catch (Exception $e) {
             return response()->json([
-                'message' => 'deleting failed',
-                'error' => $e->getMessage(),
+                'message'       => 'deleting failed',
+                'error'         => $e->getMessage(),
             ], 500);
         }
     }
