@@ -126,7 +126,7 @@ class UserController extends Controller
     public function getAllUsers()
     {
         try {
-            $users  = User::whereNot('id', '=', Auth::id())
+            $users  = User::whereNot('id', Auth::id())
                 ->get();
 
             return response()->json([
@@ -150,7 +150,7 @@ class UserController extends Controller
 
             $pending_users  = User::with('positions', 'branches', 'departments')
                 ->whereNot('is_active', "active")
-                ->whereNot('id', '=', Auth::id())
+                ->whereNot('id', Auth::id())
                 ->when(
                     $status_filter,
                     fn($status)
@@ -182,7 +182,7 @@ class UserController extends Controller
 
             $users  = User::with('positions', 'branches', 'departments', 'roles')
                 ->where('is_active', "active")
-                ->whereNot('id', '=', Auth::id())
+                ->whereNot('id',Auth::id())
                 ->when(
                     $role_filter,
                     fn($role)

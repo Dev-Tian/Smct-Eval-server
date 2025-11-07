@@ -15,6 +15,7 @@ use App\Models\User;
 //public routes
 Route::controller(UserController::class)->group(function () {
     Route::post('login', 'userLogin');
+    Route::get('users', 'getAllUsers');
     Route::post('register', 'registerUser');
 });
 
@@ -31,7 +32,6 @@ Route::get('/profile', function (Request $request) {
 Route::middleware('auth:sanctum')->group(
     function () {
         Route::controller(UserController::class)->group(function () {
-            Route::get('users', 'getAllUsers');
             Route::get('getAll_Active_users', 'getAllActiveUsers');
             Route::get('getAll_Pending_users', 'getAllPendingUsers');
             Route::get('show_user/{id}', 'showUser');
