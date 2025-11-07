@@ -45,7 +45,6 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'user_management']);
 
 
-
         // Create roles and assign created permissions
         $role_employee = Role::create(['name' => 'employee']);
         $role_employee->givePermissionTo('view_own_profile');
@@ -84,6 +83,21 @@ class RolesAndPermissionsSeeder extends Seeder
         $role_admin->givePermissionTo('system_administration');
         $role_admin->givePermissionTo('user_management');
 
+        $admin = [
+            'position_id'       => 11,
+            'branch_id'         => 126,
+            'department_id'     => 11,
+            'username'          => 'admin',
+            'fname'             => 'System',
+            'lname'             => 'Administrator',
+            'email'             => 'admin@smct.com',
+            'contact'           => '09123456789',
+            'password'          => 'password',
+            'is_active'         => 'active',
+            'date_hired'        => now(),
+            'emp_id'            => "ADMIN-12345"
+        ];
+
+        $role_admin->users()->create($admin);
     }
 }
-

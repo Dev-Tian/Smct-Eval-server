@@ -14,14 +14,13 @@ use App\Models\User;
 
 //public routes
 Route::controller(UserController::class)->group(function () {
-    Route::post('login', 'user_login');
-    Route::post('register', 'register_user');
+    Route::post('login', 'userLogin');
+    Route::post('register', 'registerUser');
 });
 
 Route::get('positions', [PositionController::class, 'index']);
 Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
-// Route::get('getAll_Active_users', [UserController::class, 'getAll_Active_users']);
 
 
 //sanctum routes
@@ -33,22 +32,21 @@ Route::middleware('auth:sanctum')->group(
     function () {
         Route::controller(UserController::class)->group(function () {
             Route::get('users', 'getAllUsers');
-            Route::get('getAll_Active_users', 'getAll_Active_users');
-            Route::get('getAll_Pending_users', 'getAll_Pending_users');
-            Route::get('getAll_rejected_users', 'getAll_rejected_users');
-            Route::get('show_user/{id}', 'show_user');
-            Route::post('update_user/{id}', 'update_user');
-            Route::post('upload_avatar', 'upload_Avatar');
-            Route::post('update_employee_auth', 'update_employee_auth');
-            Route::delete('delete_user/{id}', 'delete_user');
+            Route::get('getAll_Active_users', 'getAllActiveUsers');
+            Route::get('getAll_Pending_users', 'getAllPendingUsers');
+            Route::get('show_user/{id}', 'showUser');
+            Route::post('update_user/{id}', 'updateUser');
+            Route::post('upload_avatar', 'uploadAvatar');
+            Route::post('update_employee_auth', 'updateUserAuth');
+            Route::post('delete_user/{id}', 'deleteUser');
+            Route::post('approveRegistration/{id}', 'approveRegistration');
+            Route::post('rejectRegistration/{id}', 'rejectRegistration');
         });
 
         Route::post('logout', function (Request $request) {
             auth()->guard('web')->logout();
-
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-
             return response()->json(['message' => 'Logged out successfully']);
         });
     }
