@@ -6,16 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PositionController;
-use App\Models\User;
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });
 
 //public routes
 Route::controller(UserController::class)->group(function () {
     Route::post('login', 'userLogin');
-    Route::get('users', 'getAllUsers');
     Route::post('register', 'registerUser');
 });
 
@@ -32,6 +26,7 @@ Route::get('/profile', function (Request $request) {
 Route::middleware('auth:sanctum')->group(
     function () {
         Route::controller(UserController::class)->group(function () {
+            Route::get('users', 'getAllUsers');
             Route::get('getAll_Active_users', 'getAllActiveUsers');
             Route::get('getAll_Pending_users', 'getAllPendingUsers');
             Route::get('show_user/{id}', 'showUser');
