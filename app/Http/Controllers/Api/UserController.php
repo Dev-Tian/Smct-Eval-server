@@ -15,7 +15,6 @@ class UserController extends Controller
 
     public function registerUser(Request $request)
     {
-
         $validate = $request->validate([
             'fname'                     => ['required', 'string', 'alpha'],
             'lname'                     => ['required', 'string', 'alpha'],
@@ -32,7 +31,7 @@ class UserController extends Controller
 
         //file handling | storing
         if ($request->file('signature')) {
-            $signature = $validate['signature'];
+            $signature = $request->file['signature'];
 
             $name = time() . '-' . $validate['username'] . '.' . $signature->getClientOriginalExtension();
 
@@ -48,7 +47,6 @@ class UserController extends Controller
             'lname'                     => $validate['lname'],
             'email'                     => $validate['email'],
             'position_id'               => $validate['position_id'],
-            'branch_id'                 => $validate['branch_id'],
             'department_id'             => $validate['department_id'],
             'signature'                 => $path ?? null,
             'emp_id'                    => $validate['employee_id'],
@@ -58,6 +56,7 @@ class UserController extends Controller
         ]);
 
         $user->assignRole('employee');
+        $user->branches()->sync($validate['branch_id']);
 
         return response()->json([
             "message"       => "Registered Successfully",
@@ -113,8 +112,16 @@ class UserController extends Controller
 
     public function getAllUsers()
     {
-
-        $users  = User::whereNot('id', Auth::id())
+        $users  = User::with([
+            'branches',
+            'departments',
+            'positions',
+            'suspensions',
+            'evaluations',
+            'doesEvaluated',
+            'roles'
+        ])
+            ->whereNot('id', Auth::id())
             ->get();
 
         return response()->json([
@@ -126,11 +133,10 @@ class UserController extends Controller
 
     public function getAllPendingUsers(Request $request)
     {
-
         $search_filter = $request->input('search');
         $status_filter = $request->input('status');
 
-        $pending_users  = User::with('positions', 'branches', 'departments')
+        $pending_users  = User::with('positions', 'branches', 'departments', 'roles')
             ->whereNot('is_active', "active")
             ->whereNot('id', Auth::id())
             ->when(
@@ -152,11 +158,10 @@ class UserController extends Controller
 
     public function getAllActiveUsers(Request $request)
     {
-
         $role_filter = $request->input('role');
         $search_filter = $request->input('search');
 
-        $users  = User::with('positions', 'branches', 'departments', 'roles')
+        $users  = User::with('branches', 'departments', 'positions', 'roles')
             ->where('is_active', "active")
             ->whereNot('id', Auth::id())
             ->when(
@@ -177,43 +182,86 @@ class UserController extends Controller
 
     public function getCurrentUser()
     {
-
         $user = User::findOrFail(Auth::id());
 
-        if (!$user) {
-            return response()->json([
-                'message'   =>  'User not found'
-            ]);
-        }
-
         return response()->json([
-            'data'  => $user
+            'data'  => $user->load(
+                'branches',
+                'departments',
+                'positions',
+                'suspensions',
+                'evaluations',
+                'doesEvaluated',
+                'roles'
+            )
         ]);
     }
 
 
-    public function showUser($id)
+    public function showUser(User $user)
     {
-
-        $user = User::findOrFail($id);
-
-        if (!$user) {
-            return response()->json([
-                'message'   =>  'User not found'
-            ]);
-        }
-
         return response()->json([
-            'data'  => $user
+            'data'  =>  $user->load(
+                'branches',
+                'departments',
+                'positions',
+                'suspensions',
+                'evaluations',
+                'doesEvaluated',
+                'roles'
+            )
         ]);
     }
 
 
-    public function updateUser(Request $request, string $id)
+    public function getAllSuspendedUsers(Request $request)
     {
+        $search_filter = $request->input('search');
 
-        $user = User::findOrFail($id);
+        $sus_user  = User::with('branches', 'departments', 'positions', 'suspensions', 'roles')
+            ->whereHas('suspensions', fn($query) =>  $query->where('is_done', false))
+            ->where('suspension', true)
+            ->search($search_filter)
+            ->get();
 
+        if (!$sus_user) {
+            return response()->json([
+                'message'   => 'No Data Found!'
+            ]);
+        }
+
+        return response()->json([
+            'suspended users'   => $sus_user,
+            'message'           => 'Successfully fetch Suspended users'
+        ]);
+    }
+
+
+    public function getAllReinstatedUsers(Request $request)
+    {
+        $search_filter = $request->input('search');
+
+        $reinstated_users  = User::with('branches', 'departments', 'positions', 'suspensions', 'roles')
+            ->whereHas('suspensions', fn($query) =>  $query->where('is_done', true))
+            ->where('reinstated', true)
+            ->search($search_filter)
+            ->get();
+
+        if (!$reinstated_users) {
+            return response()->json([
+                'message'   => 'No Data Found!'
+            ]);
+        }
+
+        return response()->json([
+            'reinstated users'   => $reinstated_users,
+            'message'           => 'Successfully fetch Reinstated users'
+        ]);
+    }
+
+
+    public function updateUser(User $user, Request $request)
+    {
         $validate = $request->validate([
             'fname'                     => ['required', 'string', 'alpha'],
             'lname'                     => ['required', 'string', 'alpha'],
@@ -227,14 +275,14 @@ class UserController extends Controller
             'password'                  => ['nullable', 'string', 'min: 8', 'max:20']
         ]);
 
-        $user->syncRoles([$request->roles]);
+        $user->syncRoles([$validate['roles']]);
+        $user->branches()->sync([$validate['branch_id']]);
 
         $updateData = [
             'fname'                     => $validate['fname'],
             'lname'                     => $validate['lname'],
             'email'                     => $validate['email'],
             'position_id'               => $validate['position_id'],
-            'branch_id'                 => $validate['branch_id'],
             'department_id'             => $validate['department_id'],
             'username'                  => $validate['username'],
             'contact'                   => $validate['contact'],
@@ -281,15 +329,13 @@ class UserController extends Controller
         ]);
 
         return response()->json([
-            "img_url"   => $name,
             "status"    => true,
             "message"   => "Uploaded Successfully",
         ], 201);
     }
 
-    public function updateUserAuth(Request $request)
+    public function updateProfileUserAuth(Request $request)
     {
-
         $user = Auth::user();
         if (!$user) {
             return response()->json([
@@ -326,7 +372,6 @@ class UserController extends Controller
 
         $user->update($items);
 
-
         return response()->json([
             "status"        => true,
             "message"       => "Uploaded Successfully",
@@ -334,17 +379,8 @@ class UserController extends Controller
     }
 
 
-    public function approveRegistration($id)
+    public function approveRegistration(User $user)
     {
-
-        $user = User::findOrFail($id);
-
-        if (!$user) {
-            return response()->json([
-                'message'   => 'User not found'
-            ]);
-        }
-
         $user->update([
             'is_active'     =>  'active'
         ]);
@@ -355,17 +391,8 @@ class UserController extends Controller
     }
 
 
-    public function rejectRegistration($id)
+    public function rejectRegistration(User $user)
     {
-
-        $user = User::findOrFail($id);
-
-        if (!$user) {
-            return response()->json([
-                'message'   => 'User not found'
-            ]);
-        }
-
         $user->update([
             'is_active'      =>  'declined'
         ]);
@@ -376,17 +403,8 @@ class UserController extends Controller
     }
 
 
-    public function deleteUser($id)
+    public function deleteUser(User $user)
     {
-
-        $user = User::findOrFail($id);
-
-        if (!$user) {
-            return response()->json([
-                'message' => 'User not found'
-            ], 404);
-        }
-
         $user->delete();
 
         return response()->json([

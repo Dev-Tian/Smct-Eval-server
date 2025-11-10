@@ -17,7 +17,6 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Position::class, 'position_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignIdFor(Branch::class, 'branch_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(Department::class, 'department_id')->nullable()->constrained()->nullOnDelete();
             $table->string("username");
             $table->string("fname");

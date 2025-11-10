@@ -55,7 +55,7 @@ class User extends Authenticatable
 
     public function branches()
     {
-        return $this->belongsTo(Branch::class, 'branch_id');
+        return $this->belongsToMany(Branch::class, 'branch_user');
     }
 
     public function departments()
@@ -81,6 +81,10 @@ class User extends Authenticatable
     public function getFullNameAttribute()
     {
         return $this->fname . $this->lname;
+    }
+
+    public function suspensions(){
+        return $this->hasMany(Suspension::class , 'user_id');
     }
 
     #[Scope]
