@@ -21,7 +21,7 @@ class UsersEvaluation extends Model
         return $this->belongsTo(QuarterUsersEvaluation::class, 'quarter_of_submission_id');
     }
 
-    public function jobKnowledges(){
+    public function jobKnowledge(){
          return $this->hasMany(JobKnowledge::class, 'users_evaluation_id');
     }
 
