@@ -28,28 +28,27 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-    return [
-        'position_id' => Position::inRandomOrder()->first()->id ?? 1,  // fallback to 1 if none exists
-        'branch_id' => Branch::inRandomOrder()->first()->id ?? 1,      // fallback to 1 if none exists
-        'department_id' => Department::inRandomOrder()->first()->id ?? 1,      // fallback to 1 if none exists
-        'username' => $this->faker->unique()->userName(),
-        'fname' => $this->faker->firstName(),
-        'lname' => $this->faker->lastName(),
-        'email' => $this->faker->unique()->safeEmail(),
-        'contact' => $this->faker->phoneNumber(),
-        'emp_id' => strtoupper(Str::random(8)),
-        'password' => Hash::make('password'),
-        'is_active' => fake()->randomElement(["pending", "active","declined" ]),
-        'date_hired' => $this->faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
-        'employeeSignatureDate' => $this->faker->dateTimeBetween('-1 years', 'now')->format('Y-m-d'),
-        'signature' => $this->faker->text(200),
-        'reinstated' => $this->faker->boolean(10),
-        'reinstated_date' => $this->faker->optional()->date(),
-        'suspension' => $this->faker->boolean(10),
-        'avatar' => $this->faker->optional()->imageUrl(200, 200, 'people'),
-        'bio' => $this->faker->optional()->sentence(12),
-    ];
-}
+        return [
+            'position_id' => Position::inRandomOrder()->first()->id ?? 1,  // fallback to 1 if none exists
+            'department_id' => Department::inRandomOrder()->first()->id ?? 1,      // fallback to 1 if none exists
+            'username' => $this->faker->unique()->userName(),
+            'fname' => $this->faker->firstName(),
+            'lname' => $this->faker->lastName(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'contact' => $this->faker->phoneNumber(),
+            'emp_id' => strtoupper(Str::random(8)),
+            'password' => Hash::make('password'),
+            'is_active' => fake()->randomElement(["pending", "active", "declined"]),
+            'date_hired' => $this->faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
+            'employeeSignatureDate' => $this->faker->dateTimeBetween('-1 years', 'now')->format('Y-m-d'),
+            'signature' => $this->faker->text(200),
+            'reinstated' => $this->faker->boolean(10),
+            'reinstated_date' => $this->faker->optional()->date(),
+            'suspension' => $this->faker->boolean(10),
+            'avatar' => $this->faker->optional()->imageUrl(200, 200, 'people'),
+            'bio' => $this->faker->optional()->sentence(12),
+        ];
+    }
 
 
     /**
@@ -57,7 +56,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

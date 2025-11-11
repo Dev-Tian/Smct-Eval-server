@@ -85,7 +85,6 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $admin = [
             'position_id'       => 11,
-            'branch_id'         => 126,
             'department_id'     => 11,
             'username'          => 'admin',
             'fname'             => 'System',

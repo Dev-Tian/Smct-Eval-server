@@ -258,6 +258,41 @@ class UserController extends Controller
         ]);
     }
 
+    //test in getting all branches in specific user using pivot table
+    public function getTest(User $user)
+    {
+        return response()->json([
+            'user'          =>   $user->load('branches')
+        ]);
+    }
+
+    //test in getting all branches in auth user using pivot table
+    public function getTestAuth()
+    {
+        $user = Auth::user();
+        return response()->json([
+            'user'          =>   $user->load('branches')
+        ]);
+    }
+
+    //test in getting all branches in specific user using pivot table
+    public function getTestAll()
+    {
+        //example branches holds the area manager
+        $branches = [106, 35, 4, 6];
+        $user = User::with('branches')
+            ->whereHas(
+                'branches',
+                fn($query)
+                =>
+                $query->whereIn('branch_id', $branches)
+            )
+            ->get();
+        return response()->json([
+            'user'          =>   $user
+        ]);
+    }
+
 
     public function updateUser(User $user, Request $request)
     {

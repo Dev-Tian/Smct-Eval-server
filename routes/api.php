@@ -7,8 +7,6 @@ use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\SuspensionController;
-use App\Models\Suspension;
-
 //public routes
 
 //login and register
@@ -21,6 +19,11 @@ Route::get('positions', [PositionController::class, 'index']);
 Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
 
+//test in getting all branches in specific user using pivot table
+Route::get('getTest/{user}', [UserController::class, 'getTest']);
+Route::get('getTestAll', [UserController::class, 'getTestAll']);
+
+Route::get('branchTest/{branch}', [BranchController::class, 'branchTest']);
 
 //sanctum routes
 Route::get('/profile', function (Request $request) {
