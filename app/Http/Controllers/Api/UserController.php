@@ -71,13 +71,7 @@ class UserController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $user = User::where(
-            fn($user)
-            =>
-            $user->where('username', $request->username)
-                ->orWhere('email', $request->username)
-        )
-            ->first();
+        $user = User::whereAny(['username', 'email'], $request->username)->first();
 
         if (!$user) {
             return response()->json([
@@ -181,10 +175,8 @@ class UserController extends Controller
 
     public function getCurrentUser()
     {
-        $user = User::findOrFail(Auth::id());
-
-        return response()->json([
-            'data'  => $user->load(
+        $user = User::findOrFail(Auth::id())
+            ->load(
                 'branches',
                 'departments',
                 'positions',
@@ -192,23 +184,27 @@ class UserController extends Controller
                 'evaluations',
                 'doesEvaluated',
                 'roles'
-            )
+            );
+
+        return response()->json([
+            'data'  => $user
         ]);
     }
 
 
     public function showUser(User $user)
     {
+        $shownUser = $user->load(
+            'branches',
+            'departments',
+            'positions',
+            'suspensions',
+            'evaluations',
+            'doesEvaluated',
+            'roles'
+        );
         return response()->json([
-            'data'  =>  $user->load(
-                'branches',
-                'departments',
-                'positions',
-                'suspensions',
-                'evaluations',
-                'doesEvaluated',
-                'roles'
-            )
+            'data'  =>  $shownUser
         ]);
     }
 
@@ -218,7 +214,7 @@ class UserController extends Controller
         $search_filter = $request->input('search');
 
         $sus_user  = User::with('branches', 'departments', 'positions', 'suspensions', 'roles')
-            ->whereHas('suspensions', fn($query) =>  $query->where('is_done', false))
+            ->whereRelation('suspensions', 'is_done', false)
             ->where('suspension', true)
             ->search($search_filter)
             ->get();
@@ -241,7 +237,7 @@ class UserController extends Controller
         $search_filter = $request->input('search');
 
         $reinstated_users  = User::with('branches', 'departments', 'positions', 'suspensions', 'roles')
-            ->whereHas('suspensions', fn($query) =>  $query->where('is_done', true))
+            ->whereRelation('suspensions', 'is_done', true)
             ->where('reinstated', true)
             ->search($search_filter)
             ->get();
@@ -261,35 +257,29 @@ class UserController extends Controller
     //test in getting all branches in specific user using pivot table
     public function getTest(User $user)
     {
+        $userWithBranches = $user->load('branches');
         return response()->json([
-            'user'          =>   $user->load('branches')
+            'user'          => $userWithBranches
         ]);
     }
 
     //test in getting all branches in auth user using pivot table
     public function getTestAuth()
     {
-        $user = Auth::user();
+        $user = Auth::user()->load('branches');
         return response()->json([
-            'user'          =>   $user->load('branches')
+            'user'          =>   $user
         ]);
     }
 
     //test in getting all branches in specific user using pivot table
-    public function getTestAll()
+    public function getTestAll(User $user)
     {
         //example branches holds the area manager
-        $branches = [106, 35, 4, 6];
-        $user = User::with('branches')
-            ->whereHas(
-                'branches',
-                fn($query)
-                =>
-                $query->whereIn('branch_id', $branches)
-            )
-            ->get();
+
+        $AreaManager = $user->load('branches');
         return response()->json([
-            'user'          =>   $user
+            'user'          =>   $AreaManager
         ]);
     }
 
@@ -305,7 +295,7 @@ class UserController extends Controller
             'department_id'             => ['nullable', Rule::exists('departments', 'id')],
             'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
             'contact'                   => ['required', 'string'],
-            'roles'                     => ['required', 'string', Rule::exists('roles', 'name')],
+            'roles'                     => ['required', 'string', Rule::exists('roles', 'id')],
             'password'                  => ['nullable', 'string', 'min: 8', 'max:20']
         ]);
 
@@ -338,7 +328,7 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        $validated = $request->validate([
+        $request->validate([
             'file' => 'required'
         ]);
 
@@ -350,7 +340,7 @@ class UserController extends Controller
             ], 400);
         }
 
-        $avatar = $validated['file'];
+        $avatar = $request->file['file'];
         $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
         $path = $avatar->storeAs('user-avatars', $name, 'public');
 

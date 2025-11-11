@@ -77,8 +77,9 @@ class BranchController extends Controller
 
      //test in getting all users that using in specific branch using pivot table
     public function branchTest(Branch $branch){
+        $branchWithUsers = $branch->load('users');
         return response()->json([
-            'users_in_branch'           => $branch->load('users')
+            'users_in_branch'           => $branchWithUsers
         ]);
     }
 }
