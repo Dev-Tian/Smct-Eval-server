@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+
+    //Create
 
     public function registerUser(Request $request)
     {
@@ -63,6 +66,7 @@ class UserController extends Controller
     }
 
 
+    //Auth
     public function userLogin(Request $request)
     {
 
@@ -102,7 +106,7 @@ class UserController extends Controller
         ], 200);
     }
 
-
+    //Read
     public function getAllUsers()
     {
         $users  = User::with([
@@ -254,32 +258,63 @@ class UserController extends Controller
         ]);
     }
 
-    //test in getting all branches in specific user using pivot table
-    public function getTest(User $user)
+    //get all branch-manager/head by auth Area Manager
+    public function getAllEmployeeByAreaManagerAuth()
     {
-        $userWithBranches = $user->load('branches');
+        $areaManager = Auth::user();
+        if ($areaManager->position_id !== 16) {
+            return response()->json([
+                'message' => 'Authenticated user is not a Area Manager'
+            ]);
+        }
+        $AreaManager_branches = $areaManager->branches()->pluck('branches.id');
+
+        $branchHeads = User::with('branches', 'positions')
+            ->whereHas(
+                'branches',
+                fn($query)
+                =>
+                $query->whereIn('branch_id', $AreaManager_branches)
+            )
+            ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
+            ->get();
+
         return response()->json([
-            'user'          => $userWithBranches
+            'AreaManager_branches_id'               =>   $AreaManager_branches,
+            'Branch-manager/Head/Supervisor'        =>   $branchHeads,
         ]);
     }
 
-    //test in getting all branches in auth user using pivot table
-    public function getTestAuth()
-    {
-        $user = Auth::user()->load('branches');
-        return response()->json([
-            'user'          =>   $user
-        ]);
-    }
 
-    //test in getting all branches in specific user using pivot table
-    public function getTestAll(User $user)
+    //get all employees by auth Branch Head
+    public function getAllEmployeeByBranchManagerAuth()
     {
-        //example branches holds the area manager
+        $branchManager = Auth::user();
+        if (
+            $branchManager->position_id !== 35 ||
+            $branchManager->position_id !== 36 ||
+            $branchManager->position_id !== 37 ||
+            $branchManager->position_id !== 38
+        ) {
+            return response()->json([
+                'message' => 'Authenticated user is not a Area Manager'
+            ]);
+        }
+        $branchManager_branches = $branchManager->branches()->pluck('branches.id');
 
-        $AreaManager = $user->load('branches');
+        $employees = User::with('branches', 'positions')
+            ->whereHas(
+                'branches',
+                fn($query)
+                =>
+                $query->whereIn('branch_id', $branchManager_branches)
+            )
+            ->whereNotIn('position_id', [16, 35, 36, 37, 38]) // <--- all branch_manager/supervisor and branch manager position id
+            ->get();
+
         return response()->json([
-            'user'          =>   $AreaManager
+            'branchManager_branches_id'               =>   $branchManager_branches,
+            'employees'                               =>   $employees,
         ]);
     }
 

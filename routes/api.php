@@ -19,12 +19,6 @@ Route::get('positions', [PositionController::class, 'index']);
 Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
 
-//test in using pivot table
-Route::get('getTest/{user}', [UserController::class, 'getTest']);
-Route::get('getTestAll/{user}', [UserController::class, 'getTestAll']);
-Route::get('branchTest/{branch}', [BranchController::class, 'branchTest']);
-
-
 //sanctum routes
 Route::get('/profile', function (Request $request) {
     return $request->user()->load(['roles', 'departments', 'branches', 'positions']);
@@ -34,16 +28,18 @@ Route::middleware('auth:sanctum')->group(
     function () {
         Route::controller(UserController::class)->group(
             function () {
-                Route::get('users', 'getAllUsers');
-                Route::get('getAll_Active_users', 'getAllActiveUsers');
-                Route::get('getAll_Pending_users', 'getAllPendingUsers');
+                Route::get('getAllUsers', 'getAllUsers');
+                Route::get('getAllActiveUsers', 'getAllActiveUsers');
+                Route::get('getAllPendingUsers', 'getAllPendingUsers');
                 Route::get('getAllSuspendedUsers', 'getAllSuspendedUsers');
                 Route::get('getAllReinstatedUsers', 'getAllReinstatedUsers');
-                Route::get('show_user/{user}', 'showUser');
-                Route::post('update_user/{user}', 'updateUser');
-                Route::post('upload_avatar', 'uploadAvatar');
-                Route::post('update_employee_auth', 'updateProfileUserAuth');
-                Route::post('delete_user/{user}', 'deleteUser');
+                Route::get('getAllEmployeeByAreaManagerAuth', 'getAllEmployeeByAreaManagerAuth');
+                Route::get('getAllEmployeeByBranchManagerAuth', 'getAllEmployeeByBranchManagerAuth');
+                Route::get('showUser/{user}', 'showUser');
+                Route::post('updateUser/{user}', 'updateUser');
+                Route::post('uploadAvatar', 'uploadAvatar');
+                Route::post('updateProfileUserAuth', 'updateProfileUserAuth');
+                Route::post('deleteUser/{user}', 'deleteUser');
                 Route::post('approveRegistration/{user}', 'approveRegistration');
                 Route::post('rejectRegistration/{user}', 'rejectRegistration');
             }
