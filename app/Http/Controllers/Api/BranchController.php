@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class BranchController extends Controller
 {
@@ -40,7 +41,23 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = $request->validate([
+            'branch_code'        =>  ['required','string','regex:/^[A-Z0-9\- ]+$/',Rule::unique('branches','branch_code')],
+            'branch_name'        =>  ['required','string'],
+            'branch'             =>  ['required','string'],
+            'acronym'            =>  ['required','string','regex:/^[A-Z]+$/']
+        ]);
+
+        Branch::create([
+            'branch_code'        => $validate['branch_code'],
+            'branch_name'        => $validate['branch_name'],
+            'branch'             => $validate['branch'],
+            'acronym'            => $validate['acronym']
+        ]);
+
+        return response()->json([
+            'message'       => 'Branch Successfully Created'
+        ],201);
     }
 
     /**

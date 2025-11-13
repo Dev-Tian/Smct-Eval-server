@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use GuzzleHttp\Psr7\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -124,7 +123,7 @@ class UserController extends Controller
         return response()->json([
             'message'       => 'Users fetched successfully',
             'users'         => $users
-        ]);
+        ], 200);
     }
 
 
@@ -146,10 +145,10 @@ class UserController extends Controller
             ->get();
 
         return response()->json([
-            'status'       => $status_filter,
+            'user_status'       => $status_filter,
             'message'      => 'ok',
             'users'        => $pending_users
-        ]);
+        ], 200);
     }
 
 
@@ -165,7 +164,7 @@ class UserController extends Controller
                 $role_filter,
                 fn($role)
                 =>
-                $role->whereRelation('roles', 'name', $role_filter)
+                $role->whereRelation('roles', 'id', $role_filter)
             )
             ->search($search_filter)
             ->get();
@@ -173,7 +172,7 @@ class UserController extends Controller
         return response()->json([
             'message'   => 'ok',
             'users'     => $users
-        ]);
+        ], 200);
     }
 
 
@@ -192,7 +191,7 @@ class UserController extends Controller
 
         return response()->json([
             'data'  => $user
-        ]);
+        ], 200);
     }
 
 
@@ -209,7 +208,7 @@ class UserController extends Controller
         );
         return response()->json([
             'data'  =>  $shownUser
-        ]);
+        ], 200);
     }
 
 
@@ -223,16 +222,10 @@ class UserController extends Controller
             ->search($search_filter)
             ->get();
 
-        if (!$sus_user) {
-            return response()->json([
-                'message'   => 'No Data Found!'
-            ]);
-        }
-
         return response()->json([
             'suspended users'   => $sus_user,
             'message'           => 'Successfully fetch Suspended users'
-        ]);
+        ], 200);
     }
 
 
@@ -246,27 +239,26 @@ class UserController extends Controller
             ->search($search_filter)
             ->get();
 
-        if (!$reinstated_users) {
-            return response()->json([
-                'message'   => 'No Data Found!'
-            ]);
-        }
-
         return response()->json([
             'reinstated users'   => $reinstated_users,
             'message'           => 'Successfully fetch Reinstated users'
-        ]);
+        ], 200);
     }
 
     //get all branch-manager/head by auth Area Manager
     public function getAllEmployeeByAreaManagerAuth()
     {
         $areaManager = Auth::user();
-        if ($areaManager->position_id !== 16) {
+        if (
+            $areaManager->position_id !== 16
+            &&
+            empty($branchManager->department_id)
+        ) {
             return response()->json([
                 'message' => 'Authenticated user is not a Area Manager'
-            ]);
+            ], 401);
         }
+
         $AreaManager_branches = $areaManager->branches()->pluck('branches.id');
 
         $branchHeads = User::with('branches', 'positions')
@@ -282,7 +274,7 @@ class UserController extends Controller
         return response()->json([
             'AreaManager_branches_id'               =>   $AreaManager_branches,
             'Branch-manager/Head/Supervisor'        =>   $branchHeads,
-        ]);
+        ], 200);
     }
 
 
@@ -291,14 +283,18 @@ class UserController extends Controller
     {
         $branchManager = Auth::user();
         if (
-            $branchManager->position_id !== 35 ||
-            $branchManager->position_id !== 36 ||
-            $branchManager->position_id !== 37 ||
-            $branchManager->position_id !== 38
+            (
+                $branchManager->position_id !== 35 ||
+                $branchManager->position_id !== 36 ||
+                $branchManager->position_id !== 37 ||
+                $branchManager->position_id !== 38
+            )
+            &&
+            empty($branchManager->department_id)
         ) {
             return response()->json([
                 'message' => 'Authenticated user is not a Area Manager'
-            ]);
+            ], 401);
         }
         $branchManager_branches = $branchManager->branches()->pluck('branches.id');
 
@@ -315,7 +311,7 @@ class UserController extends Controller
         return response()->json([
             'branchManager_branches_id'               =>   $branchManager_branches,
             'employees'                               =>   $employees,
-        ]);
+        ], 200);
     }
 
 
@@ -330,7 +326,7 @@ class UserController extends Controller
             'department_id'             => ['nullable', Rule::exists('departments', 'id')],
             'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
             'contact'                   => ['required', 'string'],
-            'roles'                     => ['required', 'string', Rule::exists('roles', 'id')],
+            'roles'                     => ['required', Rule::exists('roles', 'id')],
             'password'                  => ['nullable', 'string', 'min: 8', 'max:20']
         ]);
 
@@ -355,7 +351,7 @@ class UserController extends Controller
 
         return response()->json([
             'message'   => 'Updated Successfully'
-        ]);
+        ], 200);
     }
 
 
@@ -369,7 +365,6 @@ class UserController extends Controller
 
         // Early block if no file uploaded
         if (!$request->file('file')) {
-
             return response()->json([
                 'message'       => 'Image not found or invalid file.'
             ], 400);
@@ -446,7 +441,7 @@ class UserController extends Controller
 
         return response()->json([
             'message'       =>  'Approved'
-        ]);
+        ],201);
     }
 
 
@@ -458,7 +453,7 @@ class UserController extends Controller
 
         return response()->json([
             'message'       =>  'Declined successfully'
-        ]);
+        ], 201);
     }
 
 

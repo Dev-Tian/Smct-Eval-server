@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Suspension;
 use App\Models\User;
-use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Http\Request;
-
-use function Laravel\Prompts\error;
 
 class SuspensionController extends Controller
 {

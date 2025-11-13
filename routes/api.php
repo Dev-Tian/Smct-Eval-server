@@ -6,7 +6,10 @@ use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PositionController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SuspensionController;
+use Illuminate\Support\Facades\Auth;
+
 //public routes
 
 //login and register
@@ -21,7 +24,17 @@ Route::get('departments', [DepartmentController::class, 'index']);
 
 //sanctum routes
 Route::get('/profile', function (Request $request) {
-    return $request->user()->load(['roles', 'departments', 'branches', 'positions']);
+    return $request->user()->load(
+        [
+            'roles',
+            'departments',
+            'branches',
+            'positions',
+            'evaluations',
+            'doesEvaluated',
+            'suspensions'
+        ]
+    );
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(
@@ -52,11 +65,16 @@ Route::middleware('auth:sanctum')->group(
             }
         );
 
+        Route::get('getAllRoles', [RoleController::class, 'index']);
+
         Route::post('logout', function (Request $request) {
-            auth()->guard('web')->logout();
+            Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return response()->json(['message' => 'Logged out successfully']);
+
+            return response()->json([
+                'message' => 'Logged out successfully'
+            ], 200);
         });
     }
 );
