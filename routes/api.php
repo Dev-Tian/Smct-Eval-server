@@ -43,7 +43,7 @@ Route::middleware('auth:sanctum')->group(
             function () {
                 Route::get('getAllUsers', 'getAllUsers');
                 Route::get('getAllActiveUsers', 'getAllActiveUsers');
-                Route::get('getAllPendingUsers', 'getAllPendingUsers');
+                Route::get('getPendingRegistrations', 'getAllPendingUsers');
                 Route::get('getAllSuspendedUsers', 'getAllSuspendedUsers');
                 Route::get('getAllReinstatedUsers', 'getAllReinstatedUsers');
                 Route::get('getAllEmployeeByAreaManagerAuth', 'getAllEmployeeByAreaManagerAuth');

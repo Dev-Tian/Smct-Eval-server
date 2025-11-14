@@ -354,7 +354,6 @@ class UserController extends Controller
         ], 200);
     }
 
-
     public function uploadAvatar(Request $request)
     {
         $user = Auth::user();
