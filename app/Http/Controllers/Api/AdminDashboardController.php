@@ -3,22 +3,33 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Position;
-use Exception;
+use App\Models\User;
+use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
 
-class PositionController extends Controller
+class AdminDashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $positions = Position::all();
+        //users
+        $total_users            = User::count();
+        $total_pending_users    = User::where('is_active', 'pending')->count();
+        $total_active_users     = User::where('is_active', 'active')->count();
+
+        //evaluations
+        $total_evaluations            = UsersEvaluation::count();
+        $total_pending_evaluations    = UsersEvaluation::where('status', 'pending')->count();
 
         return response()->json([
-            'positions'=>$positions
-        ]);
+            'total_users'                   => $total_users,
+            'total_pending_users'           => $total_pending_users,
+            'total_active_users'            => $total_active_users,
+            'total_evaluations'             => $total_evaluations,
+            'total_pending_evaluations'     => $total_pending_evaluations
+        ],200);
     }
 
     /**

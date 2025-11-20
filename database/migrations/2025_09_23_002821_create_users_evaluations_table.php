@@ -17,24 +17,27 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class, 'employee_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(User::class, 'evaluator_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignIdFor(QuarterUsersEvaluation::class, 'quarter_of_submission_id')->nullable()->constrained()->nullOnDelete();
             $table->string("category");
-            $table->integer("rating");
-            $table->string("status");
+            $table->decimal('rating',3,2);
+            $table->string('status',['pending', 'completed'])->default('pending');
 
-            $table->integer('reviewTypeProbationary');
+            $table->date('coverageFrom');
+            $table->date('coverageTo');
+            $table->integer('reviewTypeProbationary')->nullable();
 
-            $table->boolean('reviewTypeOthersImprovement');
+            $table->string('reviewTypeRegular')->nullable();
+            $table->boolean('reviewTypeOthersImprovement')->nullable();
+            $table->string("reviewTypeOthersCustom")->nullable();
 
-            $table->string("reviewTypeOthersCustom");
+            $table->string("priorityArea1")->nullable();
+            $table->string("priorityArea2")->nullable();
+            $table->string("priorityArea3")->nullable();
 
-            $table->string("priorityArea1");
-            $table->string("priorityArea2");
-            $table->string("priorityArea3");
+            $table->string("remarks")->nullable();
 
-            $table->string("remarks");
-
-            $table->string("overallComments");
+            $table->string("overallComments")->nullable();
+            $table->date('evaluatorApprovedAt')->nullable();
+            $table->date('employeeApprovedAt')->nullable();
 
             $table->timestamps();
         });

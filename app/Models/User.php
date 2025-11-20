@@ -83,10 +83,6 @@ class User extends Authenticatable
         return $this->fname . $this->lname;
     }
 
-    public function suspensions(){
-        return $this->hasMany(Suspension::class , 'user_id');
-    }
-
     #[Scope]
     public function search($query, $term)
     {

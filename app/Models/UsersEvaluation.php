@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use App\Enum\EvalReviewType;
 use Illuminate\Database\Eloquent\Model;
 
 class UsersEvaluation extends Model
 {
 
     protected $guarded = [];
+
+    protected $casts = [
+        'reviewTypeRegular' => EvalReviewType::class
+    ];
 
     public function employee()
     {
@@ -17,11 +22,6 @@ class UsersEvaluation extends Model
     public function evaluator()
     {
         return $this->belongsTo(User::class, 'evaluator_id');
-    }
-
-    public function quarterUsersEvaluations()
-    {
-        return $this->belongsTo(QuarterUsersEvaluation::class, 'quarter_of_submission_id');
     }
 
     public function jobKnowledge()
@@ -57,5 +57,33 @@ class UsersEvaluation extends Model
     public function customerServices()
     {
         return $this->hasMany(CustomerService::class, 'users_evaluation_id');
+    }
+
+    public function search($query, $search)
+    {
+        return $query
+            ->when(
+                $search,
+                function ($query, $search) {
+                    $query->whereHas(
+                        'employee',
+                        fn($q)
+                        =>
+                        $q->whereRaw('CONCAT(fname, " ", lname) LIKE ?', ["%{$search}%"])
+                            ->orWhereRaw('CONCAT(lname, " ", fname) LIKE ?', ["%{$search}%"])
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('username', 'like', "%{$search}%")
+                    );
+                    $query->whereHas(
+                        'evaluator',
+                        fn($q)
+                        =>
+                        $q->whereRaw('CONCAT(fname, " ", lname) LIKE ?', ["%{$search}%"])
+                            ->orWhereRaw('CONCAT(lname, " ", fname) LIKE ?', ["%{$search}%"])
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('username', 'like', "%{$search}%")
+                    );
+                }
+            );
     }
 }

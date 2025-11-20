@@ -20,12 +20,6 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'view_own_evaluations']);
         Permission::create(['name' => 'submit_self_assessment']);
 
-        //manager role
-        Permission::create(['name' => 'view_team_profiles']);
-        Permission::create(['name' => 'conduct_evaluations']); //evaluator too
-        Permission::create(['name' => 'view_team_reports']);
-        Permission::create(['name' => 'approve_goals']);
-
         //hr and hr-manager role
         Permission::create(['name' => 'view_all_profiles']);
         Permission::create(['name' => 'manage_evaluations']);
@@ -51,20 +45,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $role_employee->givePermissionTo('view_own_evaluations');
         $role_employee->givePermissionTo('submit_self_assessment');
 
-        $role_manager = Role::create(['name' => 'manager']);
-        $role_manager->givePermissionTo('view_team_profiles');
-        $role_manager->givePermissionTo('conduct_evaluations');
-        $role_manager->givePermissionTo('view_team_reports');
-        $role_manager->givePermissionTo('approve_goals');
-
-        $role_hr = Role::create(['name' => 'hr']);
-        $role_hr->givePermissionTo('view_all_profiles');
-        $role_hr->givePermissionTo('manage_evaluations');
-        $role_hr->givePermissionTo('generate_reports');
-        $role_hr->givePermissionTo('manage_users');
-        $role_hr->givePermissionTo('view_hr_reports');
-
-        $role_hr_manager = Role::create(['name' => 'hr manager']);
+        $role_hr_manager = Role::create(['name' => 'hr']);
         $role_hr_manager->givePermissionTo('view_all_profiles');
         $role_hr_manager->givePermissionTo('manage_evaluations');
         $role_hr_manager->givePermissionTo('generate_reports');

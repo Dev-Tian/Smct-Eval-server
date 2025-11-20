@@ -14,16 +14,43 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        try{
-            $departments = Department::all();
-            return response()->json([
-                'departments'=>$departments
-            ]);
-        }catch(Exception $err){
-            return response()->json([
-                'error'=>$err->getMessage()
-            ]);
-        }
+        $departments = Department::all();
+
+        return response()->json([
+            'departments' => $departments
+        ]);
+    }
+
+    public function getTotalEmployeesDepartments()
+    {
+        $all = Department::withCount([
+            'users as managers_count'
+             =>
+            fn($user)
+            =>
+            $user->whereHas(
+                'positions',
+                fn($position)
+                =>
+                $position->where('label', 'LIKE', "%manager%")
+            ),
+            'users as employees_count'
+            =>
+            fn($user)
+            =>
+            $user->whereHas(
+                'positions',
+                fn($position)
+                =>
+                $position->whereNot('label', 'LIKE', "%manager%")
+            )
+        ])
+        ->get();
+
+
+        return response()->json([
+            'departments' => $all
+        ]);
     }
 
     /**
@@ -39,7 +66,17 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = $request->validate([
+            'department_name'       => ['required', 'string', 'alpha']
+        ]);
+
+        Department::create([
+             'department_name'       => $validate['department_name']
+        ]);
+
+        return response()->json([
+            'message'       =>  'Added Successfully '
+        ],201);
     }
 
     /**
@@ -69,8 +106,12 @@ class DepartmentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Department $department)
     {
-        //
+        $department->delete();
+
+        return response()->json([
+            'message'       =>  'Department Deleted Successfully'
+        ],200);
     }
 }

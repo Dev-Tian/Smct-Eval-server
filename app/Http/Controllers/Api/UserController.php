@@ -112,7 +112,6 @@ class UserController extends Controller
             'branches',
             'departments',
             'positions',
-            'suspensions',
             'evaluations',
             'doesEvaluated',
             'roles'
@@ -176,32 +175,12 @@ class UserController extends Controller
     }
 
 
-    public function getCurrentUser()
-    {
-        $user = User::findOrFail(Auth::id())
-            ->load(
-                'branches',
-                'departments',
-                'positions',
-                'suspensions',
-                'evaluations',
-                'doesEvaluated',
-                'roles'
-            );
-
-        return response()->json([
-            'data'  => $user
-        ], 200);
-    }
-
-
     public function showUser(User $user)
     {
         $shownUser = $user->load(
             'branches',
             'departments',
             'positions',
-            'suspensions',
             'evaluations',
             'doesEvaluated',
             'roles'
@@ -212,109 +191,95 @@ class UserController extends Controller
     }
 
 
-    public function getAllSuspendedUsers(Request $request)
+    //applicable for area manager / branch manager/supervisor /department manager
+    public function getAllEmployeeByAuth(Request $request)
     {
-        $search_filter = $request->input('search');
+        $search  = $request->input('search');
+        $manager = Auth::user();
 
-        $sus_user  = User::with('branches', 'departments', 'positions', 'suspensions', 'roles')
-            ->whereRelation('suspensions', 'is_done', false)
-            ->where('suspension', true)
-            ->search($search_filter)
-            ->get();
+        //first test if it is manager
+        $isManagerOrSupervisor = $manager->positions()
+            ->where(function ($q) {
+                $q->where('label', 'LIKE', '%manager%')
+                    ->orWhere('label', 'LIKE', '%supervisor%');
+            })
+            ->exists();
 
-        return response()->json([
-            'suspended users'   => $sus_user,
-            'message'           => 'Successfully fetch Suspended users'
-        ], 200);
-    }
+        if ($isManagerOrSupervisor) {
 
+            $isHO = $manager->branches()->where('branch_id', 126)->exists();
 
-    public function getAllReinstatedUsers(Request $request)
-    {
-        $search_filter = $request->input('search');
+            //area manager
+            if (!$isHO && $manager->position_id == 16 && empty($manager->department_id)) {
+                $branches = $manager->branches()->pluck('branches.id');
 
-        $reinstated_users  = User::with('branches', 'departments', 'positions', 'suspensions', 'roles')
-            ->whereRelation('suspensions', 'is_done', true)
-            ->where('reinstated', true)
-            ->search($search_filter)
-            ->get();
+                $branchHeads = User::with('branches', 'positions')
+                    ->whereHas(
+                        'branches',
+                        fn($query)
+                        =>
+                        $query->whereIn('branch_id', $branches)
+                    )
+                    ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
+                    ->search($search)
+                    ->get();
 
-        return response()->json([
-            'reinstated users'   => $reinstated_users,
-            'message'           => 'Successfully fetch Reinstated users'
-        ], 200);
-    }
+                return response()->json([
+                    'employees' => $branchHeads
+                ],200);
+            }
 
-    //get all branch-manager/head by auth Area Manager
-    public function getAllEmployeeByAreaManagerAuth()
-    {
-        $areaManager = Auth::user();
-        if (
-            $areaManager->position_id !== 16
-            &&
-            empty($branchManager->department_id)
-        ) {
-            return response()->json([
-                'message' => 'Authenticated user is not a Area Manager'
-            ], 401);
+            //branch manager/supervisor
+            if (
+                !$isHO
+                &&
+                (
+                    $manager->position_id == 35 ||
+                    $manager->position_id == 36 ||
+                    $manager->position_id == 37 ||
+                    $manager->position_id == 38
+                )
+                &&
+                empty($manager->department_id)
+            ) {
+                $branches = $manager->branches()->pluck('branches.id');
+
+                $employees = User::with('branches', 'positions')
+                    ->whereHas(
+                        'branches',
+                        fn($query)
+                        =>
+                        $query->whereIn('branch_id', $branches)
+                    )
+                    ->whereNot('position_id', 16) // <--- area manager id
+                    ->search($search)
+                    ->get();
+
+                return response()->json([
+                    'employees' => $employees
+                ],200);
+            }
+
+            //Department manager
+            if ($isHO  && !empty($manager->department_id)) {
+                $employees = User::with('branches', 'positions')
+                    ->whereRelation('branches','branch_id', 126) //<--- must branch HO
+                    ->where('department_id',$manager->department_id) // <--- must the same department
+                    ->search($search)
+                    ->get();
+
+                return response()->json([
+                    'employees' => $employees
+                ],200);
+            }
         }
-
-        $AreaManager_branches = $areaManager->branches()->pluck('branches.id');
-
-        $branchHeads = User::with('branches', 'positions')
-            ->whereHas(
-                'branches',
-                fn($query)
-                =>
-                $query->whereIn('branch_id', $AreaManager_branches)
-            )
-            ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
-            ->get();
-
         return response()->json([
-            'AreaManager_branches_id'               =>   $AreaManager_branches,
-            'Branch-manager/Head/Supervisor'        =>   $branchHeads,
-        ], 200);
+            'error' => 'Auth user is not a manager'
+        ], 401);
     }
 
 
-    //get all employees by auth Branch Head
-    public function getAllEmployeeByBranchManagerAuth()
-    {
-        $branchManager = Auth::user();
-        if (
-            (
-                $branchManager->position_id !== 35 ||
-                $branchManager->position_id !== 36 ||
-                $branchManager->position_id !== 37 ||
-                $branchManager->position_id !== 38
-            )
-            &&
-            empty($branchManager->department_id)
-        ) {
-            return response()->json([
-                'message' => 'Authenticated user is not a Area Manager'
-            ], 401);
-        }
-        $branchManager_branches = $branchManager->branches()->pluck('branches.id');
-
-        $employees = User::with('branches', 'positions')
-            ->whereHas(
-                'branches',
-                fn($query)
-                =>
-                $query->whereIn('branch_id', $branchManager_branches)
-            )
-            ->whereNotIn('position_id', [16, 35, 36, 37, 38]) // <--- all branch_manager/supervisor and branch manager position id
-            ->get();
-
-        return response()->json([
-            'branchManager_branches_id'               =>   $branchManager_branches,
-            'employees'                               =>   $employees,
-        ], 200);
-    }
-
-
+    //update
     public function updateUser(User $user, Request $request)
     {
         $validate = $request->validate([
@@ -440,7 +405,7 @@ class UserController extends Controller
 
         return response()->json([
             'message'       =>  'Approved'
-        ],201);
+        ], 201);
     }
 
 
@@ -455,7 +420,27 @@ class UserController extends Controller
         ], 201);
     }
 
+    public function updateUserBranch(User $user, Request $request)
+    {
 
+        $user->branches()->syncWithoutDetaching($request->branch_ids);
+
+        return response()->json([
+            'message'       =>  'User Branch Updated'
+        ], 201);
+    }
+
+    public function removeUserBranches(User $user)
+    {
+        $user->branches()->detach();
+
+        return response()->json([
+            'message' => 'All user branches removed'
+        ], 200);
+    }
+
+
+    //destroy || delete
     public function deleteUser(User $user)
     {
         $user->delete();

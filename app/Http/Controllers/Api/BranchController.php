@@ -15,17 +15,44 @@ class BranchController extends Controller
      */
     public function index()
     {
-        try{
-            $branches = Branch::all();
-            return response()->json([
-                'branches'=>$branches
-            ]);
-        }catch(Exception $err){
-            return response()->json([
-                'error'=>$err->getMessage()
-            ]);
-        }
+        $branches = Branch::all();
 
+        return response()->json([
+            'branches' => $branches
+        ],200);
+
+    }
+
+    public function getTotalEmployeesBranch()
+    {
+        $all = Branch::withCount([
+            'users as managers_count'
+             =>
+            fn($user)
+            =>
+            $user->whereHas(
+                'positions',
+                fn($position)
+                =>
+                $position->where('label', 'LIKE', "%manager%")
+            ),
+            'users as employees_count'
+            =>
+            fn($user)
+            =>
+            $user->whereHas(
+                'positions',
+                fn($position)
+                =>
+                $position->whereNot('label', 'LIKE', "%manager%")
+            )
+        ])
+        ->get();
+
+
+        return response()->json([
+            'branches' => $all
+        ]);
     }
 
     /**
@@ -42,10 +69,10 @@ class BranchController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'branch_code'        =>  ['required','string','regex:/^[A-Z0-9\- ]+$/',Rule::unique('branches','branch_code')],
-            'branch_name'        =>  ['required','string'],
-            'branch'             =>  ['required','string'],
-            'acronym'            =>  ['required','string','regex:/^[A-Z]+$/']
+            'branch_code'        =>  ['required', 'string', 'regex:/^[A-Z0-9\- ]+$/', Rule::unique('branches', 'branch_code')],
+            'branch_name'        =>  ['required', 'string'],
+            'branch'             =>  ['required', 'string'],
+            'acronym'            =>  ['required', 'string', 'regex:/^[A-Z]+$/']
         ]);
 
         Branch::create([
@@ -57,15 +84,17 @@ class BranchController extends Controller
 
         return response()->json([
             'message'       => 'Branch Successfully Created'
-        ],201);
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Branch $branch)
     {
-        //
+        return response()->json([
+            'branch'        =>  $branch
+        ]);
     }
 
     /**

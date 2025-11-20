@@ -2,13 +2,15 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\DepartmentController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\SuspensionController;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\AdminDashboardController;
+use App\Http\Controllers\Api\EvaluatorDashboardController;
+use App\Http\Controllers\Api\UsersEvaluationController;
 
 //public routes
 
@@ -32,7 +34,6 @@ Route::get('/profile', function (Request $request) {
             'positions',
             'evaluations',
             'doesEvaluated',
-            'suspensions'
         ]
     );
 })->middleware('auth:sanctum');
@@ -44,26 +45,50 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('getAllUsers', 'getAllUsers');
                 Route::get('getAllActiveUsers', 'getAllActiveUsers');
                 Route::get('getPendingRegistrations', 'getAllPendingUsers');
-                Route::get('getAllSuspendedUsers', 'getAllSuspendedUsers');
-                Route::get('getAllReinstatedUsers', 'getAllReinstatedUsers');
-                Route::get('getAllEmployeeByAreaManagerAuth', 'getAllEmployeeByAreaManagerAuth');
-                Route::get('getAllEmployeeByBranchManagerAuth', 'getAllEmployeeByBranchManagerAuth');
+                Route::get('getAllEmployeeByAuth', 'getAllEmployeeByAuth');
                 Route::get('showUser/{user}', 'showUser');
                 Route::post('updateUser/{user}', 'updateUser');
                 Route::post('uploadAvatar', 'uploadAvatar');
                 Route::post('updateProfileUserAuth', 'updateProfileUserAuth');
-                Route::post('deleteUser/{user}', 'deleteUser');
+                Route::post('updateUserBranch/{user}', 'updateUserBranch');
+                Route::post('removeUserBranches/{user}', 'removeUserBranches');
                 Route::post('approveRegistration/{user}', 'approveRegistration');
                 Route::post('rejectRegistration/{user}', 'rejectRegistration');
+                Route::delete('deleteUser/{user}', 'deleteUser');
             }
         );
 
-        Route::controller(SuspensionController::class)->group(
+        Route::controller(BranchController::class)->group(
             function () {
-                Route::post('suspend/{user}', 'store');
-                Route::post('updateSuspension/{suspension}', 'update');
+                Route::get('getTotalEmployeesBranch', 'getTotalEmployeesBranch');
+                Route::get('branch/{branch}', 'show');
+                Route::post('addBranch', 'store');
             }
         );
+
+        Route::controller(UsersEvaluationController::class)->group(
+            function () {
+                Route::get('allEvaluations', 'index');
+                Route::get('getEvalAuthEvaluator', 'getEvalAuthEvaluator');
+                Route::get('getMyEvalAuthEmployee', 'getMyEvalAuthEmployee');
+                Route::get('user_eval/{usersEvaluation}', 'show');
+                Route::post('submit/{user}', 'store');
+                Route::delete('delete_eval/{usersEvaluation}', 'destroy');
+            }
+        );
+
+        Route::controller(DepartmentController::class)->group(
+            function () {
+                Route::get('getTotalEmployeesDepartments', 'getTotalEmployeesDepartments');
+                Route::post('addDepartment', 'store');
+                Route::delete('deleteDepartment', 'destroy');
+            }
+        );
+
+
+        //Dashboards
+        Route::get('adminDashboard', [AdminDashboardController::class ,'index']);
+        Route::get('evaluatorDashboard', [EvaluatorDashboardController::class ,'index']);
 
         Route::get('getAllRoles', [RoleController::class, 'index']);
 
