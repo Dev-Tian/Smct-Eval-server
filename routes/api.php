@@ -30,7 +30,7 @@ Route::get('departments', [DepartmentController::class, 'index']);
 //sanctum routes
 Route::get('/profile', function (Request $request) {
     return $request->user()->load(
-        [
+            [
             'roles',
             'departments',
             'branches',
@@ -79,7 +79,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('allEvaluations', 'index');
                 Route::get('getEvalAuthEvaluator', 'getEvalAuthEvaluator');
                 Route::get('getMyEvalAuthEmployee', 'getMyEvalAuthEmployee');
-                Route::get('user_eval/{usersEvaluation}', 'show');
+                Route::get('submissions/{usersEvaluation}', 'show');
                 Route::post('submit/{user}', 'store');
                 Route::delete('delete_eval/{usersEvaluation}', 'destroy');
             }
