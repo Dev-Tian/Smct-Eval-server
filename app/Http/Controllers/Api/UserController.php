@@ -157,23 +157,26 @@ class UserController extends Controller
             'doesEvaluated',
             'roles'
         ])
-        ->search($search_filter)
-        ->when(
-            $department_filter,
-             fn($q)
-             =>
-            $q->where('department_id', $department_filter)
-             )
-        ->when(
-            $branch_filter, function($q) use ($branch_filter){
-                $q->whereHas('branches',
-                        function($subq) use ($branch_filter){
+            ->search($search_filter)
+            ->when(
+                $department_filter,
+                fn($q)
+                =>
+                $q->where('department_id', $department_filter)
+            )
+            ->when(
+                $branch_filter,
+                function ($q) use ($branch_filter) {
+                    $q->whereHas(
+                        'branches',
+                        function ($subq) use ($branch_filter) {
                             $subq->where('branch_id', $branch_filter);
-                        });
-            }
-             )
-        ->whereNot('id', Auth::id())
-        ->get();
+                        }
+                    );
+                }
+            )
+            ->whereNot('id', Auth::id())
+            ->get();
 
         return response()->json([
             'message'       => 'Users fetched successfully',
@@ -255,9 +258,9 @@ class UserController extends Controller
             'positions',
             'roles'
         ])
-        ->search($search)
-        ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
-        ->get();
+            ->search($search)
+            ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
+            ->get();
 
         return response()->json([
             'branch_heads'      =>  $users
@@ -273,9 +276,9 @@ class UserController extends Controller
             'positions',
             'roles'
         ])
-        ->search($search)
-        ->where('position_id', 16)
-        ->get();
+            ->search($search)
+            ->where('position_id', 16)
+            ->get();
 
         return response()->json([
             'branch_heads'      =>  $users
@@ -318,7 +321,7 @@ class UserController extends Controller
 
                 return response()->json([
                     'employees' => $branchHeads
-                ],200);
+                ], 200);
             }
 
             //branch manager/supervisor
@@ -349,20 +352,20 @@ class UserController extends Controller
 
                 return response()->json([
                     'employees' => $employees
-                ],200);
+                ], 200);
             }
 
             //Department manager
             if ($isHO  && !empty($manager->department_id)) {
                 $employees = User::with('branches', 'positions')
-                    ->whereRelation('branches','branch_id', 126) //<--- must branch HO
-                    ->where('department_id',$manager->department_id) // <--- must the same department
+                    ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
+                    ->where('department_id', $manager->department_id) // <--- must the same department
                     ->search($search)
                     ->get();
 
                 return response()->json([
                     'employees' => $employees
-                ],200);
+                ], 200);
             }
         }
         return response()->json([

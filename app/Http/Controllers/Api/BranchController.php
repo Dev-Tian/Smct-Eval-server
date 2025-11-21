@@ -18,15 +18,14 @@ class BranchController extends Controller
 
         return response()->json([
             'branches' => $branches
-        ],200);
-
+        ], 200);
     }
 
     public function getTotalEmployeesBranch()
     {
         $all = Branch::withCount([
             'users as managers_count'
-             =>
+            =>
             fn($user)
             =>
             $user->whereHas(
@@ -46,7 +45,7 @@ class BranchController extends Controller
                 $position->whereNot('label', 'LIKE', "%manager%")
             )
         ])
-        ->get();
+            ->get();
 
 
         return response()->json([

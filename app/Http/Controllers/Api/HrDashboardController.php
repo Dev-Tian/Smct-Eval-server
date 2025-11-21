@@ -18,17 +18,17 @@ class HrDashboardController extends Controller
     {
         // totals
         $new_eval = UsersEvaluation::where('status', 'pending')
-                ->where('evaluatorApprovedAt','>=', Carbon::now()->subHours(24))
-                ->count();
+            ->where('evaluatorApprovedAt', '>=', Carbon::now()->subHours(24))
+            ->count();
 
         $pending_eval = UsersEvaluation::where('status', 'pending')->count();
         $completed_eval = UsersEvaluation::where('status', 'completed')->count();
 
         return response()->json([
-            'new_eval'          => $new_eval,
-            'pending_eval'          => $pending_eval,
-            'completed_eval'          => $completed_eval,
-        ],200);
+            'new_eval'            => $new_eval,
+            'pending_eval'        => $pending_eval,
+            'completed_eval'      => $completed_eval,
+        ], 200);
     }
 
     /**

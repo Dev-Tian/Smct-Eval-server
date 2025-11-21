@@ -30,7 +30,7 @@ Route::get('departments', [DepartmentController::class, 'index']);
 //sanctum routes
 Route::get('/profile', function (Request $request) {
     return $request->user()->load(
-            [
+        [
             'roles',
             'departments',
             'branches',
@@ -38,10 +38,10 @@ Route::get('/profile', function (Request $request) {
             'evaluations',
             'doesEvaluated',
             'unreadNotifications'
-            ]
-            )
-            ->loadCount('unreadNotifications as notification_counts');
-        })->middleware('auth:sanctum');
+        ]
+    )
+        ->loadCount('unreadNotifications as notification_counts');
+})->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(
     function () {
@@ -81,6 +81,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('getMyEvalAuthEmployee', 'getMyEvalAuthEmployee');
                 Route::get('submissions/{usersEvaluation}', 'show');
                 Route::post('submit/{user}', 'store');
+                Route::post('approvedByEmployee/{usersEvaluation}', 'approvedByEmployee');
                 Route::delete('delete_eval/{usersEvaluation}', 'destroy');
             }
         );
@@ -96,10 +97,10 @@ Route::middleware('auth:sanctum')->group(
         Route::post('isReadNotification', [NotificationsController::class, 'isRead']);
 
         //Dashboards
-        Route::get('adminDashboard', [AdminDashboardController::class ,'index']);
-        Route::get('evaluatorDashboard', [EvaluatorDashboardController::class ,'index']);
-        Route::get('hrDashboard', [HrDashboardController::class ,'index']);
-        Route::get('employeeDashboard', [EmployeeDashboardController::class ,'index']);
+        Route::get('adminDashboard', [AdminDashboardController::class, 'index']);
+        Route::get('evaluatorDashboard', [EvaluatorDashboardController::class, 'index']);
+        Route::get('hrDashboard', [HrDashboardController::class, 'index']);
+        Route::get('employeeDashboard', [EmployeeDashboardController::class, 'index']);
 
         Route::get('getAllRoles', [RoleController::class, 'index']);
 
@@ -114,15 +115,3 @@ Route::middleware('auth:sanctum')->group(
         });
     }
 );
-
-
-        Route::controller(UsersEvaluationController::class)->group(
-            function () {
-                Route::get('allEvaluations', 'index');
-                Route::get('getEvalAuthEvaluator', 'getEvalAuthEvaluator');
-                Route::get('getMyEvalAuthEmployee', 'getMyEvalAuthEmployee');
-                Route::get('user_eval/{usersEvaluation}', 'show');
-                Route::post('submit/{user}', 'store');
-                Route::delete('delete_eval/{usersEvaluation}', 'destroy');
-            }
-        );

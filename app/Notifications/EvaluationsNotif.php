@@ -19,14 +19,18 @@ class EvaluationsNotif extends Notification
         public string $status = "",
         public int $evaluation_id = 0,
         public int $employee_id = 0,
+        public string $employee_name = "",
         public int $evaluator_id = 0,
+        public string $evaluator_name = "",
         public string $message = ""
     ) {
-        $this->status           =  $status;
-        $this->evaluation_id    =  $evaluation_id;
-        $this->employee_id      =  $employee_id;
-        $this->evaluator_id     =  $evaluator_id;
-        $this->message          =  $message;
+        $this->status = $status;
+        $this->evaluation_id = $evaluation_id;
+        $this->employee_id = $employee_id;
+        $this->employee_name = $employee_name;
+        $this->evaluator_id = $evaluator_id;
+        $this->evaluator_name = $evaluator_name;
+        $this->message = $message;
     }
 
     /**
@@ -65,11 +69,13 @@ class EvaluationsNotif extends Notification
     public function toDatabase(object $notifiable): array
     {
         return [
-            'status'        => $this->status,
-            'evaluation_id' => $this->evaluation_id,
-            'employee_id'   => $this->employee_id,
-            'evaluator_id'  => $this->evaluator_id,
-            'message'       => $this->message,
+            'status'            => $this->status,
+            'evaluation_id'     => $this->evaluation_id,
+            'employee_id'       => $this->employee_id,
+            'employee_name'     => $this->employee_name,
+            'evaluator_id'      => $this->evaluator_id,
+            'evaluator_name'    => $this->evaluator_name,
+            'message'           => $this->message
         ];
     }
 }

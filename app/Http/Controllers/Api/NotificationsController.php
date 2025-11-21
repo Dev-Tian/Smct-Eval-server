@@ -8,21 +8,22 @@ use Illuminate\Support\Facades\Auth;
 
 class NotificationsController extends Controller
 {
-    public function isRead(Request $request){
+    public function isRead(Request $request)
+    {
         $user = Auth::user();
 
-    $notification = $user->notifications()->where('id', $request->id)->first();
+        $notification = $user->notifications()->where('id', $request->id)->first();
 
-if (!$notification) {
-    return response()->json([
-        'message' => 'Notification not found'
-    ], 404);
-}
+        if (!$notification) {
+            return response()->json([
+                'message' => 'Notification not found'
+            ], 404);
+        }
 
-$notification->markAsRead();
+        $notification->markAsRead();
 
-    return response()->json([
+        return response()->json([
             'message'         =>  'Mark as read notification',
-        ],200);
+        ], 200);
     }
 }
