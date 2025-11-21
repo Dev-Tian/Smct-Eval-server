@@ -5,7 +5,6 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use App\Models\Branch;
 use App\Models\Position;
 use App\Models\Department;
 use App\Models\User;
@@ -40,7 +39,6 @@ class UserFactory extends Factory
             'password' => Hash::make('password'),
             'is_active' => fake()->randomElement(["pending", "active", "declined"]),
             'date_hired' => $this->faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
-            'employeeSignatureDate' => $this->faker->dateTimeBetween('-1 years', 'now')->format('Y-m-d'),
             'signature' => $this->faker->text(200),
             'avatar' => $this->faker->optional()->imageUrl(200, 200, 'people'),
             'bio' => $this->faker->optional()->sentence(12),

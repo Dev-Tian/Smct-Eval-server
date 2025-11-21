@@ -64,6 +64,43 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function store(Request $request)
+    {
+        $validate = $request->validate([
+            'fname'                     => ['required', 'string', 'alpha'],
+            'lname'                     => ['required', 'string', 'alpha'],
+            'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+            'position_id'               => ['required', Rule::exists('positions', 'id')],
+            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
+            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
+            'employee_id'               => ['required', Rule::unique('users', 'emp_id')],
+            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
+            'contact'                   => ['required', 'string'],
+            'password'                  => ['required', 'string', 'min: 8', 'max:20'],
+            'role'                      => ['required', Rule::exists('roles', 'name')]
+        ]);
+
+        $user = User::create([
+            'fname'                     => $validate['fname'],
+            'lname'                     => $validate['lname'],
+            'email'                     => $validate['email'],
+            'position_id'               => $validate['position_id'],
+            'department_id'             => $validate['department_id'],
+            'emp_id'                    => $validate['employee_id'],
+            'username'                  => $validate['username'],
+            'contact'                   => $validate['contact'],
+            'password'                  => $validate['password'],
+            'is_active'                 => 'active'
+        ]);
+
+        $user->assignRole($validate['role']);
+        $user->branches()->sync($validate['branch_id']);
+
+        return response()->json([
+            "message"       => "Registered Successfully",
+        ], 200);
+    }
+
 
     //Auth
     public function userLogin(Request $request)
@@ -106,8 +143,12 @@ class UserController extends Controller
     }
 
     //Read
-    public function getAllUsers()
+    public function getAllUsers(Request $request)
     {
+        $search_filter = $request->input('search');
+        $department_filter = $request->input('department');
+        $branch_filter = $request->input('branch');
+
         $users  = User::with([
             'branches',
             'departments',
@@ -116,8 +157,23 @@ class UserController extends Controller
             'doesEvaluated',
             'roles'
         ])
-            ->whereNot('id', Auth::id())
-            ->get();
+        ->search($search_filter)
+        ->when(
+            $department_filter,
+             fn($q)
+             =>
+            $q->where('department_id', $department_filter)
+             )
+        ->when(
+            $branch_filter, function($q) use ($branch_filter){
+                $q->whereHas('branches',
+                        function($subq) use ($branch_filter){
+                            $subq->where('branch_id', $branch_filter);
+                        });
+            }
+             )
+        ->whereNot('id', Auth::id())
+        ->get();
 
         return response()->json([
             'message'       => 'Users fetched successfully',
@@ -187,6 +243,42 @@ class UserController extends Controller
         );
         return response()->json([
             'data'  =>  $shownUser
+        ], 200);
+    }
+
+    public function getAllBranchHeads(Request $request)
+    {
+        $search  = $request->input('search');
+        $users = User::with([
+            'branches',
+            'departments',
+            'positions',
+            'roles'
+        ])
+        ->search($search)
+        ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
+        ->get();
+
+        return response()->json([
+            'branch_heads'      =>  $users
+        ], 200);
+    }
+
+    public function getAllAreaManager(Request $request)
+    {
+        $search  = $request->input('search');
+        $users = User::with([
+            'branches',
+            'departments',
+            'positions',
+            'roles'
+        ])
+        ->search($search)
+        ->where('position_id', 16)
+        ->get();
+
+        return response()->json([
+            'branch_heads'      =>  $users
         ], 200);
     }
 

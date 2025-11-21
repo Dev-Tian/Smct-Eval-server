@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\QuarterUsersEvaluation;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,7 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'evaluator_id')->nullable()->constrained()->nullOnDelete();
             $table->string("category");
             $table->decimal('rating',3,2);
-            $table->string('status',['pending', 'completed'])->default('pending');
+            $table->enum('status',['pending', 'completed'])->default('pending');
 
             $table->date('coverageFrom');
             $table->date('coverageTo');

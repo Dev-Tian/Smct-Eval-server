@@ -9,7 +9,10 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\AdminDashboardController;
+use App\Http\Controllers\Api\EmployeeDashboardController;
 use App\Http\Controllers\Api\EvaluatorDashboardController;
+use App\Http\Controllers\Api\HrDashboardController;
+use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\UsersEvaluationController;
 
 //public routes
@@ -34,9 +37,11 @@ Route::get('/profile', function (Request $request) {
             'positions',
             'evaluations',
             'doesEvaluated',
-        ]
-    );
-})->middleware('auth:sanctum');
+            'unreadNotifications'
+            ]
+            )
+            ->loadCount('unreadNotifications as notification_counts');
+        })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(
     function () {
@@ -44,12 +49,15 @@ Route::middleware('auth:sanctum')->group(
             function () {
                 Route::get('getAllUsers', 'getAllUsers');
                 Route::get('getAllActiveUsers', 'getAllActiveUsers');
+                Route::get('getAllBranchHeads', 'getAllBranchHeads');
+                Route::get('getAllAreaManager', 'getAllAreaManager');
                 Route::get('getPendingRegistrations', 'getAllPendingUsers');
                 Route::get('getAllEmployeeByAuth', 'getAllEmployeeByAuth');
                 Route::get('showUser/{user}', 'showUser');
                 Route::post('updateUser/{user}', 'updateUser');
                 Route::post('uploadAvatar', 'uploadAvatar');
                 Route::post('updateProfileUserAuth', 'updateProfileUserAuth');
+                Route::post('addUser', 'store');
                 Route::post('updateUserBranch/{user}', 'updateUserBranch');
                 Route::post('removeUserBranches/{user}', 'removeUserBranches');
                 Route::post('approveRegistration/{user}', 'approveRegistration');
@@ -85,10 +93,13 @@ Route::middleware('auth:sanctum')->group(
             }
         );
 
+        Route::post('isReadNotification', [NotificationsController::class, 'isRead']);
 
         //Dashboards
         Route::get('adminDashboard', [AdminDashboardController::class ,'index']);
         Route::get('evaluatorDashboard', [EvaluatorDashboardController::class ,'index']);
+        Route::get('hrDashboard', [HrDashboardController::class ,'index']);
+        Route::get('employeeDashboard', [EmployeeDashboardController::class ,'index']);
 
         Route::get('getAllRoles', [RoleController::class, 'index']);
 
@@ -103,3 +114,15 @@ Route::middleware('auth:sanctum')->group(
         });
     }
 );
+
+
+        Route::controller(UsersEvaluationController::class)->group(
+            function () {
+                Route::get('allEvaluations', 'index');
+                Route::get('getEvalAuthEvaluator', 'getEvalAuthEvaluator');
+                Route::get('getMyEvalAuthEmployee', 'getMyEvalAuthEmployee');
+                Route::get('user_eval/{usersEvaluation}', 'show');
+                Route::post('submit/{user}', 'store');
+                Route::delete('delete_eval/{usersEvaluation}', 'destroy');
+            }
+        );

@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -14,15 +13,15 @@ class EvaluationsNotif extends Notification
     /**
      * Create a new notification instance.
      */
-    public
-        $status,
-        $evaluation_id,
-        $employee_id,
-        $evaluator_id,
-        $message;
 
-    public function __construct($status = 0, $evaluation_id = 0, $employee_id=0, $evaluator_id=0, $message="")
-    {
+
+    public function __construct(
+        public string $status = "",
+        public int $evaluation_id = 0,
+        public int $employee_id = 0,
+        public int $evaluator_id = 0,
+        public string $message = ""
+    ) {
         $this->status           =  $status;
         $this->evaluation_id    =  $evaluation_id;
         $this->employee_id      =  $employee_id;

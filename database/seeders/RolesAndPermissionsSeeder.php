@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -33,6 +32,7 @@ class RolesAndPermissionsSeeder extends Seeder
         //evaluator role
         Permission::create(['name' => 'view_evaluation_reports']);
         Permission::create(['name' => 'manage_evaluation_templates']);
+        Permission::create(['name' => 'conduct_evaluations']);
 
         //admin role
         Permission::create(['name' => 'system_administration']);

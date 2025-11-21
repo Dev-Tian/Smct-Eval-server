@@ -7,8 +7,8 @@ use App\Models\User;
 use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 use App\Notifications\EvaluationsNotif;
+use Illuminate\Support\Facades\Notification;
 
 use function Symfony\Component\Clock\now;
 
@@ -64,18 +64,12 @@ class UsersEvaluationController extends Controller
     {
         $auth_user = Auth::user();
 
-
-        //  expected load----
-        //  "job_knowledge": [
-        //     { "question_number": 1, "score": 5, "comment": "Good" }
-        // ]
-
         $validated  = $request->validate([
             'category'                              => ['required', 'string'],
             'rating'                                => ['required'],
             'coverageFrom'                          => ['required'],
             'coverageTo'                            => ['required'],
-            'reviewTypeProbationary'                => ['nullable', 'numeric'],
+            'reviewTypeProbationary'                => ['nullable','numeric'],
             'reviewTypeRegular'                     => ['nullable','string'],
             'reviewTypeOthersImprovement'           => ['nullable','boolean'],
             'reviewTypeOthersCustom'                => ['nullable','string'],
@@ -130,20 +124,20 @@ class UsersEvaluationController extends Controller
 
         $submission  =  UsersEvaluation::create([
             'employee_id'                       =>  $user->id,
-            'evaluator_id'                      =>  $auth_user->id,
+            'evaluator_id'                      =>  $auth_user->id ,
             'category'                          =>  $validated['category'],
             'rating'                            =>  $validated['rating'],
             'coverageFrom'                      =>  $validated['coverageFrom'],
             'coverageTo'                        =>  $validated['coverageTo'],
-            'reviewTypeProbationary'            =>  $validated['reviewTypeProbationary'],
-            'reviewTypeRegular'                 =>  $validated['reviewTypeRegular'],
-            'reviewTypeOthersImprovement'       =>  $validated['reviewTypeOthersImprovement'],
-            'reviewTypeOthersCustom'            =>  $validated['reviewTypeOthersCustom'],
-            'priorityArea1'                     =>  $validated['priorityArea1'],
-            'priorityArea2'                     =>  $validated['priorityArea2'],
-            'priorityArea3'                     =>  $validated['priorityArea3'],
-            'remarks'                           =>  $validated['remarks'],
-            'overallComments'                   =>  $validated['overallComments'],
+            'reviewTypeProbationary'            =>  $validated['reviewTypeProbationary'] ?? null,
+            'reviewTypeRegular'                 =>  $validated['reviewTypeRegular'] ?? null,
+            'reviewTypeOthersImprovement'       =>  $validated['reviewTypeOthersImprovement'] ?? null,
+            'reviewTypeOthersCustom'            =>  $validated['reviewTypeOthersCustom'] ?? null,
+            'priorityArea1'                     =>  $validated['priorityArea1'] ?? null,
+            'priorityArea2'                     =>  $validated['priorityArea2'] ?? null,
+            'priorityArea3'                     =>  $validated['priorityArea3'] ?? null,
+            'remarks'                           =>  $validated['remarks'] ?? null,
+            'overallComments'                   =>  $validated['overallComments'] ?? null,
             'evaluatorApprovedAt'               =>  now()
         ]);
 
@@ -174,7 +168,7 @@ class UsersEvaluationController extends Controller
         $employee = User::findOrFail($submission->employee_id);
         $employee->notify($params);
 
-        $hrs = User::with('roles')
+        User::with('roles')
             ->whereRelation('roles','name','hr')
             ->chunk(100,
                 function($hrs) use ($params){
