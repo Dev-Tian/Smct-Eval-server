@@ -15,13 +15,13 @@ class AdminDashboardController extends Controller
     public function index()
     {
         //users
-        $total_users            = User::count();
-        $total_pending_users    = User::where('is_active', 'pending')->count();
-        $total_active_users     = User::where('is_active', 'active')->count();
+        $total_users = User::count();
+        $total_pending_users = User::where('is_active', 'pending')->count();
+        $total_active_users = User::where('is_active', 'active')->count();
 
         //evaluations
-        $total_evaluations            = UsersEvaluation::count();
-        $total_pending_evaluations    = UsersEvaluation::where('status', 'pending')->count();
+        $total_evaluations = UsersEvaluation::count();
+        $total_pending_evaluations = UsersEvaluation::where('status', 'pending')->count();
 
         return response()->json([
             'total_users'                   => $total_users,
@@ -29,7 +29,7 @@ class AdminDashboardController extends Controller
             'total_active_users'            => $total_active_users,
             'total_evaluations'             => $total_evaluations,
             'total_pending_evaluations'     => $total_pending_evaluations
-        ],200);
+        ], 200);
     }
 
     /**

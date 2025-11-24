@@ -28,7 +28,7 @@ class BranchSeeder extends Seeder
             ['branch_code' => 'ILID',   'branch_name' => 'ILIGAN',              'branch' => 'Des Appliance Plaza, Inc.', 'acronym' => 'DAP', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'IMED',   'branch_name' => 'IMELDA',              'branch' => 'Des Appliance Plaza, Inc.', 'acronym' => 'DAP', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'INIT2',  'branch_name' => 'INITAO',              'branch' => 'Des Appliance Plaza, Inc.', 'acronym' => 'DAP', 'created_at' => now(), 'updated_at' => now()],
-            ['branch_code' => 'IPID',      'branch_name' => 'IPIL',                'branch' => 'Des Appliance Plaza, Inc.', 'acronym' => 'DAP', 'created_at' => now(), 'updated_at' => now()],
+            ['branch_code' => 'IPID',   'branch_name' => 'IPIL',                'branch' => 'Des Appliance Plaza, Inc.', 'acronym' => 'DAP', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'JIME',   'branch_name' => 'JIMENEZ',             'branch' => 'Des Appliance Plaza, Inc.', 'acronym' => 'DAP', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'KABD',   'branch_name' => 'KABASALAN',           'branch' => 'Des Appliance Plaza, Inc.', 'acronym' => 'DAP', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'LABD',   'branch_name' => 'LABASON',             'branch' => 'Des Appliance Plaza, Inc.', 'acronym' => 'DAP', 'created_at' => now(), 'updated_at' => now()],

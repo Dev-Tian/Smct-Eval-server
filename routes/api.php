@@ -49,9 +49,9 @@ Route::middleware('auth:sanctum')->group(
             function () {
                 Route::get('getAllUsers', 'getAllUsers');
                 Route::get('getAllActiveUsers', 'getAllActiveUsers');
+                Route::get('getPendingRegistrations', 'getAllPendingUsers');
                 Route::get('getAllBranchHeads', 'getAllBranchHeads');
                 Route::get('getAllAreaManager', 'getAllAreaManager');
-                Route::get('getPendingRegistrations', 'getAllPendingUsers');
                 Route::get('getAllEmployeeByAuth', 'getAllEmployeeByAuth');
                 Route::get('showUser/{user}', 'showUser');
                 Route::post('updateUser/{user}', 'updateUser');
@@ -90,7 +90,7 @@ Route::middleware('auth:sanctum')->group(
             function () {
                 Route::get('getTotalEmployeesDepartments', 'getTotalEmployeesDepartments');
                 Route::post('addDepartment', 'store');
-                Route::delete('deleteDepartment', 'destroy');
+                Route::delete('deleteDepartment/{department}', 'destroy');
             }
         );
 

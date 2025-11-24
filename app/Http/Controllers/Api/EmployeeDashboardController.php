@@ -20,17 +20,17 @@ class EmployeeDashboardController extends Controller
 
         $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->count();
         $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->sum('rating');
-    $average = ($sum_ratings / $total_evaluations);
-    $recent_evaluation = UsersEvaluation::where('employee_id', $user->id)
-                                ->latest('created_at')
-                                ->select('id', 'rate')
-                                ->first();
+        $average = ($sum_ratings / $total_evaluations);
+        $recent_evaluation = UsersEvaluation::where('employee_id', $user->id)
+            ->latest('created_at')
+            ->select('id', 'rate')
+            ->first();
 
         return response()->json([
             'total_evaluations'     =>  $total_evaluations,
             'average'               =>  $average,
             'recent_evaluation'     =>  $recent_evaluation,
-        ] ,200);
+        ], 200);
     }
 
     /**

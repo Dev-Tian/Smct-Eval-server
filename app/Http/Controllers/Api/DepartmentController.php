@@ -24,7 +24,7 @@ class DepartmentController extends Controller
     {
         $all = Department::withCount([
             'users as managers_count'
-             =>
+            =>
             fn($user)
             =>
             $user->whereHas(
@@ -44,11 +44,11 @@ class DepartmentController extends Controller
                 $position->whereNot('label', 'LIKE', "%manager%")
             )
         ])
-        ->get();
+            ->get();
 
 
         return response()->json([
-            'departments' => $all
+            'departments'       => $all
         ]);
     }
 
@@ -66,16 +66,16 @@ class DepartmentController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'department_name'       => ['required', 'string', 'alpha']
+            'department_name'     => ['required', 'string', 'alpha']
         ]);
 
         Department::create([
-             'department_name'       => $validate['department_name']
+            'department_name'     => $validate['department_name']
         ]);
 
         return response()->json([
             'message'       =>  'Added Successfully '
-        ],201);
+        ], 201);
     }
 
     /**
@@ -111,6 +111,6 @@ class DepartmentController extends Controller
 
         return response()->json([
             'message'       =>  'Department Deleted Successfully'
-        ],200);
+        ], 200);
     }
 }

@@ -85,7 +85,7 @@ class UserController extends Controller
             'lname'                     => $validate['lname'],
             'email'                     => $validate['email'],
             'position_id'               => $validate['position_id'],
-            'department_id'             => $validate['department_id'],
+            'department_id'             => $validate['department_id'] ?? null,
             'emp_id'                    => $validate['employee_id'],
             'username'                  => $validate['username'],
             'contact'                   => $validate['contact'],
