@@ -107,11 +107,11 @@ class UserController extends Controller
     {
 
         $request->validate([
-            'username' => ['required', 'string', 'lowercase'],
+            'email' => ['required', 'string', 'lowercase'],
             'password' => ['required', 'string'],
         ]);
 
-        $user = User::whereAny(['username', 'email'], $request->username)->first();
+        $user = User::whereAny(['username', 'email'], $request->email)->first();
 
         if (!$user) {
             return response()->json([
@@ -120,7 +120,7 @@ class UserController extends Controller
         }
 
         $credentials = [
-            'username' => !filter_var($request->username, FILTER_VALIDATE_EMAIL) ? $request->username : $user->username,
+            'username' => !filter_var($request->email, FILTER_VALIDATE_EMAIL) ? $request->email : $user->username,
             'password' => $request->password
         ];
 
