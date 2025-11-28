@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enum\EvalReviewType;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -62,13 +63,13 @@ class UsersEvaluation extends Model
         return $this->hasMany(CustomerService::class, 'users_evaluation_id');
     }
 
-    public function scopeSearch($query, $search)
+    #[Scope]
+    public function search($query, $search)
     {
         return
             $query->when(
                 $search,
                 function ($sub) use ($search) {
-                    // Match employee
                     $sub->whereHas('employee', function ($e) use ($search) {
                         $e->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$search}%"])
                             ->orWhereRaw("CONCAT(lname, ' ', fname) LIKE ?", ["%{$search}%"])
@@ -76,7 +77,6 @@ class UsersEvaluation extends Model
                             ->orWhere('username', 'like', '%{$search}%');
                     })
 
-                        // OR match evaluator
                         ->orWhereHas('evaluator', function ($e) use ($search) {
                             $e->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$search}%"])
                                 ->orWhereRaw("CONCAT(lname, ' ', fname) LIKE ?", ["%{$search}%"])
