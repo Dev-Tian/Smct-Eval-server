@@ -31,8 +31,8 @@ class UserController extends Controller
         ]);
 
         //file handling | storing
-        if ($request->file('signature')) {
-            $signature = $request->file['signature'];
+        if ($request->hasFile('signature')) {
+            $signature = $request->file('signature');
 
             $name = time() . '-' . $validate['username'] . '.' . $signature->getClientOriginalExtension();
 
