@@ -78,6 +78,51 @@ class RolesAndPermissionsSeeder extends Seeder
             'emp_id'            => "ADMIN-12345"
         ];
 
+        $hr = [
+            'position_id'       => 82,
+            'department_id'     => 5,
+            'username'          => 'hr',
+            'fname'             => 'HR',
+            'lname'             => 'Administrator',
+            'email'             => 'hr@smct.com',
+            'contact'           => '09123456789',
+            'password'          => 'password',
+            'is_active'         => 'active',
+            'date_hired'        => now(),
+            'emp_id'            => "HR-12345"
+        ];
+
+        $evaluator = [
+            'position_id'       => 113,
+            'department_id'     => 4,
+            'username'          => 'evaluator',
+            'fname'             => 'EVALUATOR',
+            'lname'             => 'EVALUATOR',
+            'email'             => 'evaluator@smct.com',
+            'contact'           => '09123456789',
+            'password'          => 'password',
+            'is_active'         => 'active',
+            'date_hired'        => now(),
+            'emp_id'            => "EVALUATOR-12345"
+        ];
+
+        $employee = [
+            'position_id'       => 8,
+            'department_id'     => 11,
+            'username'          => 'employee',
+            'fname'             => 'EMPLOYEE',
+            'lname'             => 'EMPLOYEE',
+            'email'             => 'admin@smct.com',
+            'contact'           => '09123456789',
+            'password'          => 'password',
+            'is_active'         => 'active',
+            'date_hired'        => now(),
+            'emp_id'            => "EMPLOYEE-12345"
+        ];
+
         $role_admin->users()->create($admin);
+        $role_employee->users()->create($employee);
+        $role_hr_manager->users()->create($hr);
+        $role_evaluator->users()->create($evaluator);
     }
 }

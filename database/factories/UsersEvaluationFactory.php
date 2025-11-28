@@ -21,8 +21,8 @@ class UsersEvaluationFactory extends Factory
         $probationary = $this->faker->boolean();
 
         return [
-            'employee_id' => User::inRandomOrder()->value('id') ?? User::factory(),
-            'evaluator_id' => User::inRandomOrder()->value('id') ?? User::factory(),
+            'employee_id' => User::inRandomOrder()->value('id') ?? 2,
+            'evaluator_id' => User::inRandomOrder()->value('id') ?? 2,
             'category' => $this->faker->sentence(5),
             'rating' => $this->faker->randomFloat(2, 1, 5),
             'status' => $status,
@@ -32,6 +32,7 @@ class UsersEvaluationFactory extends Factory
             'reviewTypeProbationary' => $probationary
                 ? $this->faker->randomElement([3, 5])
                 : null,
+
             'reviewTypeRegular' => $probationary
                 ? null
                 : $this->faker->randomElement(['Q1', 'Q2', 'Q3', 'Q4']),
