@@ -41,8 +41,8 @@ class UsersEvaluationFactory extends Factory
             'priorityArea1' => $this->faker->optional()->sentence(3),
             'priorityArea2' => $this->faker->optional()->sentence(3),
             'priorityArea3' => $this->faker->optional()->sentence(3),
-            'remarks' => $this->faker->optional()->paragraph(),
-            'overallComments' => $this->faker->optional()->paragraph(),
+            'remarks' => $this->faker->optional()->sentence(2),
+            'overallComments' => $this->faker->optional()->sentence(2),
             'evaluatorApprovedAt' => $this->faker->date(),
             'employeeApprovedAt' => $status === 'completed'
                 ? $this->faker->date()
