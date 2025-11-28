@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Enum\EvalReviewType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class UsersEvaluation extends Model
 {
+
+    use HasFactory;
 
     protected $guarded = [];
 
@@ -59,30 +62,27 @@ class UsersEvaluation extends Model
         return $this->hasMany(CustomerService::class, 'users_evaluation_id');
     }
 
-    public function search($query, $search)
+    public function scopeSearch($query, $search)
     {
-        return $query
-            ->when(
+        return
+            $query->when(
                 $search,
-                function ($query, $search) {
-                    $query->whereHas(
-                        'employee',
-                        fn($q)
-                        =>
-                        $q->whereRaw('CONCAT(fname, " ", lname) LIKE ?', ["%{$search}%"])
-                            ->orWhereRaw('CONCAT(lname, " ", fname) LIKE ?', ["%{$search}%"])
-                            ->orWhere('email', 'like', "%{$search}%")
-                            ->orWhere('username', 'like', "%{$search}%")
-                    );
-                    $query->whereHas(
-                        'evaluator',
-                        fn($q)
-                        =>
-                        $q->whereRaw('CONCAT(fname, " ", lname) LIKE ?', ["%{$search}%"])
-                            ->orWhereRaw('CONCAT(lname, " ", fname) LIKE ?', ["%{$search}%"])
-                            ->orWhere('email', 'like', "%{$search}%")
-                            ->orWhere('username', 'like', "%{$search}%")
-                    );
+                function ($sub) use ($search) {
+                    // Match employee
+                    $sub->whereHas('employee', function ($e) use ($search) {
+                        $e->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$search}%"])
+                            ->orWhereRaw("CONCAT(lname, ' ', fname) LIKE ?", ["%{$search}%"])
+                            ->orWhere('email', 'like', '%{$search}%')
+                            ->orWhere('username', 'like', '%{$search}%');
+                    })
+
+                        // OR match evaluator
+                        ->orWhereHas('evaluator', function ($e) use ($search) {
+                            $e->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$search}%"])
+                                ->orWhereRaw("CONCAT(lname, ' ', fname) LIKE ?", ["%{$search}%"])
+                                ->orWhere('email', 'like', '%{$search}%')
+                                ->orWhere('username', 'like', '%{$search}%');
+                        });
                 }
             );
     }

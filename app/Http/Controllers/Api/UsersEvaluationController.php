@@ -19,6 +19,7 @@ class UsersEvaluationController extends Controller
      */
     public function index(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
         $status = $request->input('status');
         $quarter = $request->input('quarter');
@@ -26,8 +27,11 @@ class UsersEvaluationController extends Controller
 
         $all_evaluations = UsersEvaluation::with(
             'employee',
+            'employee.branches',
+            'employee.positions',
             'evaluator',
-            'quarterUsersEvaluations',
+            'evaluator.branches',
+            'evaluator.positions',
             'jobKnowledge',
             'adaptability',
             'qualityOfWorks',
@@ -41,10 +45,10 @@ class UsersEvaluationController extends Controller
             ->when($status, fn($q)  => $q->where('status', $status))
             ->when($quarter, fn($q) => $q->where('quarter_of_submission_id', $quarter))
             ->when($year, fn($q)    => $q->whereYear('created_at', $year))
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
-            'Evaluations'   =>  $all_evaluations
+            'evaluations'   =>  $all_evaluations
         ], 200);
     }
 
@@ -204,8 +208,11 @@ class UsersEvaluationController extends Controller
     {
         $user_eval = $usersEvaluation->load(
             'employee',
+            'employee.branches',
+            'employee.positions',
             'evaluator',
-            'quarterUsersEvaluations',
+            'evaluator.branches',
+            'evaluator.positions',
             'jobKnowledge',
             'adaptability',
             'qualityOfWorks',

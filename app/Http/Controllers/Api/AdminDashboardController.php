@@ -18,17 +18,21 @@ class AdminDashboardController extends Controller
         $total_users = User::count();
         $total_pending_users = User::where('is_active', 'pending')->count();
         $total_active_users = User::where('is_active', 'active')->count();
+        $total_declined_users = User::where('is_active', 'declined')->count();
 
         //evaluations
         $total_evaluations = UsersEvaluation::count();
         $total_pending_evaluations = UsersEvaluation::where('status', 'pending')->count();
+        $total_completed_evaluations = UsersEvaluation::where('status', 'completed')->count();
 
         return response()->json([
             'total_users'                   => $total_users,
             'total_pending_users'           => $total_pending_users,
             'total_active_users'            => $total_active_users,
             'total_evaluations'             => $total_evaluations,
-            'total_pending_evaluations'     => $total_pending_evaluations
+            'total_pending_evaluations'     => $total_pending_evaluations,
+            'total_completed_evaluations'   => $total_completed_evaluations,
+            'total_declined_users'          => $total_declined_users
         ], 200);
     }
 

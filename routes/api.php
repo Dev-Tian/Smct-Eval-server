@@ -26,7 +26,10 @@ Route::controller(UserController::class)->group(function () {
 Route::get('positions', [PositionController::class, 'index']);
 Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
-// Route::get('getPendingRegistrations', [UserController::class, 'getAllPendingUsers']);
+
+//test
+// Route::get('allEvaluations', [UsersEvaluationController::class, 'index']);
+
 
 //sanctum routes
 Route::get('/profile', function (Request $request) {
