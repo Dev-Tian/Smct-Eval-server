@@ -21,8 +21,11 @@ class BranchController extends Controller
         ], 200);
     }
 
-    public function getTotalEmployeesBranch()
+    public function getTotalEmployeesBranch(Request $request)
     {
+        $paginate = $request->input('per_page', 10);
+        $search = $request->input('search');
+
         $all = Branch::withCount([
             'users as managers_count'
             =>
@@ -45,8 +48,16 @@ class BranchController extends Controller
                 $position->whereNot('label', 'LIKE', "%manager%")
             )
         ])
-            ->get();
-
+            ->when(
+                $search,
+                fn($q)
+                =>
+                $q->where('branch_code', 'LIKE', "%{$search}%")
+                    ->orWhere('branch_name', 'LIKE', "%{$search}%")
+                    ->orWhere('branch', 'LIKE', "%{$search}%")
+                    ->orWhere('acronym', 'LIKE', "%{$search}%")
+            )
+            ->paginate($paginate);
 
         return response()->json([
             'branches' => $all
@@ -114,8 +125,12 @@ class BranchController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Branch $branch)
     {
-        //
+        $branch->delete();
+
+        return response()->json([
+            'message'       =>  'Branch Deleted Successfully'
+        ], 200);
     }
 }

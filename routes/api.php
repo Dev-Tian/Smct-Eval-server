@@ -28,7 +28,7 @@ Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
 
 //test
-// Route::get('allEvaluations', [UsersEvaluationController::class, 'index']);
+// Route::get('getTotalEmployeesBranch', [BranchController::class, 'getTotalEmployeesBranch']);
 
 
 //sanctum routes
@@ -66,7 +66,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('removeUserBranches/{user}', 'removeUserBranches');
                 Route::post('approveRegistration/{user}', 'approveRegistration');
                 Route::post('rejectRegistration/{user}', 'rejectRegistration');
-                Route::delete('deleteUser/{user}', 'deleteUser');
+                Route::post('deleteUser/{user}', 'deleteUser');
             }
         );
 
@@ -75,6 +75,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('getTotalEmployeesBranch', 'getTotalEmployeesBranch');
                 Route::get('branch/{branch}', 'show');
                 Route::post('addBranch', 'store');
+                Route::post('deleteBranch/{branch}', 'destroy');
             }
         );
 
@@ -86,7 +87,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('submissions/{usersEvaluation}', 'show');
                 Route::post('submit/{user}', 'store');
                 Route::post('approvedByEmployee/{usersEvaluation}', 'approvedByEmployee');
-                Route::delete('delete_eval/{usersEvaluation}', 'destroy');
+                Route::post('deleteEval/{usersEvaluation}', 'destroy');
             }
         );
 
@@ -94,7 +95,7 @@ Route::middleware('auth:sanctum')->group(
             function () {
                 Route::get('getTotalEmployeesDepartments', 'getTotalEmployeesDepartments');
                 Route::post('addDepartment', 'store');
-                Route::delete('deleteDepartment/{department}', 'destroy');
+                Route::post('deleteDepartment/{department}', 'destroy');
             }
         );
 

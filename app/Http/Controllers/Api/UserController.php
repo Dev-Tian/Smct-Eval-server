@@ -77,7 +77,7 @@ class UserController extends Controller
             'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
             'contact'                   => ['required', 'string'],
             'password'                  => ['required', 'string', 'min: 8', 'max:20'],
-            'role'                      => ['required', Rule::exists('roles', 'name')]
+            'role_id'                   => ['required', Rule::exists('roles', 'id')]
         ]);
 
         $user = User::create([
@@ -93,7 +93,7 @@ class UserController extends Controller
             'is_active'                 => 'active'
         ]);
 
-        $user->assignRole($validate['role']);
+        $user->assignRole($validate['role_id']);
         $user->branches()->sync($validate['branch_id']);
 
         return response()->json([
@@ -187,6 +187,7 @@ class UserController extends Controller
 
     public function getAllPendingUsers(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $search_filter = $request->input('search');
         $status_filter = $request->input('status');
 
@@ -200,7 +201,7 @@ class UserController extends Controller
                 $status->where('is_active', '=', $status_filter)
             )
             ->search($search_filter)
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
             'user_status'       => $status_filter,
@@ -212,6 +213,7 @@ class UserController extends Controller
 
     public function getAllActiveUsers(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $role_filter = $request->input('role');
         $search_filter = $request->input('search');
 
@@ -225,7 +227,7 @@ class UserController extends Controller
                 $role->whereRelation('roles', 'id', $role_filter)
             )
             ->search($search_filter)
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
             'message'   => 'ok',

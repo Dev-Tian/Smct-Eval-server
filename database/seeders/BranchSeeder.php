@@ -124,7 +124,7 @@ class BranchSeeder extends Seeder
             ['branch_code' => 'CAMH',   'branch_name' => 'CAMINO NUEVO',        'branch' => 'Honda Des, Inc.', 'acronym' => 'HD', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'DATH',   'branch_name' => 'DATOC',               'branch' => 'Honda Des, Inc.', 'acronym' => 'HD', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'GENT',   'branch_name' => 'GENERAL TRIAS',       'branch' => 'Honda Des, Inc.', 'acronym' => 'HD', 'created_at' => now(), 'updated_at' => now()],
-            ['branch_code' => 'GUSA',   'branch_name' => 'GUSA',                'branch' => 'H onda Des, Inc.', 'acronym' => 'HD', 'created_at' => now(), 'updated_at' => now()],
+            ['branch_code' => 'GUSA',   'branch_name' => 'GUSA',                'branch' => 'Honda Des, Inc.', 'acronym' => 'HD', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'IPIH',   'branch_name' => 'IPIL',                'branch' => 'Honda Des, Inc.', 'acronym' => 'HD', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'KABA',   'branch_name' => 'KABASALAN',           'branch' => 'Honda Des, Inc.', 'acronym' => 'HD', 'created_at' => now(), 'updated_at' => now()],
             ['branch_code' => 'MARH',   'branch_name' => 'MARANDING',           'branch' => 'Honda Des, Inc.', 'acronym' => 'HD', 'created_at' => now(), 'updated_at' => now()],
