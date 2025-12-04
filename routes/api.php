@@ -110,7 +110,6 @@ Route::middleware('auth:sanctum')->group(
         Route::get('getAllRoles', [RoleController::class, 'index']);
 
         Route::post('logout', function (Request $request) {
-            Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
