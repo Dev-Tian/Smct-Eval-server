@@ -476,8 +476,10 @@ class UserController extends Controller
             $name = time() . '-' .  $user->username . '.' . $signature->getClientOriginalExtension();
             $path = $signature->storeAs('user-signatures', $name, 'public');
 
-            if (Storage::disk('public')->exists($user->signature)) {
-                Storage::disk('public')->delete($user->signature);
+            if ($user->signature) {
+                if (Storage::disk('public')->exists($user->signature)) {
+                    Storage::disk('public')->delete($user->signature);
+                }
             }
 
             $items['signature'] = $path ?? null;
