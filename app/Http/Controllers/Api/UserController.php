@@ -386,6 +386,7 @@ class UserController extends Controller
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
             'department_id'             => ['nullable', Rule::exists('departments', 'id')],
+            'employeeId'                =>  ['required'],
             'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
             'contact'                   => ['required', 'string'],
             'roles'                     => ['required', Rule::exists('roles', 'name')],
@@ -403,6 +404,7 @@ class UserController extends Controller
             'department_id'             => $validate['department_id'],
             'username'                  => $validate['username'],
             'contact'                   => $validate['contact'],
+            'emp_id'                    => $validate['employeeId'],
         ];
 
         if ($request->password) {
