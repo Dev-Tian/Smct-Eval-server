@@ -20,8 +20,11 @@ class DepartmentController extends Controller
         ]);
     }
 
-    public function getTotalEmployeesDepartments()
+    public function getTotalEmployeesDepartments(Request $request)
     {
+        $paginate = $request->input('per_page', 10);
+        $search = $request->input('search');
+
         $all = Department::withCount([
             'users as managers_count'
             =>
@@ -44,7 +47,8 @@ class DepartmentController extends Controller
                 $position->whereNot('label', 'LIKE', "%manager%")
             )
         ])
-            ->get();
+            ->when($search, fn($q) => $q->where('department_name', 'LIKE', "%{$search}%"))
+            ->paginate($paginate);
 
 
         return response()->json([

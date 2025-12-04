@@ -77,7 +77,7 @@ class UserController extends Controller
             'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
             'contact'                   => ['required', 'string'],
             'password'                  => ['required', 'string', 'min: 8', 'max:20'],
-            'role'                      => ['required', Rule::exists('roles', 'name')]
+            'role_id'                   => ['required', Rule::exists('roles', 'id')]
         ]);
 
         $user = User::create([
@@ -93,7 +93,7 @@ class UserController extends Controller
             'is_active'                 => 'active'
         ]);
 
-        $user->assignRole($validate['role']);
+        $user->assignRole($validate['role_id']);
         $user->branches()->sync($validate['branch_id']);
 
         return response()->json([
@@ -187,6 +187,7 @@ class UserController extends Controller
 
     public function getAllPendingUsers(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $search_filter = $request->input('search');
         $status_filter = $request->input('status');
 
@@ -200,7 +201,7 @@ class UserController extends Controller
                 $status->where('is_active', '=', $status_filter)
             )
             ->search($search_filter)
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
             'user_status'       => $status_filter,
@@ -212,6 +213,7 @@ class UserController extends Controller
 
     public function getAllActiveUsers(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $role_filter = $request->input('role');
         $search_filter = $request->input('search');
 
@@ -225,7 +227,7 @@ class UserController extends Controller
                 $role->whereRelation('roles', 'id', $role_filter)
             )
             ->search($search_filter)
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
             'message'   => 'ok',
@@ -418,10 +420,6 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        $request->validate([
-            'file' => 'required'
-        ]);
-
         // Early block if no file uploaded
         if (!$request->file('file')) {
             return response()->json([
@@ -429,12 +427,14 @@ class UserController extends Controller
             ], 400);
         }
 
-        $avatar = $request->file['file'];
+        $avatar = $request->file('file');
         $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
         $path = $avatar->storeAs('user-avatars', $name, 'public');
 
-        if (Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
+        if ($user->avatar) {
+            if (Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
+            }
         }
 
         $user->update([
@@ -460,7 +460,7 @@ class UserController extends Controller
             'fname'                     => ['required', 'string', 'alpha'],
             'lname'                     => ['required', 'string', 'alpha'],
             'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
-            'signature'                 => ['required'],
+
         ]);
 
         $items = [
@@ -472,12 +472,14 @@ class UserController extends Controller
 
         //file handling | storing
         if ($request->file('signature')) {
-            $signature = $validated['signature'];
+            $signature = $request->file('signature');
             $name = time() . '-' .  $user->username . '.' . $signature->getClientOriginalExtension();
             $path = $signature->storeAs('user-signatures', $name, 'public');
 
-            if (Storage::disk('public')->exists($user->signature)) {
-                Storage::disk('public')->delete($user->signature);
+            if ($user->signature) {
+                if (Storage::disk('public')->exists($user->signature)) {
+                    Storage::disk('public')->delete($user->signature);
+                }
             }
 
             $items['signature'] = $path ?? null;

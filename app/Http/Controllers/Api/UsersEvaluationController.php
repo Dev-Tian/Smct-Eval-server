@@ -43,7 +43,15 @@ class UsersEvaluationController extends Controller
             ->orderBy('id', 'desc')
             ->search($search)
             ->when($status, fn($q)  => $q->where('status', $status))
-            ->when($quarter, fn($q) => $q->where('quarter_of_submission_id', $quarter))
+            ->when(
+                $quarter,
+                fn($q) =>
+                $q->where(
+                    fn($sub) =>
+                    $sub->where('reviewTypeRegular', $quarter)
+                        ->orWhere('reviewTypeProbationary', $quarter)
+                )
+            )
             ->when($year, fn($q)    => $q->whereYear('created_at', $year))
             ->paginate($perPage);
 
