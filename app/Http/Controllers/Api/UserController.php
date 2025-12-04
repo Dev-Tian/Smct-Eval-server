@@ -388,7 +388,7 @@ class UserController extends Controller
             'department_id'             => ['nullable', Rule::exists('departments', 'id')],
             'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
             'contact'                   => ['required', 'string'],
-            'roles'                     => ['required', Rule::exists('roles', 'id')],
+            'roles'                     => ['required', Rule::exists('roles', 'name')],
             'password'                  => ['nullable', 'string', 'min: 8', 'max:20']
         ]);
 
