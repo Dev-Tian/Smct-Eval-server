@@ -459,18 +459,29 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'fname'                     => ['required', 'string', 'alpha'],
-            'lname'                     => ['required', 'string', 'alpha'],
-            'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
+            'username'                 => ['nullable', 'string'],
+            'email'                    => ['nullable', 'email',],
+            'current_password'         => [
+                'nullable',
+                Rule::when(
+                    fn() => $request->filled('current_password'),
+                    ['current_password:sanctum']
+                ),
+            ],
+            'new_password'             => ['nullable', 'required_with:current_password'],
+            'confirm_password'         => ['nullable', 'required_with:new_password', 'same:new_password'],
 
         ]);
 
+
         $items = [
-            'fname'                     => $validated['fname'],
-            'lname'                     => $validated['lname'],
-            'email'                     => $validated['email'],
-            'bio'                       => $request->bio ?? "",
+            'username'                  => $validated['username'] ?? $user->username,
+            'email'                     => $validated['email'] ?? $user->email,
         ];
+
+        if ($request->filled('current_password')) {
+            $items["password"] = $validated["confirm_password"];
+        }
 
         //file handling | storing
         if ($request->file('signature')) {

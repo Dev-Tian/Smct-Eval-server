@@ -228,8 +228,7 @@ class UsersEvaluationController extends Controller
             'reliabilities',
             'ethicals',
             'customerServices'
-        )
-            ->orderBy('id', 'desc');
+        );
 
         return response()->json([
             'user_eval'         =>   $user_eval
