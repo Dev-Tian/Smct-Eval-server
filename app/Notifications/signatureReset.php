@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Notifications\Notifications;
+namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -16,6 +16,7 @@ class signatureReset extends Notification
     public function __construct(
         public string $message = ""
     ) {
+
         $this->message = $message;
     }
 
@@ -51,6 +52,7 @@ class signatureReset extends Notification
             //
         ];
     }
+
     public function toDatabase(object $notifiable): array
     {
         return [

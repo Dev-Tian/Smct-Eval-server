@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Notifications\Notifications\signatureReset;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\signatureReset;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -529,7 +529,8 @@ class UserController extends Controller
 
     public function requestSignatureReset()
     {
-        $user = Auth::user();
+        // $user = Auth::user();
+        $user = User::findOrFail(4);
 
         $user->update([
             'requestSignatureReset'     =>  true,
@@ -556,8 +557,8 @@ class UserController extends Controller
         $user->update([
             'requestSignatureReset'     =>  false,
         ]);
-
         $user->notify(new signatureReset("Unfortunately, your signature reset request has been declined."));
+
 
         return response()->json([
             'message'       =>  'Rejected Successfully'
