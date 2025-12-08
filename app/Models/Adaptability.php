@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Adaptability extends Model
 {
-    protected $guarded=[];
+    protected $guarded = [];
 
-    public function usersEvaluation(){
-            return $this->belongsTo(UsersEvaluation::class, 'users_evaluation_id');
-        }
-
+    public function usersEvaluation()
+    {
+        return $this->belongsTo(UsersEvaluation::class, 'users_evaluation_id');
+    }
 }

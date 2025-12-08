@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Department;
-use Exception;
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
@@ -14,16 +13,47 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        try{
-            $departments = Department::all();
-            return response()->json([
-                'departments'=>$departments
-            ]);
-        }catch(Exception $err){
-            return response()->json([
-                'error'=>$err->getMessage()
-            ]);
-        }
+        $departments = Department::all();
+
+        return response()->json([
+            'departments' => $departments
+        ]);
+    }
+
+    public function getTotalEmployeesDepartments(Request $request)
+    {
+        $paginate = $request->input('per_page', 10);
+        $search = $request->input('search');
+
+        $all = Department::withCount([
+            'users as managers_count'
+            =>
+            fn($user)
+            =>
+            $user->whereHas(
+                'positions',
+                fn($position)
+                =>
+                $position->where('label', 'LIKE', "%manager%")
+            ),
+            'users as employees_count'
+            =>
+            fn($user)
+            =>
+            $user->whereHas(
+                'positions',
+                fn($position)
+                =>
+                $position->whereNot('label', 'LIKE', "%manager%")
+            )
+        ])
+            ->when($search, fn($q) => $q->where('department_name', 'LIKE', "%{$search}%"))
+            ->paginate($paginate);
+
+
+        return response()->json([
+            'departments'       => $all
+        ]);
     }
 
     /**
@@ -39,7 +69,17 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = $request->validate([
+            'department_name'     => ['required', 'string', 'alpha']
+        ]);
+
+        Department::create([
+            'department_name'     => $validate['department_name']
+        ]);
+
+        return response()->json([
+            'message'       =>  'Added Successfully '
+        ], 201);
     }
 
     /**
@@ -69,8 +109,12 @@ class DepartmentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Department $department)
     {
-        //
+        $department->delete();
+
+        return response()->json([
+            'message'       =>  'Department Deleted Successfully'
+        ], 200);
     }
 }

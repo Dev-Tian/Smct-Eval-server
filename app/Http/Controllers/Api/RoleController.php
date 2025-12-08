@@ -3,21 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Position;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
-class PositionController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $positions = Position::all();
+        $roles = Role::all();
 
         return response()->json([
-            'positions'=>$positions
-        ]);
+            'roles' =>  $roles
+        ], 200);
     }
 
     /**
@@ -33,7 +33,7 @@ class PositionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
     }
 
     /**

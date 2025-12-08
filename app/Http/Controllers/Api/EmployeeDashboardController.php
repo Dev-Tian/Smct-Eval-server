@@ -3,21 +3,34 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Position;
+use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class PositionController extends Controller
+use function Laravel\Prompts\select;
+
+class EmployeeDashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $positions = Position::all();
+        $user = Auth::user();
+
+        $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->count();
+        $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->sum('rating');
+        $average = ($sum_ratings / $total_evaluations);
+        $recent_evaluation = UsersEvaluation::where('employee_id', $user->id)
+            ->latest('created_at')
+            ->select('id', 'rate')
+            ->first();
 
         return response()->json([
-            'positions'=>$positions
-        ]);
+            'total_evaluations'     =>  $total_evaluations,
+            'average'               =>  $average,
+            'recent_evaluation'     =>  $recent_evaluation,
+        ], 200);
     }
 
     /**

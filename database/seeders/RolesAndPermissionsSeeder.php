@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -20,12 +19,6 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'view_own_evaluations']);
         Permission::create(['name' => 'submit_self_assessment']);
 
-        //manager role
-        Permission::create(['name' => 'view_team_profiles']);
-        Permission::create(['name' => 'conduct_evaluations']); //evaluator too
-        Permission::create(['name' => 'view_team_reports']);
-        Permission::create(['name' => 'approve_goals']);
-
         //hr and hr-manager role
         Permission::create(['name' => 'view_all_profiles']);
         Permission::create(['name' => 'manage_evaluations']);
@@ -39,6 +32,7 @@ class RolesAndPermissionsSeeder extends Seeder
         //evaluator role
         Permission::create(['name' => 'view_evaluation_reports']);
         Permission::create(['name' => 'manage_evaluation_templates']);
+        Permission::create(['name' => 'conduct_evaluations']);
 
         //admin role
         Permission::create(['name' => 'system_administration']);
@@ -51,20 +45,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $role_employee->givePermissionTo('view_own_evaluations');
         $role_employee->givePermissionTo('submit_self_assessment');
 
-        $role_manager = Role::create(['name' => 'manager']);
-        $role_manager->givePermissionTo('view_team_profiles');
-        $role_manager->givePermissionTo('conduct_evaluations');
-        $role_manager->givePermissionTo('view_team_reports');
-        $role_manager->givePermissionTo('approve_goals');
-
-        $role_hr = Role::create(['name' => 'hr']);
-        $role_hr->givePermissionTo('view_all_profiles');
-        $role_hr->givePermissionTo('manage_evaluations');
-        $role_hr->givePermissionTo('generate_reports');
-        $role_hr->givePermissionTo('manage_users');
-        $role_hr->givePermissionTo('view_hr_reports');
-
-        $role_hr_manager = Role::create(['name' => 'hr manager']);
+        $role_hr_manager = Role::create(['name' => 'hr']);
         $role_hr_manager->givePermissionTo('view_all_profiles');
         $role_hr_manager->givePermissionTo('manage_evaluations');
         $role_hr_manager->givePermissionTo('generate_reports');
@@ -85,7 +66,6 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $admin = [
             'position_id'       => 11,
-            'branch_id'         => 126,
             'department_id'     => 11,
             'username'          => 'admin',
             'fname'             => 'System',
@@ -98,6 +78,51 @@ class RolesAndPermissionsSeeder extends Seeder
             'emp_id'            => "ADMIN-12345"
         ];
 
+        $hr = [
+            'position_id'       => 82,
+            'department_id'     => 5,
+            'username'          => 'hr',
+            'fname'             => 'HR',
+            'lname'             => 'Administrator',
+            'email'             => 'hr@smct.com',
+            'contact'           => '09123456789',
+            'password'          => 'password',
+            'is_active'         => 'active',
+            'date_hired'        => now(),
+            'emp_id'            => "HR-12345"
+        ];
+
+        $evaluator = [
+            'position_id'       => 113,
+            'department_id'     => 4,
+            'username'          => 'evaluator',
+            'fname'             => 'EVALUATOR',
+            'lname'             => 'EVALUATOR',
+            'email'             => 'evaluator@smct.com',
+            'contact'           => '09123456789',
+            'password'          => 'password',
+            'is_active'         => 'active',
+            'date_hired'        => now(),
+            'emp_id'            => "EVALUATOR-12345"
+        ];
+
+        $employee = [
+            'position_id'       => 8,
+            'department_id'     => 11,
+            'username'          => 'employee',
+            'fname'             => 'EMPLOYEE',
+            'lname'             => 'EMPLOYEE',
+            'email'             => 'admin@smct.com',
+            'contact'           => '09123456789',
+            'password'          => 'password',
+            'is_active'         => 'active',
+            'date_hired'        => now(),
+            'emp_id'            => "EMPLOYEE-12345"
+        ];
+
         $role_admin->users()->create($admin);
+        $role_employee->users()->create($employee);
+        $role_hr_manager->users()->create($hr);
+        $role_evaluator->users()->create($evaluator);
     }
 }

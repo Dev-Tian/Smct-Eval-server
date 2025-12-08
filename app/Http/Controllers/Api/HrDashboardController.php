@@ -3,21 +3,32 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Position;
+use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
-class PositionController extends Controller
+use function Symfony\Component\Clock\now;
+
+class HrDashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $positions = Position::all();
+        // totals
+        $new_eval = UsersEvaluation::where('status', 'pending')
+            ->where('evaluatorApprovedAt', '>=', Carbon::now()->subHours(24))
+            ->count();
+
+        $pending_eval = UsersEvaluation::where('status', 'pending')->count();
+        $completed_eval = UsersEvaluation::where('status', 'completed')->count();
 
         return response()->json([
-            'positions'=>$positions
-        ]);
+            'new_eval'            => $new_eval,
+            'pending_eval'        => $pending_eval,
+            'completed_eval'      => $completed_eval,
+        ], 200);
     }
 
     /**

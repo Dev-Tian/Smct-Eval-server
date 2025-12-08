@@ -1,23 +1,22 @@
 <?php
 
-<<<<<<< Updated upstream
-=======
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
->>>>>>> Stashed changes
 use App\Http\Controllers\Api\BranchController;
 use App\Http\Controllers\Api\DepartmentController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PositionController;
-use App\Models\User;
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\AdminDashboardController;
+use App\Http\Controllers\Api\EmployeeDashboardController;
+use App\Http\Controllers\Api\EvaluatorDashboardController;
+use App\Http\Controllers\Api\HrDashboardController;
+use App\Http\Controllers\Api\NotificationsController;
+use App\Http\Controllers\Api\UsersEvaluationController;
 
 //public routes
+
+//login and register
 Route::controller(UserController::class)->group(function () {
     Route::post('login', 'userLogin');
     Route::post('register', 'registerUser');
@@ -27,34 +26,28 @@ Route::get('positions', [PositionController::class, 'index']);
 Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
 
-<<<<<<< Updated upstream
-=======
 //test
 // Route::get('getAllYears', [UsersEvaluationController::class, 'getAllYears']);
 
->>>>>>> Stashed changes
 
 //sanctum routes
 Route::get('/profile', function (Request $request) {
-    return $request->user()->load(['roles', 'departments', 'branches', 'positions']);
+    return $request->user()->load(
+        [
+            'roles',
+            'departments',
+            'branches',
+            'positions',
+            'evaluations',
+            'doesEvaluated',
+            'unreadNotifications'
+        ]
+    )
+        ->loadCount('unreadNotifications as notification_counts');
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(
     function () {
-<<<<<<< Updated upstream
-        Route::controller(UserController::class)->group(function () {
-            Route::get('users', 'getAllUsers');
-            Route::get('getAll_Active_users', 'getAllActiveUsers');
-            Route::get('getAll_Pending_users', 'getAllPendingUsers');
-            Route::get('show_user/{id}', 'showUser');
-            Route::post('update_user/{id}', 'updateUser');
-            Route::post('upload_avatar', 'uploadAvatar');
-            Route::post('update_employee_auth', 'updateUserAuth');
-            Route::post('delete_user/{id}', 'deleteUser');
-            Route::post('approveRegistration/{id}', 'approveRegistration');
-            Route::post('rejectRegistration/{id}', 'rejectRegistration');
-        });
-=======
         Route::controller(UserController::class)->group(
             function () {
                 Route::get('getAllUsers', 'getAllUsers');
@@ -115,13 +108,14 @@ Route::middleware('auth:sanctum')->group(
         Route::get('employeeDashboard', [EmployeeDashboardController::class, 'index']);
 
         Route::get('getAllRoles', [RoleController::class, 'index']);
->>>>>>> Stashed changes
 
         Route::post('logout', function (Request $request) {
-            auth()->guard('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return response()->json(['message' => 'Logged out successfully']);
+
+            return response()->json([
+                'message' => 'Logged out successfully'
+            ], 200);
         });
     }
 );

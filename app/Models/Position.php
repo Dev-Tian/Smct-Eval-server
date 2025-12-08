@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Position extends Model
 {
-     protected $guarded=[];
+    protected $guarded = [];
 
-    public function users(){
-         return $this->hasMany(User::class, 'position_id');
+    public function users()
+    {
+        return $this->hasMany(User::class, 'position_id');
     }
 }
