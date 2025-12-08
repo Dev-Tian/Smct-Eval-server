@@ -8,7 +8,9 @@ use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\EvaluationsNotif;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Response;
 
 use function Symfony\Component\Clock\now;
 
@@ -75,6 +77,8 @@ class UsersEvaluationController extends Controller
     public function store(Request $request, User $user)
     {
         $auth_user_evaluator = Auth::user();
+        // $auth_user_evaluator = User::findOrFail(49);
+
 
         $validated  = $request->validate([
             'category'                              => ['required', 'string'],
@@ -372,5 +376,17 @@ class UsersEvaluationController extends Controller
         return response()->json([
             'message'       => 'Deleted Successfully'
         ], 200);
+    }
+
+    public function getAllYears()
+    {
+        $years = UsersEvaluation::select(DB::raw("YEAR(created_at) as year"))
+            ->distinct()
+            ->orderBy('year', 'DESC')
+            ->get();
+
+        return response()->json([
+            "years" => $years
+        ]);
     }
 }
