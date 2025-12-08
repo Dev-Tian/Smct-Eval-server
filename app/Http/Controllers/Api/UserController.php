@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Notifications\Notifications\signatureReset;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -287,6 +288,23 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function getAllSignatureRequest(Request $request)
+    {
+        $search = $request->input("search");
+        $users = User::with(
+            'branches',
+            'departments',
+            'positions',
+        )
+            ->where('requestSignatureReset', true)
+            ->search($search)
+            ->get();
+
+        return response()->json([
+            'users'      =>  $users
+        ], 200);
+    }
+
 
     //applicable for area manager / branch manager/supervisor /department manager
     public function getAllEmployeeByAuth(Request $request)
@@ -496,6 +514,8 @@ class UserController extends Controller
             }
 
             $items['signature'] = $path ?? null;
+            $items['requestSignatureReset'] = false;
+            $items['approvedSignatureReset'] = false;
         }
 
         $user->update($items);
@@ -506,6 +526,43 @@ class UserController extends Controller
         ], 201);
     }
 
+
+    public function requestSignatureReset()
+    {
+        $user = Auth::user();
+
+        $user->update([
+            'requestSignatureReset'     =>  true,
+        ]);
+
+        return response()->json([
+            'message'       =>  'Approved'
+        ], 201);
+    }
+
+    public function approvedSignatureReset(User $user)
+    {
+        $user->update([
+            'approvedSignatureReset'     =>  true,
+        ]);
+
+        return response()->json([
+            'message'       =>  'Approved'
+        ], 201);
+    }
+
+    public function rejectSignatureReset(User $user)
+    {
+        $user->update([
+            'requestSignatureReset'     =>  false,
+        ]);
+
+        $user->notify(new signatureReset("Unfortunately, your signature reset request has been declined."));
+
+        return response()->json([
+            'message'       =>  'Rejected Successfully'
+        ], 201);
+    }
 
     public function approveRegistration(User $user)
     {
