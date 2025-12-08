@@ -522,6 +522,7 @@ class UserController extends Controller
             $user = User::findOrFail(Auth::id());
 =======
         $validate = $request->validate([
+<<<<<<< Updated upstream
             'fname' => ['required', 'string', 'alpha'],
             'lname' => ['required', 'string', 'alpha'],
             'employeeId' => ['required'],
@@ -533,6 +534,19 @@ class UserController extends Controller
             'contact' => ['required', 'string'],
             'roles' => ['required', Rule::exists('roles', 'name')],
             'password' => ['nullable', 'string', 'min: 8', 'max:20']
+=======
+            'fname'                     => ['required', 'string', 'alpha'],
+            'lname'                     => ['required', 'string', 'alpha'],
+            'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
+            'position_id'               => ['required', Rule::exists('positions', 'id')],
+            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
+            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
+            'employeeId'                =>  ['required'],
+            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
+            'contact'                   => ['required', 'string'],
+            'roles'                     => ['required', Rule::exists('roles', 'name')],
+            'password'                  => ['nullable', 'string', 'min: 8', 'max:20']
+>>>>>>> Stashed changes
         ]);
 >>>>>>> Stashed changes
 
@@ -554,6 +568,7 @@ class UserController extends Controller
         }
 =======
         $updateData = [
+<<<<<<< Updated upstream
             'fname' => $validate['fname'],
             'emp_id' => $validate['employeeId'],
             'lname' => $validate['lname'],
@@ -562,6 +577,16 @@ class UserController extends Controller
             'department_id' => $validate['department_id'],
             'username' => $validate['username'],
             'contact' => $validate['contact'],
+=======
+            'fname'                     => $validate['fname'],
+            'lname'                     => $validate['lname'],
+            'email'                     => $validate['email'],
+            'position_id'               => $validate['position_id'],
+            'department_id'             => $validate['department_id'],
+            'username'                  => $validate['username'],
+            'contact'                   => $validate['contact'],
+            'emp_id'                    => $validate['employeeId'],
+>>>>>>> Stashed changes
         ];
 
         if ($request->password) {
@@ -736,18 +761,43 @@ class UserController extends Controller
                 $items['signature'] = $path ?? null;
 =======
         $validated = $request->validate([
+<<<<<<< Updated upstream
             'fname' => ['required', 'string', 'alpha'],
             'lname' => ['required', 'string', 'alpha'],
             'email' => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
             'signature' => ['required'],
+=======
+            'username'                 => ['nullable', 'string'],
+            'email'                    => ['nullable', 'email',],
+            'current_password'         => [
+                'nullable',
+                Rule::when(
+                    fn() => $request->filled('current_password'),
+                    ['current_password:sanctum']
+                ),
+            ],
+            'new_password'             => ['nullable', 'required_with:current_password'],
+            'confirm_password'         => ['nullable', 'required_with:new_password', 'same:new_password'],
+
+>>>>>>> Stashed changes
         ]);
 
+
         $items = [
+<<<<<<< Updated upstream
             'fname' => $validated['fname'],
             'lname' => $validated['lname'],
             'email' => $validated['email'],
             'bio' => $request->bio ?? "",
+=======
+            'username'                  => $validated['username'] ?? $user->username,
+            'email'                     => $validated['email'] ?? $user->email,
+>>>>>>> Stashed changes
         ];
+
+        if ($request->filled('current_password')) {
+            $items["password"] = $validated["confirm_password"];
+        }
 
         //file handling | storing
         if ($request->file('signature')) {
