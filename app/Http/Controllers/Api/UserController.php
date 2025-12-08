@@ -297,6 +297,7 @@ class UserController extends Controller
             'positions',
         )
             ->where('requestSignatureReset', true)
+            ->whereNot('approvedSignatureReset', true)
             ->search($search)
             ->get();
 
@@ -546,6 +547,7 @@ class UserController extends Controller
         $user->update([
             'approvedSignatureReset'     =>  true,
         ]);
+        $user->notify(new signatureReset("Your signature reset request has been approved."));
 
         return response()->json([
             'message'       =>  'Approved'
