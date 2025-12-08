@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Database\Migrations\Migration;
@@ -30,6 +29,8 @@ return new class extends Migration
             $table->longText("signature")->nullable();
             $table->string("avatar")->nullable();
             $table->string('bio')->nullable();
+            $table->boolean('requestSignatureReset')->default(false);
+            $table->boolean('approvedSignatureReset')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
