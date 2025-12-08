@@ -15,6 +15,7 @@ class UserController extends Controller
 
     public function registerUser(Request $request)
     {
+<<<<<<< Updated upstream
         try {
             $validate = $request->validate([
                 'fname'                     => ['required', 'string', 'alpha'],
@@ -29,6 +30,21 @@ class UserController extends Controller
                 'contact'                   => ['required', 'string'],
                 'password'                  => ['required', 'string', 'min: 8', 'max:20']
             ]);
+=======
+        $validate = $request->validate([
+            'fname' => ['required', 'string', 'alpha'],
+            'lname' => ['required', 'string', 'alpha'],
+            'email' => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+            'position_id' => ['required', Rule::exists('positions', 'id')],
+            'branch_id' => ['required', Rule::exists('branches', 'id')],
+            'department_id' => ['nullable', Rule::exists('departments', 'id')],
+            'signature' => ['required'],
+            'employee_id' => ['required', Rule::unique('users', 'emp_id')],
+            'username' => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
+            'contact' => ['required', 'string'],
+            'password' => ['required', 'string', 'min: 8', 'max:20']
+        ]);
+>>>>>>> Stashed changes
 
             //file handling | storing
             if ($request->file('signature')) {
@@ -60,6 +76,7 @@ class UserController extends Controller
             $user->assignRole('employee');
 
             return response()->json([
+<<<<<<< Updated upstream
                 "message"       => "Registered Successfully",
             ], 200);
         } catch (Exception $e) {
@@ -68,6 +85,68 @@ class UserController extends Controller
                 'error'         => $e->getMessage(),
             ], 500);
         }
+=======
+                'message' => 'Signature not found or invalid file.'
+            ], 400);
+        }
+
+        $user = User::create([
+            'fname' => $validate['fname'],
+            'lname' => $validate['lname'],
+            'email' => $validate['email'],
+            'position_id' => $validate['position_id'],
+            'department_id' => $validate['department_id'],
+            'signature' => $path ?? null,
+            'emp_id' => $validate['employee_id'],
+            'username' => $validate['username'],
+            'contact' => $validate['contact'],
+            'password' => $validate['password']
+        ]);
+
+        $user->assignRole('employee');
+        $user->branches()->sync($validate['branch_id']);
+
+        return response()->json([
+            "message" => "Registered Successfully",
+        ], 200);
+    }
+
+    public function store(Request $request)
+    {
+        $validate = $request->validate([
+            'fname' => ['required', 'string', 'alpha'],
+            'lname' => ['required', 'string', 'alpha'],
+            'email' => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+            'position_id' => ['required', Rule::exists('positions', 'id')],
+            'branch_id' => ['required', Rule::exists('branches', 'id')],
+            'department_id' => ['nullable', Rule::exists('departments', 'id')],
+            'employee_id' => ['required', Rule::unique('users', 'emp_id')],
+            'username' => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
+            'contact' => ['required', 'string'],
+            'password' => ['required', 'string', 'min: 8', 'max:20'],
+            'role' => ['required', Rule::exists('roles', 'name')]
+        ]);
+
+        $user = User::create([
+            'fname' => $validate['fname'],
+            'lname' => $validate['lname'],
+            'email' => $validate['email'],
+            'position_id' => $validate['position_id'],
+            'department_id' => $validate['department_id'] ?? null,
+            'emp_id' => $validate['employee_id'],
+            'username' => $validate['username'],
+            'contact' => $validate['contact'],
+            'password' => $validate['password'],
+            'is_active' => 'active'
+        ]);
+
+        $user->assignRole($validate['role']);
+        $user->branches()->sync($validate['branch_id']);
+
+        return response()->json([
+            "message" => "Registered Successfully",
+        ], 200);
+>>>>>>> Stashed changes
     }
 
 
@@ -116,10 +195,27 @@ class UserController extends Controller
             ], 200);
         } catch (Exception $e) {
             return response()->json([
+<<<<<<< Updated upstream
                 'message'   => 'Login failed',
                 'error'     => $e->getMessage(),
             ], 500);
         }
+=======
+                "status" => false,
+                "message" => "Email and password do not match our records"
+            ], 400);
+        }
+
+        $user = Auth::user();
+
+        $role = $user->getRoleNames();
+
+        return response()->json([
+            "role" => $role,
+            "status" => true,
+            "message" => "Login successful. Redirecting you to Dashboard"
+        ], 200);
+>>>>>>> Stashed changes
     }
 
 
@@ -129,6 +225,7 @@ class UserController extends Controller
             $users  = User::whereNot('id', '=', Auth::id())
                 ->get();
 
+<<<<<<< Updated upstream
             return response()->json([
                 'message'       => 'Users fetched successfully',
                 'users'         => $users
@@ -139,11 +236,47 @@ class UserController extends Controller
                 'error'         => $e->getMessage(),
             ], 500);
         }
+=======
+        $users = User::with([
+            'branches',
+            'departments',
+            'positions',
+            'evaluations',
+            'doesEvaluated',
+            'roles'
+        ])
+            ->search($search_filter)
+            ->when(
+                $department_filter,
+                fn($q)
+                =>
+                $q->where('department_id', $department_filter)
+            )
+            ->when(
+                $branch_filter,
+                function ($q) use ($branch_filter) {
+                    $q->whereHas(
+                        'branches',
+                        function ($subq) use ($branch_filter) {
+                            $subq->where('branch_id', $branch_filter);
+                        }
+                    );
+                }
+            )
+            ->whereNot('id', Auth::id())
+            ->get();
+
+        return response()->json([
+            'message' => 'Users fetched successfully',
+            'users' => $users
+        ], 200);
+>>>>>>> Stashed changes
     }
 
 
     public function getAllPendingUsers(Request $request)
     {
+<<<<<<< Updated upstream
         try {
             $search_filter = $request->input('search');
             $status_filter = $request->input('status');
@@ -171,11 +304,34 @@ class UserController extends Controller
                 'error'     => $e->getMessage(),
             ], 500);
         }
+=======
+        $search_filter = $request->input('search');
+        $status_filter = $request->input('status');
+
+        $pending_users = User::with('positions', 'branches', 'departments', 'roles')
+            ->whereNot('is_active', "active")
+            ->whereNot('id', Auth::id())
+            ->when(
+                $status_filter,
+                fn($status)
+                =>
+                $status->where('is_active', '=', $status_filter)
+            )
+            ->search($search_filter)
+            ->get();
+
+        return response()->json([
+            'user_status' => $status_filter,
+            'message' => 'ok',
+            'users' => $pending_users
+        ], 200);
+>>>>>>> Stashed changes
     }
 
 
     public function getAllActiveUsers(Request $request)
     {
+<<<<<<< Updated upstream
         try {
             $role_filter = $request->input('role');
             $search_filter = $request->input('search');
@@ -188,10 +344,134 @@ class UserController extends Controller
                     fn($role)
                     =>
                     $role->whereRelation('roles', 'name', $role_filter)
+=======
+        $role_filter = $request->input('role');
+        $search_filter = $request->input('search');
+
+        $users = User::with('branches', 'departments', 'positions', 'roles')
+            ->where('is_active', "active")
+            ->whereNot('id', Auth::id())
+            ->when(
+                $role_filter,
+                fn($role)
+                =>
+                $role->whereRelation('roles', 'id', $role_filter)
+            )
+            ->search($search_filter)
+            ->get();
+
+        return response()->json([
+            'message' => 'ok',
+            'users' => $users
+        ], 200);
+    }
+
+
+    public function showUser(User $user)
+    {
+        $shownUser = $user->load(
+            'branches',
+            'departments',
+            'positions',
+            'evaluations',
+            'doesEvaluated',
+            'roles'
+        );
+        return response()->json([
+            'data' => $shownUser
+        ], 200);
+    }
+
+    public function getAllBranchHeads(Request $request)
+    {
+        $search = $request->input('search');
+        $users = User::with([
+            'branches',
+            'departments',
+            'positions',
+            'roles'
+        ])
+            ->search($search)
+            ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
+            ->get();
+
+        return response()->json([
+            'branch_heads' => $users
+        ], 200);
+    }
+
+    public function getAllAreaManager(Request $request)
+    {
+        $search = $request->input('search');
+        $users = User::with([
+            'branches',
+            'departments',
+            'positions',
+            'roles'
+        ])
+            ->search($search)
+            ->where('position_id', 16)
+            ->get();
+
+        return response()->json([
+            'branch_heads' => $users
+        ], 200);
+    }
+
+
+    //applicable for area manager / branch manager/supervisor /department manager
+    public function getAllEmployeeByAuth(Request $request)
+    {
+        $search = $request->input('search');
+        $manager = Auth::user();
+
+        //first test if it is manager
+        $isManagerOrSupervisor = $manager->positions()
+            ->where(function ($q) {
+                $q->where('label', 'LIKE', '%manager%')
+                    ->orWhere('label', 'LIKE', '%supervisor%');
+            })
+            ->exists();
+
+        if ($isManagerOrSupervisor) {
+
+            $isHO = $manager->branches()->where('branch_id', 126)->exists();
+
+            //area manager
+            if (!$isHO && $manager->position_id == 16 && empty($manager->department_id)) {
+                $branches = $manager->branches()->pluck('branches.id');
+
+                $branchHeads = User::with('branches', 'positions')
+                    ->whereHas(
+                        'branches',
+                        fn($query)
+                        =>
+                        $query->whereIn('branch_id', $branches)
+                    )
+                    ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
+                    ->search($search)
+                    ->get();
+
+                return response()->json([
+                    'employees' => $branchHeads
+                ], 200);
+            }
+
+            //branch manager/supervisor
+            if (
+                !$isHO
+                &&
+                (
+                    $manager->position_id == 35 ||
+                    $manager->position_id == 36 ||
+                    $manager->position_id == 37 ||
+                    $manager->position_id == 38
+>>>>>>> Stashed changes
                 )
                 ->search($search_filter)
                 ->get();
 
+<<<<<<< Updated upstream
             return response()->json([
                 'message'   => 'ok',
                 'users'     => $users
@@ -201,14 +481,60 @@ class UserController extends Controller
                 'message'   => 'Fetch all active users failed',
                 'error'     => $e->getMessage(),
             ], 500);
+=======
+                $employees = User::with('branches', 'positions')
+                    ->whereHas(
+                        'branches',
+                        fn($query)
+                        =>
+                        $query->whereIn('branch_id', $branches)
+                    )
+                    ->whereNot('position_id', 16) // <--- area manager id
+                    ->search($search)
+                    ->get();
+
+                return response()->json([
+                    'employees' => $employees
+                ], 200);
+            }
+
+            //Department manager
+            if ($isHO && !empty($manager->department_id)) {
+                $employees = User::with('branches', 'positions')
+                    ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
+                    ->where('department_id', $manager->department_id) // <--- must the same department
+                    ->search($search)
+                    ->get();
+
+                return response()->json([
+                    'employees' => $employees
+                ], 200);
+            }
+>>>>>>> Stashed changes
         }
     }
 
 
     public function getCurrentUser()
     {
+<<<<<<< Updated upstream
         try {
             $user = User::findOrFail(Auth::id());
+=======
+        $validate = $request->validate([
+            'fname' => ['required', 'string', 'alpha'],
+            'lname' => ['required', 'string', 'alpha'],
+            'employeeId' => ['required'],
+            'email' => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
+            'position_id' => ['required', Rule::exists('positions', 'id')],
+            'branch_id' => ['required', Rule::exists('branches', 'id')],
+            'department_id' => ['nullable', Rule::exists('departments', 'id')],
+            'username' => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
+            'contact' => ['required', 'string'],
+            'roles' => ['required', Rule::exists('roles', 'name')],
+            'password' => ['nullable', 'string', 'min: 8', 'max:20']
+        ]);
+>>>>>>> Stashed changes
 
             if (!$user) {
                 return response()->json([
@@ -216,6 +542,7 @@ class UserController extends Controller
                 ]);
             }
 
+<<<<<<< Updated upstream
             return response()->json([
                 'data'  => $user
             ]);
@@ -225,6 +552,28 @@ class UserController extends Controller
                 'error'     => $e->getMessage(),
             ], 500);
         }
+=======
+        $updateData = [
+            'fname' => $validate['fname'],
+            'emp_id' => $validate['employeeId'],
+            'lname' => $validate['lname'],
+            'email' => $validate['email'],
+            'position_id' => $validate['position_id'],
+            'department_id' => $validate['department_id'],
+            'username' => $validate['username'],
+            'contact' => $validate['contact'],
+        ];
+
+        if ($request->password) {
+            $updateData['password'] = $validate['password'];
+        }
+
+        $user->update($updateData);
+
+        return response()->json([
+            'message' => 'Updated Successfully'
+        ], 200);
+>>>>>>> Stashed changes
     }
 
 
@@ -304,7 +653,11 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
+<<<<<<< Updated upstream
         $validated = $request->validate([
+=======
+        $request->validate([
+>>>>>>> Stashed changes
             'file' => 'required'
         ]);
 
@@ -312,12 +665,17 @@ class UserController extends Controller
         if (!$request->file('file')) {
 
             return response()->json([
-                'message'       => 'Image not found or invalid file.'
+                'message' => 'Image not found or invalid file.'
             ], 400);
         }
 
+<<<<<<< Updated upstream
         $avatar = $validated['file'];
         $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
+=======
+        $avatar = $request->file['file'];
+        $name = time() . '-' . $user->username . '.' . $avatar->getClientOriginalExtension();
+>>>>>>> Stashed changes
         $path = $avatar->storeAs('user-avatars', $name, 'public');
 
         if (Storage::disk('public')->exists($user->avatar)) {
@@ -329,9 +687,14 @@ class UserController extends Controller
         ]);
 
         return response()->json([
+<<<<<<< Updated upstream
             "img_url"   => $name,
             "status"    => true,
             "message"   => "Uploaded Successfully",
+=======
+            "status" => true,
+            "message" => "Uploaded Successfully",
+>>>>>>> Stashed changes
         ], 201);
     }
 
@@ -345,6 +708,7 @@ class UserController extends Controller
                 ], 401);
             }
 
+<<<<<<< Updated upstream
             $validated = $request->validate([
                 'fname'                     => ['required', 'string', 'alpha'],
                 'lname'                     => ['required', 'string', 'alpha'],
@@ -370,6 +734,30 @@ class UserController extends Controller
                 }
 
                 $items['signature'] = $path ?? null;
+=======
+        $validated = $request->validate([
+            'fname' => ['required', 'string', 'alpha'],
+            'lname' => ['required', 'string', 'alpha'],
+            'email' => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
+            'signature' => ['required'],
+        ]);
+
+        $items = [
+            'fname' => $validated['fname'],
+            'lname' => $validated['lname'],
+            'email' => $validated['email'],
+            'bio' => $request->bio ?? "",
+        ];
+
+        //file handling | storing
+        if ($request->file('signature')) {
+            $signature = $validated['signature'];
+            $name = time() . '-' . $user->username . '.' . $signature->getClientOriginalExtension();
+            $path = $signature->storeAs('user-signatures', $name, 'public');
+
+            if (Storage::disk('public')->exists($user->signature)) {
+                Storage::disk('public')->delete($user->signature);
+>>>>>>> Stashed changes
             }
 
             $user->update($items);
@@ -385,11 +773,22 @@ class UserController extends Controller
                 'error'         => $e->getMessage(),
             ], 500);
         }
+<<<<<<< Updated upstream
+=======
+
+        $user->update($items);
+
+        return response()->json([
+            "status" => true,
+            "message" => "Uploaded Successfully",
+        ], 201);
+>>>>>>> Stashed changes
     }
 
 
     public function approveRegistration($id)
     {
+<<<<<<< Updated upstream
         try {
             $user = User::findOrFail($id);
 
@@ -412,11 +811,21 @@ class UserController extends Controller
                 'error'         => $e->getMessage(),
             ], 500);
         }
+=======
+        $user->update([
+            'is_active' => 'active'
+        ]);
+
+        return response()->json([
+            'message' => 'Approved'
+        ], 201);
+>>>>>>> Stashed changes
     }
 
 
     public function rejectRegistration($id)
     {
+<<<<<<< Updated upstream
         try {
             $user = User::findOrFail($id);
 
@@ -425,11 +834,22 @@ class UserController extends Controller
                     'message'   => 'User not found'
                 ]);
             }
+=======
+        $user->update([
+            'is_active' => 'declined'
+        ]);
+
+        return response()->json([
+            'message' => 'Declined successfully'
+        ], 201);
+    }
+>>>>>>> Stashed changes
 
             $user->update([
                 'is_active'      =>  'declined'
             ]);
 
+<<<<<<< Updated upstream
             return response()->json([
                 'message'       =>  'Declined successfully'
             ]);
@@ -439,6 +859,22 @@ class UserController extends Controller
                 'error'         => $e->getMessage(),
             ], 500);
         }
+=======
+        $user->branches()->syncWithoutDetaching($request->branch_ids);
+
+        return response()->json([
+            'message' => 'User Branch Updated'
+        ], 201);
+    }
+
+    public function removeUserBranches(User $user)
+    {
+        $user->branches()->detach();
+
+        return response()->json([
+            'message' => 'All user branches removed'
+        ], 200);
+>>>>>>> Stashed changes
     }
 
 
@@ -447,6 +883,7 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
+<<<<<<< Updated upstream
             if (!$user) {
                 return response()->json([
                     'message' => 'User not found'
@@ -464,5 +901,10 @@ class UserController extends Controller
                 'error'         => $e->getMessage(),
             ], 500);
         }
+=======
+        return response()->json([
+            'message' => 'Deleted Successfully'
+        ], 200);
+>>>>>>> Stashed changes
     }
 }
