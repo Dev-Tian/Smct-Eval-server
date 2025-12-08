@@ -530,8 +530,7 @@ class UserController extends Controller
 
     public function requestSignatureReset()
     {
-        // $user = Auth::user();
-        $user = User::findOrFail(4);
+        $user = Auth::user();
 
         $user->update([
             'requestSignatureReset'     =>  true,
