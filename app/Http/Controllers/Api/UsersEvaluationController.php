@@ -77,7 +77,7 @@ class UsersEvaluationController extends Controller
     public function store(Request $request, User $user)
     {
         $auth_user_evaluator = Auth::user();
-        // $auth_user_evaluator = User::findOrFail(49);
+        // $auth_user_evaluator = User::findOrFail(10);
 
 
         $validated  = $request->validate([
@@ -241,16 +241,17 @@ class UsersEvaluationController extends Controller
 
     public function getMyEvalAuthEmployee(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
         $status = $request->input('status');
         $quarter = $request->input('quarter');
         $year = $request->input('year');
 
         $user = Auth::user();
+        // $user = User::findOrFail(25);
         $user_eval = UsersEvaluation::with([
             'employee',
             'evaluator',
-            'quarterUsersEvaluations',
             'jobKnowledge',
             'adaptability',
             'qualityOfWorks',
@@ -265,7 +266,7 @@ class UsersEvaluationController extends Controller
             ->when($status,  fn($q) =>  $q->where('status', $status))
             ->when($quarter, fn($q) =>  $q->where('quarter_of_submission_id', $quarter))
             ->when($year,    fn($q) =>  $q->whereYear('created_at', $year))
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
             'myEval_as_Employee'         =>   $user_eval

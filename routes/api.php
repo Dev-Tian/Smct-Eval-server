@@ -27,8 +27,9 @@ Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
 
 //test
+// Route::get('employeeDashboard', [EmployeeDashboardController::class, 'index']);
 
-// Route::get('getAllYears', [UsersEvaluationController::class, 'getAllYears']);
+// Route::get('getMyEvalAuthEmployee', [UsersEvaluationController::class, 'getMyEvalAuthEmployee']);
 
 
 //sanctum routes
@@ -39,8 +40,6 @@ Route::get('/profile', function (Request $request) {
             'departments',
             'branches',
             'positions',
-            'evaluations',
-            'doesEvaluated',
             'unreadNotifications'
         ]
     )

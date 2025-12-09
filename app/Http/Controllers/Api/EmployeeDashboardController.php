@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,14 +17,15 @@ class EmployeeDashboardController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
+        // $user = Auth::user();
+        $user = User::findOrFail(25);
 
         $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->count();
         $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->sum('rating');
         $average = ($sum_ratings / $total_evaluations);
         $recent_evaluation = UsersEvaluation::where('employee_id', $user->id)
             ->latest('created_at')
-            ->select('id', 'rate')
+            ->select('id', 'rating')
             ->first();
 
         return response()->json([
