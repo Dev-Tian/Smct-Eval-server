@@ -23,6 +23,7 @@ class UsersEvaluationFactory extends Factory
         return [
             'employee_id' => User::inRandomOrder()->value('id') ?? 2,
             'evaluator_id' => User::inRandomOrder()->value('id') ?? 2,
+            'hireDate' => $this->faker->date(),
             'category' => $this->faker->sentence(5),
             'rating' => $this->faker->randomFloat(2, 1, 5),
             'status' => $status,

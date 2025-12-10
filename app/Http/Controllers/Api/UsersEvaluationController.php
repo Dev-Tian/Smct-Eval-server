@@ -81,10 +81,11 @@ class UsersEvaluationController extends Controller
 
 
         $validated  = $request->validate([
+            'hireDate'                              => ['required', 'string', 'date'],
             'category'                              => ['required', 'string'],
-            'rating'                                => ['required'],
-            'coverageFrom'                          => ['required'],
-            'coverageTo'                            => ['required'],
+            'rating'                                => ['required', 'numeric'],
+            'coverageFrom'                          => ['required', 'date'],
+            'coverageTo'                            => ['required', 'date'],
             'reviewTypeProbationary'                => ['nullable', 'numeric'],
             'reviewTypeRegular'                     => ['nullable', 'string'],
             'reviewTypeOthersImprovement'           => ['nullable', 'boolean'],
@@ -141,6 +142,7 @@ class UsersEvaluationController extends Controller
         $submission  =  UsersEvaluation::create([
             'employee_id'                       =>  $user->id,
             'evaluator_id'                      =>  $auth_user_evaluator->id,
+            'hireDate'                          =>  $validated['hireDate'],
             'category'                          =>  $validated['category'],
             'rating'                            =>  $validated['rating'],
             'coverageFrom'                      =>  $validated['coverageFrom'],
@@ -248,7 +250,6 @@ class UsersEvaluationController extends Controller
         $year = $request->input('year');
 
         $user = Auth::user();
-        // $user = User::findOrFail(25);
         $user_eval = UsersEvaluation::with([
             'employee',
             'evaluator',

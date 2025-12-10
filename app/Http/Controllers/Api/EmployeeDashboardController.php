@@ -17,9 +17,9 @@ class EmployeeDashboardController extends Controller
      */
     public function index()
     {
-        // $user = Auth::user();
-        $user = User::findOrFail(25);
+        $user = Auth::user();
 
+        $user_eval = UsersEvaluation::where('employee_id', $user->id)->get();
         $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->count();
         $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->sum('rating');
         $average = ($sum_ratings / $total_evaluations);
@@ -32,6 +32,7 @@ class EmployeeDashboardController extends Controller
             'total_evaluations'     =>  $total_evaluations,
             'average'               =>  $average,
             'recent_evaluation'     =>  $recent_evaluation,
+            'user_eval'             =>  $user_eval,
         ], 200);
     }
 

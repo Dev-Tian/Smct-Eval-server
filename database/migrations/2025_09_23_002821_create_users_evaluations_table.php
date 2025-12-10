@@ -15,10 +15,12 @@ return new class extends Migration
         Schema::create('users_evaluations', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class, 'employee_id')->nullable()->constrained()->nullOnDelete();
+            $table->date("hireDate");
             $table->foreignIdFor(User::class, 'evaluator_id')->nullable()->constrained()->nullOnDelete();
+
             $table->string("category");
-            $table->decimal('rating',3,2);
-            $table->enum('status',['pending', 'completed'])->default('pending');
+            $table->decimal('rating', 3, 2);
+            $table->enum('status', ['pending', 'completed'])->default('pending');
 
             $table->date('coverageFrom');
             $table->date('coverageTo');

@@ -406,7 +406,6 @@ class UserController extends Controller
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
             'department_id'             => ['nullable', Rule::exists('departments', 'id')],
             'employeeId'                => ['required'],
-            'hireDate'                  => ['nullable', 'date'],
             'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
             'contact'                   => ['required', 'string'],
             'roles'                     => ['required', Rule::exists('roles', 'name')],
@@ -422,14 +421,13 @@ class UserController extends Controller
             'email'                     => $validate['email'],
             'position_id'               => $validate['position_id'],
             'department_id'             => $validate['department_id'] ?? $user->department_id ?? null,
-            'date_hired'                => $validate['hireDate'] ?? $user->date_hired ?? null,
             'username'                  => $validate['username'],
             'contact'                   => $validate['contact'],
             'contact'                   => $validate['contact'],
             'emp_id'                    => $validate['employeeId'],
         ];
 
-        if ($request->password) {
+        if ($request->filled("password")) {
             $updateData['password'] = $validate['password'];
         }
 
@@ -440,36 +438,6 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function uploadAvatar(Request $request)
-    {
-        $user = Auth::user();
-
-        // Early block if no file uploaded
-        if (!$request->file('file')) {
-            return response()->json([
-                'message'       => 'Image not found or invalid file.'
-            ], 400);
-        }
-
-        $avatar = $request->file('file');
-        $name = time() . '-' .  $user->username . '.' . $avatar->getClientOriginalExtension();
-        $path = $avatar->storeAs('user-avatars', $name, 'public');
-
-        if ($user->avatar) {
-            if (Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-        }
-
-        $user->update([
-            'avatar' => $path ?? null
-        ]);
-
-        return response()->json([
-            "status"    => true,
-            "message"   => "Uploaded Successfully",
-        ], 201);
-    }
 
     public function updateProfileUserAuth(Request $request)
     {
