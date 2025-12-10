@@ -120,6 +120,18 @@ class UserController extends Controller
             ], 404);
         }
 
+        if ($user->is_active === "pending") {
+            return response()->json([
+                "message"   => "Your account is not activated yet. Please wait for admin to approve."
+            ], 401);
+        }
+
+        if ($user->is_active === "declined") {
+            return response()->json([
+                "message"   => "Your account has been rejected."
+            ], 401);
+        }
+
         $credentials = [
             'username' => !filter_var($request->email, FILTER_VALIDATE_EMAIL) ? $request->email : $user->username,
             'password' => $request->password
@@ -131,8 +143,6 @@ class UserController extends Controller
                 "message"   => "Email and password do not match our records"
             ], 400);
         }
-
-        $user  = Auth::user();
 
         $role = $user->getRoleNames();
 
