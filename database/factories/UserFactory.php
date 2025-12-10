@@ -4,10 +4,8 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use App\Models\Position;
 use App\Models\Department;
-use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -35,7 +33,7 @@ class UserFactory extends Factory
             'lname' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
             'contact' => $this->faker->phoneNumber(),
-            'emp_id' => strtoupper(Str::random(8)),
+            'emp_id' => random_int(0000000000, 9999999999),
             'password' => Hash::make('password'),
             'is_active' => fake()->randomElement(["pending", "active", "declined"]),
             'date_hired' => $this->faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),

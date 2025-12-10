@@ -15,13 +15,14 @@ class EvaluatorDashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $total_evaluations = UsersEvaluation::where('evaluator_id', $user->id)->count();
-        $sum_ratings = UsersEvaluation::where('evaluator_id', $user->id)->sum('rating');
-        $team_average = ($sum_ratings / $total_evaluations);
+
+        $total_evaluations = UsersEvaluation::where('evaluator_id', $user->id)->whereNotNull('rating')->count() ?? 0;
+        $sum_ratings = UsersEvaluation::where('evaluator_id', $user->id)->whereNotNull('rating')->sum('rating') ?? 0;
+        $team_average = !empty($total_evaluations) ? ($sum_ratings / $total_evaluations) : 0;
 
         // Eval approvals
-        $total_pending = UsersEvaluation::where('evaluator_id', $user->id)->where('status', 'pending')->count();
-        $total_approved = UsersEvaluation::where('evaluator_id', $user->id)->where('status', 'approved')->count();
+        $total_pending = UsersEvaluation::where('evaluator_id', $user->id)->where('status', 'pending')->whereNotNull('rating')->count() ?? 0;
+        $total_approved = UsersEvaluation::where('evaluator_id', $user->id)->where('status', 'approved')->whereNotNull('rating')->count() ?? 0;
 
         return response()->json([
             'total_evaluations'     => $total_evaluations,

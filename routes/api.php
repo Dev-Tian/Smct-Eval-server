@@ -29,7 +29,7 @@ Route::get('departments', [DepartmentController::class, 'index']);
 //test
 // Route::get('employeeDashboard', [EmployeeDashboardController::class, 'index']);
 
-// Route::get('getMyEvalAuthEmployee', [UsersEvaluationController::class, 'getMyEvalAuthEmployee']);
+// Route::post('submit/{user}', [UsersEvaluationController::class, 'store']);
 
 
 //sanctum routes
