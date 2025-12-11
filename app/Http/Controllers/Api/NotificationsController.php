@@ -26,4 +26,16 @@ class NotificationsController extends Controller
             'message'         =>  'Mark as read notification',
         ], 200);
     }
+
+    public function markAllAsRead()
+    {
+
+        $user = Auth::user();
+
+        $user->unreadNotifications->markAllAsRead();
+
+        return response()->json([
+            'message'       =>  "Successfully read all notifications"
+        ], 200);
+    }
 }

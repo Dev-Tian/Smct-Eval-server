@@ -8,6 +8,7 @@ use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\EvaluationsNotif;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Response;
@@ -265,14 +266,21 @@ class UsersEvaluationController extends Controller
             ->where('employee_id', $user->id)
             ->search($search)
             ->when($status,  fn($q) =>  $q->where('status', $status))
-            ->when($quarter, fn($q) =>  $q->where('quarter_of_submission_id', $quarter))
+            ->when($quarter, fn($q) =>  $q->where('reviewTypeProbationary', $quarter)->orWhere('reviewTypeRegular', $quarter))
             ->when($year,    fn($q) =>  $q->whereYear('created_at', $year))
             ->paginate($perPage);
 
+        $years = UsersEvaluation::selectRaw("YEAR(created_at) as year")
+            ->groupBy('year')
+            ->where('employee_id', $user->id)
+            ->get();
+
         return response()->json([
-            'myEval_as_Employee'         =>   $user_eval
+            'myEval_as_Employee'         =>   $user_eval,
+            'years'                      =>   $years
         ], 200);
     }
+
 
     public function getEvalAuthEvaluator(Request $request)
     {

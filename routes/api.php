@@ -104,6 +104,7 @@ Route::middleware('auth:sanctum')->group(
         );
 
         Route::post('isReadNotification', [NotificationsController::class, 'isRead']);
+        Route::post('markAllAsRead', [NotificationsController::class, 'markAllAsRead']);
 
         //Dashboards
         Route::get('adminDashboard', [AdminDashboardController::class, 'index']);

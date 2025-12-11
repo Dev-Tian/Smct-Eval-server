@@ -25,7 +25,6 @@ return new class extends Migration
             $table->string("contact");
             $table->string("emp_id");
             $table->enum('is_active', ["pending", "active", "declined"])->default('pending');
-            $table->date("date_hired")->nullable();
             $table->longText("signature")->nullable();
             $table->string("avatar")->nullable();
             $table->string('bio')->nullable();
