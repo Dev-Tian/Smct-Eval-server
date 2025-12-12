@@ -3,22 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Notifications\DatabaseNotification as Notification;
 
 class NotificationsController extends Controller
 {
-    public function isRead(Request $request)
+    public function isRead(Notification $notification)
     {
-        $user = Auth::user();
-
-        $notification = $user->notifications()->where('id', $request->id)->first();
-
-        if (!$notification) {
-            return response()->json([
-                'message' => 'Notification not found'
-            ], 404);
-        }
 
         $notification->markAsRead();
 
@@ -32,10 +23,19 @@ class NotificationsController extends Controller
 
         $user = Auth::user();
 
-        $user->unreadNotifications->markAllAsRead();
+        $user->unreadNotifications->markAsRead();
 
         return response()->json([
             'message'       =>  "Successfully read all notifications"
         ], 200);
+    }
+
+    public function destroy(Notification $notification)
+    {
+        $notification->delete();
+
+        return response()->json([
+            'message'       =>  "Successfully deleted"
+        ]);
     }
 }

@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Notifications\EvalNotifications;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\signatureReset;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -59,6 +60,25 @@ class UserController extends Controller
 
         $user->assignRole('employee');
         $user->branches()->sync($validate['branch_id']);
+
+        //notification for admin and hr
+        $notificationData =  new EvalNotifications(
+            "New user registration: " . $user->fname . " " . $user->lname,
+        );
+
+        User::with('roles')
+            ->whereHas(
+                'roles',
+                fn($q)
+                =>
+                $q->where('name', 'hr')->orWhere('name', 'admin')
+            )
+            ->chunk(
+                100,
+                function ($hrs) use ($notificationData) {
+                    Notification::send($hrs, $notificationData);
+                }
+            );
 
         return response()->json([
             "message"       => "Registered Successfully",
@@ -527,7 +547,7 @@ class UserController extends Controller
         $user->update([
             'approvedSignatureReset'     =>  true,
         ]);
-        $user->notify(new signatureReset("Your signature reset request has been approved."));
+        $user->notify(new EvalNotifications("Your signature reset request has been approved."));
 
         return response()->json([
             'message'       =>  'Approved'
@@ -539,7 +559,7 @@ class UserController extends Controller
         $user->update([
             'requestSignatureReset'     =>  false,
         ]);
-        $user->notify(new signatureReset("Unfortunately, your signature reset request has been declined."));
+        $user->notify(new EvalNotifications("Unfortunately, your signature reset request has been declined."));
 
 
         return response()->json([

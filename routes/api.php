@@ -40,7 +40,7 @@ Route::get('/profile', function (Request $request) {
             'departments',
             'branches',
             'positions',
-            'unreadNotifications'
+            'notifications'
         ]
     )
         ->loadCount('unreadNotifications as notification_counts');
@@ -103,7 +103,8 @@ Route::middleware('auth:sanctum')->group(
             }
         );
 
-        Route::post('isReadNotification', [NotificationsController::class, 'isRead']);
+        Route::post('deleteNotification/{notification}', [NotificationsController::class, 'destroy']);
+        Route::post('isReadNotification/{notification}', [NotificationsController::class, 'isRead']);
         Route::post('markAllAsRead', [NotificationsController::class, 'markAllAsRead']);
 
         //Dashboards

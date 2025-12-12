@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UsersEvaluation;
+use App\Notifications\EvalNotifications;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\EvaluationsNotif;
@@ -77,8 +78,8 @@ class UsersEvaluationController extends Controller
 
     public function store(Request $request, User $user)
     {
-        $auth_user_evaluator = Auth::user();
-        // $auth_user_evaluator = User::findOrFail(11);
+        // $auth_user_evaluator = Auth::user();
+        $auth_user_evaluator = User::findOrFail(11);
 
 
         $validated  = $request->validate([
@@ -177,23 +178,13 @@ class UsersEvaluationController extends Controller
         }
 
 
-        $user->notify(new EvaluationsNotif(
-            'pending',
-            $submission->id,
-            $submission->employee_id,
-            $user->fname . ' ' . $user->lname,
-            $submission->evaluator_id,
-            $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname,
+        //notification for employee
+        $user->notify(new EvalNotifications(
             "An evaluation submitted by " . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . " is awaiting your approval.",
         ));
 
-        $notificationData =  new EvaluationsNotif(
-            'pending',
-            $submission->id,
-            $submission->employee_id,
-            $user->fname . ' ' . $user->lname,
-            $submission->evaluator_id,
-            $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname,
+        //notification for admin and hr
+        $notificationData =  new EvalNotifications(
             "A new evaluation submitted for " . $user->fname . ' ' . $user->lname . " was submitted by " . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname,
         );
 
@@ -337,23 +328,11 @@ class UsersEvaluationController extends Controller
         $auth_user_employee = Auth::user();
 
 
-        $evaluator->notify(new EvaluationsNotif(
-            'completed',
-            $usersEvaluation->id,
-            $usersEvaluation->employee_id,
-            $auth_user_employee->fname . ' ' . $auth_user_employee->lname,
-            $usersEvaluation->evaluator_id,
-            $evaluator->fname . ' ' . $evaluator->lname,
+        $evaluator->notify(new EvalNotifications(
             "Your submitted evaluation for " . $auth_user_employee->fname . ' ' . $auth_user_employee->lname . " has been successfully approved.",
         ));
 
-        $notificationData =  new EvaluationsNotif(
-            'completed',
-            $usersEvaluation->id,
-            $usersEvaluation->employee_id,
-            $auth_user_employee->fname . ' ' . $auth_user_employee->lname,
-            $usersEvaluation->evaluator_id,
-            $evaluator->fname . ' ' . $evaluator->lname,
+        $notificationData =  new EvalNotifications(
             "An evaluation submitted by " . $evaluator->fname . ' ' . $evaluator->lname . " for " . $auth_user_employee->fname . ' ' . $auth_user_employee->lname . " has been approved ",
         );
 
