@@ -207,6 +207,7 @@ class UserController extends Controller
                 }
             )
             ->whereNot('id', Auth::id())
+            ->latest('updated_at')
             ->get();
 
         return response()->json([
@@ -232,6 +233,7 @@ class UserController extends Controller
                 $status->where('is_active', '=', $status_filter)
             )
             ->search($search_filter)
+            ->latest('updated_at')
             ->paginate($perPage);
 
         return response()->json([
@@ -258,6 +260,7 @@ class UserController extends Controller
                 $role->whereRelation('roles', 'id', $role_filter)
             )
             ->search($search_filter)
+            ->latest('updated_at')
             ->paginate($perPage);
 
         return response()->json([
@@ -293,6 +296,7 @@ class UserController extends Controller
         ])
             ->search($search)
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
+            ->latest('updated_at')
             ->get();
 
         return response()->json([
@@ -311,6 +315,7 @@ class UserController extends Controller
         ])
             ->search($search)
             ->where('position_id', 16)
+            ->latest('updated_at')
             ->get();
 
         return response()->json([
@@ -329,6 +334,7 @@ class UserController extends Controller
             ->where('requestSignatureReset', true)
             ->whereNot('approvedSignatureReset', true)
             ->search($search)
+            ->latest('updated_at')
             ->get();
 
         return response()->json([
@@ -368,6 +374,7 @@ class UserController extends Controller
                     )
                     ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
                     ->search($search)
+                    ->latest('updated_at')
                     ->get();
 
                 return response()->json([
@@ -399,6 +406,7 @@ class UserController extends Controller
                     )
                     ->whereNot('position_id', 16) // <--- area manager id
                     ->search($search)
+                    ->latest('updated_at')
                     ->get();
 
                 return response()->json([
@@ -412,6 +420,7 @@ class UserController extends Controller
                     ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
                     ->where('department_id', $manager->department_id) // <--- must the same department
                     ->search($search)
+                    ->latest('updated_at')
                     ->get();
 
                 return response()->json([
@@ -480,26 +489,19 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'username'                 => ['nullable', 'string'],
-            'email'                    => ['nullable', 'email',],
-            'current_password'         => [
-                'nullable',
-                Rule::when(
-                    fn() => $request->filled('current_password'),
-                    ['current_password:sanctum']
-                ),
-            ],
-            'new_password'             => ['nullable', 'required_with:current_password'],
+            'email'                    => ['nullable', 'email'],
+            'current_password'         => ['required', 'current_password:sanctum'],
+            'new_password'             => ['nullable', 'required_with:confirm_password'],
             'confirm_password'         => ['nullable', 'required_with:new_password', 'same:new_password'],
-
         ]);
-
 
         $items = [
             'username'                  => $validated['username'] ?? $user->username,
             'email'                     => $validated['email'] ?? $user->email,
         ];
 
-        if ($request->filled('current_password')) {
+
+        if ($request->filled('new_password') && $request->filled('confirm_password')) {
             $items["password"] = $validated["confirm_password"];
         }
 

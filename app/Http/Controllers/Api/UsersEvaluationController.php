@@ -8,11 +8,8 @@ use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\EvaluationsNotif;
-use DateTime;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Response;
 
 use function Symfony\Component\Clock\now;
 
@@ -57,6 +54,7 @@ class UsersEvaluationController extends Controller
                 )
             )
             ->when($year, fn($q)    => $q->whereYear('created_at', $year))
+            ->latest('updated_at')
             ->paginate($perPage);
 
         return response()->json([
@@ -259,11 +257,13 @@ class UsersEvaluationController extends Controller
             ->when($status,  fn($q) =>  $q->where('status', $status))
             ->when($quarter, fn($q) =>  $q->where('reviewTypeProbationary', $quarter)->orWhere('reviewTypeRegular', $quarter))
             ->when($year,    fn($q) =>  $q->whereYear('created_at', $year))
+            ->latest('updated_at')
             ->paginate($perPage);
 
         $years = UsersEvaluation::selectRaw("YEAR(created_at) as year")
             ->groupBy('year')
             ->where('employee_id', $user->id)
+            ->latest('updated_at')
             ->get();
 
         return response()->json([
@@ -299,6 +299,7 @@ class UsersEvaluationController extends Controller
             ->when($status, fn($q) =>  $q->where('status', $status))
             ->when($quarter, fn($q) =>  $q->where('quarter_of_submission_id', $quarter))
             ->when($year,   fn($q) =>  $q->whereYear('created_at', $year))
+            ->latest('updated_at')
             ->get();
 
         return response()->json([

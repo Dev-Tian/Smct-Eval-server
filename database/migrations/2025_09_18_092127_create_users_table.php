@@ -27,7 +27,6 @@ return new class extends Migration
             $table->enum('is_active', ["pending", "active", "declined"])->default('pending');
             $table->longText("signature")->nullable();
             $table->string("avatar")->nullable();
-            $table->string('bio')->nullable();
             $table->boolean('requestSignatureReset')->default(false);
             $table->boolean('approvedSignatureReset')->default(false);
             $table->rememberToken();
