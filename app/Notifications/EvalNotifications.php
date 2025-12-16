@@ -3,10 +3,14 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EvalNotifications extends Notification
+use function Symfony\Component\Clock\now;
+
+class EvalNotifications extends Notification implements ShouldBroadcastNow
 {
     use Queueable;
 
@@ -28,7 +32,7 @@ class EvalNotifications extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'broadcast'];
     }
 
     /**
@@ -52,6 +56,12 @@ class EvalNotifications extends Notification
         return [
             //
         ];
+    }
+    public function toBroadcast($notifiable)
+    {
+        return new BroadcastMessage([
+            'message' => $this->message
+        ]);
     }
 
     public function toDatabase(object $notifiable): array

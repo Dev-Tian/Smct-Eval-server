@@ -621,4 +621,14 @@ class UserController extends Controller
             'message'       => 'Deleted Successfully'
         ], 200);
     }
+
+    // public function test()
+    // {
+    //     $user  = User::findOrFail(1);
+    //     $user->notify(new EvalNotifications("This is a test notification for broadcasting."));
+
+    //     return response()->json([
+    //         'data'  =>  "success"
+    //     ], 200);
+    // }
 }
