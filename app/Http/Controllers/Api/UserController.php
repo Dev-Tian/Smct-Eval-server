@@ -539,6 +539,24 @@ class UserController extends Controller
             'requestSignatureReset'     =>  true,
         ]);
 
+        $notificationData =  new EvalNotifications(
+            "Signature reset request from: " . $user->fname . " " . $user->lname,
+        );
+
+        User::with('roles')
+            ->whereHas(
+                'roles',
+                fn($q)
+                =>
+                $q->where('name', 'hr')->orWhere('name', 'admin')
+            )
+            ->chunk(
+                100,
+                function ($hrs) use ($notificationData) {
+                    Notification::send($hrs, $notificationData);
+                }
+            );
+
         return response()->json([
             'message'       =>  'Approved'
         ], 201);
