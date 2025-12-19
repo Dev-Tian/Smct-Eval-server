@@ -303,7 +303,7 @@ class UsersEvaluationController extends Controller
             ->get();
 
         return response()->json([
-            'myEval_as_Employee'         =>   $user_eval
+            'myEval_as_Evaluator'         =>   $user_eval
         ], 200);
     }
 
