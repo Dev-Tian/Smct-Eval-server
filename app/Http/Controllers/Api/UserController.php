@@ -346,8 +346,13 @@ class UserController extends Controller
     //applicable for area manager / branch manager/supervisor /department manager
     public function getAllEmployeeByAuth(Request $request)
     {
-        $search  = $request->input('search');
         $manager = Auth::user();
+
+        $search  = $request->input('search');
+        $position_filter = $request->input('position');
+        $perPage = $request->input('per_page', 10);
+
+
 
         //first test if it is manager
         $isManagerOrSupervisor = $manager->positions()
@@ -365,17 +370,24 @@ class UserController extends Controller
             if (!$isHO && $manager->position_id == 16 && empty($manager->department_id)) {
                 $branches = $manager->branches()->pluck('branches.id');
 
-                $branchHeads = User::with('branches', 'positions')
+                $branchHeads = User::with('branches', 'positions', 'roles')
                     ->whereHas(
                         'branches',
                         fn($query)
                         =>
                         $query->whereIn('branch_id', $branches)
                     )
+                    ->when(
+                        $position_filter,
+                        fn($q)
+                        =>
+                        $q->where('position_id', $position_filter)
+                    )
+                    ->whereNot('id', $manager->id)
                     ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
                     ->search($search)
                     ->latest('updated_at')
-                    ->get();
+                    ->paginate($perPage);
 
                 return response()->json([
                     'employees' => $branchHeads
@@ -397,17 +409,24 @@ class UserController extends Controller
             ) {
                 $branches = $manager->branches()->pluck('branches.id');
 
-                $employees = User::with('branches', 'positions')
+                $employees = User::with('branches', 'positions', 'roles')
                     ->whereHas(
                         'branches',
                         fn($query)
                         =>
                         $query->whereIn('branch_id', $branches)
                     )
+                    ->when(
+                        $position_filter,
+                        fn($q)
+                        =>
+                        $q->where('position_id', $position_filter)
+                    )
+                    ->whereNot('id', $manager->id)
                     ->whereNot('position_id', 16) // <--- area manager id
                     ->search($search)
                     ->latest('updated_at')
-                    ->get();
+                    ->paginate($perPage);
 
                 return response()->json([
                     'employees' => $employees
@@ -416,12 +435,19 @@ class UserController extends Controller
 
             //Department manager
             if ($isHO  && !empty($manager->department_id)) {
-                $employees = User::with('branches', 'positions')
+                $employees = User::with('branches', 'positions', "roles")
                     ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
+                    ->when(
+                        $position_filter,
+                        fn($q)
+                        =>
+                        $q->where('position_id', $position_filter)
+                    )
+                    ->whereNot('id', $manager->id)
                     ->where('department_id', $manager->department_id) // <--- must the same department
                     ->search($search)
                     ->latest('updated_at')
-                    ->get();
+                    ->paginate($perPage);
 
                 return response()->json([
                     'employees' => $employees
