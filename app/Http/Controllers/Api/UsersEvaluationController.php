@@ -77,11 +77,12 @@ class UsersEvaluationController extends Controller
     public function store(Request $request, User $user)
     {
         // $auth_user_evaluator = Auth::user();
-        $auth_user_evaluator = User::findOrFail(11);
+        $auth_user_evaluator = User::findOrFail(4);
 
 
         $validated  = $request->validate([
-            'hireDate'                              => ['required', 'string', 'date'],
+            //main
+            'hireDate'                              => ['required', 'date'],
             'category'                              => ['required', 'string'],
             'rating'                                => ['required', 'numeric'],
             'coverageFrom'                          => ['required', 'date'],
@@ -95,48 +96,68 @@ class UsersEvaluationController extends Controller
             'priorityArea3'                         => ['nullable', 'string'],
             'remarks'                               => ['nullable', 'string'],
             'overallComments'                       => ['nullable', 'string'],
+            //jobKnowledge
+            'jobKnowledgeScore1'                    => ['required', 'numeric'],
+            'jobKnowledgeScore2'                    => ['required', 'numeric'],
+            'jobKnowledgeScore3'                    => ['required', 'numeric'],
+            'jobKnowledgeComments1'                 => ['nullable', 'string'],
+            'jobKnowledgeComments2'                 => ['nullable', 'string'],
+            'jobKnowledgeComments3'                 => ['nullable', 'string'],
+            //qualityOfWork
+            'qualityOfWorkScore1'                   => ['required', 'numeric'],
+            'qualityOfWorkScore2'                   => ['required', 'numeric'],
+            'qualityOfWorkScore3'                   => ['required', 'numeric'],
+            'qualityOfWorkScore4'                   => ['required', 'numeric'],
+            'qualityOfWorkScore5'                   => ['required', 'numeric'],
+            'qualityOfWorkComments1'                => ['nullable', 'string'],
+            'qualityOfWorkComments2'                => ['nullable', 'string'],
+            'qualityOfWorkComments3'                => ['nullable', 'string'],
+            'qualityOfWorkComments4'                => ['nullable', 'string'],
+            'qualityOfWorkComments5'                => ['nullable', 'string'],
+            //adaptability
+            'adaptabilityScore1'                    => ['required', 'numeric'],
+            'adaptabilityScore2'                    => ['required', 'numeric'],
+            'adaptabilityScore3'                    => ['required', 'numeric'],
+            'adaptabilityComments1'                 => ['nullable', 'string'],
+            'adaptabilityComments2'                 => ['nullable', 'string'],
+            'adaptabilityComments3'                 => ['nullable', 'string'],
+            //teamwork
+            'teamworkScore1'                        => ['required', 'numeric'],
+            'teamworkScore2'                        => ['required', 'numeric'],
+            'teamworkScore3'                        => ['required', 'numeric'],
+            'teamworkComments1'                     => ['nullable', 'string'],
+            'teamworkComments2'                     => ['nullable', 'string'],
+            'teamworkComments3'                     => ['nullable', 'string'],
+            //reliability
+            'reliabilityScore1'                     => ['required', 'numeric'],
+            'reliabilityScore2'                     => ['required', 'numeric'],
+            'reliabilityScore3'                     => ['required', 'numeric'],
+            'reliabilityScore4'                     => ['required', 'numeric'],
+            'reliabilityComments1'                  => ['nullable', 'string'],
+            'reliabilityComments2'                  => ['nullable', 'string'],
+            'reliabilityComments3'                  => ['nullable', 'string'],
+            'reliabilityComments4'                  => ['nullable', 'string'],
+            //ethical
+            'ethicalScore1'                         => ['required', 'numeric'],
+            'ethicalScore2'                         => ['required', 'numeric'],
+            'ethicalScore3'                         => ['required', 'numeric'],
+            'ethicalScore4'                         => ['required', 'numeric'],
+            'ethicalExplanation1'                   => ['nullable', 'string'],
+            'ethicalExplanation2'                   => ['nullable', 'string'],
+            'ethicalExplanation3'                   => ['nullable', 'string'],
+            'ethicalExplanation4'                   => ['nullable', 'string'],
+            //customerService
+            'customerServiceScore1'                 => ['required', 'numeric'],
+            'customerServiceScore2'                 => ['required', 'numeric'],
+            'customerServiceScore3'                 => ['required', 'numeric'],
+            'customerServiceScore4'                 => ['required', 'numeric'],
+            'customerServiceScore5'                 => ['required', 'numeric'],
+            'customerServiceExplanation1'           => ['nullable', 'string'],
+            'customerServiceExplanation2'           => ['nullable', 'string'],
+            'customerServiceExplanation3'           => ['nullable', 'string'],
+            'customerServiceExplanation4'           => ['nullable', 'string'],
+            'customerServiceExplanation5'           => ['nullable', 'string'],
 
-            // validation for child job_knowledge
-            'job_knowledge'                         => ['required', 'array'],
-            'job_knowledge.*.question_number'       => ['required', 'numeric'],
-            'job_knowledge.*.score'                 => ['required', 'numeric'],
-            'job_knowledge.*.comment'               => ['nullable', 'string'],
-
-            // validation for child quality_of_works
-            'quality_of_works'                      => ['required', 'array'],
-            'quality_of_works.*.question_number'    => ['required', 'numeric'],
-            'quality_of_works.*.score'              => ['required', 'numeric'],
-            'quality_of_works.*.comment'            => ['nullable', 'string'],
-
-            // validation for child adaptability
-            'adaptability'                          => ['required', 'array'],
-            'adaptability.*.question_number'        => ['required', 'numeric'],
-            'adaptability.*.score'                  => ['required', 'numeric'],
-            'adaptability.*.comment'                => ['nullable', 'string'],
-
-            // validation for child teamworks
-            'teamworks'                             => ['required', 'array'],
-            'teamworks.*.question_number'           => ['required', 'numeric'],
-            'teamworks.*.score'                     => ['required', 'numeric'],
-            'teamworks.*.comment'                   => ['nullable', 'string'],
-
-            // validation for child reliabilities
-            'reliabilities'                         => ['required', 'array'],
-            'reliabilities.*.question_number'       => ['required', 'numeric'],
-            'reliabilities.*.score'                 => ['required', 'numeric'],
-            'reliabilities.*.comment'               => ['nullable', 'string'],
-
-            // validation for child ethicals
-            'ethicals'                              => ['required', 'array'],
-            'ethicals.*.question_number'            => ['required', 'numeric'],
-            'ethicals.*.score'                      => ['required', 'numeric'],
-            'ethicals.*.explanation'                => ['nullable', 'string'],
-
-            // validation for child customer_services
-            'customer_services'                     => ['required', 'array'],
-            'customer_services.*.question_number'   => ['required', 'numeric'],
-            'customer_services.*.score'             => ['required', 'numeric'],
-            'customer_services.*.explanation'       => ['nullable', 'string'],
         ]);
 
         $submission  =  UsersEvaluation::create([
@@ -156,26 +177,71 @@ class UsersEvaluationController extends Controller
             'priorityArea3'                     =>  $validated['priorityArea3'] ?? null,
             'remarks'                           =>  $validated['remarks'] ?? null,
             'overallComments'                   =>  $validated['overallComments'] ?? null,
-            'evaluatorApprovedAt'               =>  now()
+            'evaluatorApprovedAt'               =>  now(),
         ]);
 
-        $childMappings = [
-            'job_knowledge'     => 'jobKnowledge',
-            'quality_of_works'  => 'qualityOfWorks',
-            'adaptability'      => 'adaptability',
-            'teamworks'         => 'teamworks',
-            'reliabilities'     => 'reliabilities',
-            'ethicals'          => 'ethicals',
-            'customer_services' => 'customerServices',
-        ];
-
-        foreach ($childMappings as $requestKey => $relation) {
-            foreach ($request->$requestKey as $item) {
-                $submission->$relation()->create($item);
-            }
+        for ($i = 1; $i <= 3; $i++) {
+            $submission->jobKnowledge()->create([
+                'users_evaluation_id'       => $submission->id,
+                'question_number'           => $i,
+                'score'                     => $validated['jobKnowledgeScore' . $i],
+                'comment'                   => $validated['jobKnowledgeComments' . $i]
+            ]);
         }
 
+        for ($i = 1; $i <= 5; $i++) {
+            $submission->qualityOfWorks()->create([
+                'users_evaluation_id'       => $submission->id,
+                'question_number'           => $i,
+                'score'                     => $validated['qualityOfWorkScore' . $i],
+                'comment'                   => $validated['qualityOfWorkComments' . $i]
+            ]);
+        }
 
+        for ($i = 1; $i <= 3; $i++) {
+            $submission->adaptability()->create([
+                'users_evaluation_id'       => $submission->id,
+                'question_number'           => $i,
+                'score'                     => $validated['adaptabilityScore' . $i],
+                'comment'                   => $validated['adaptabilityComments' . $i]
+            ]);
+        }
+
+        for ($i = 1; $i <= 3; $i++) {
+            $submission->teamworks()->create([
+                'users_evaluation_id'       => $submission->id,
+                'question_number'           => $i,
+                'score'                     => $validated['teamworkScore' . $i],
+                'comment'                   => $validated['teamworkComments' . $i]
+            ]);
+        }
+
+        for ($i = 1; $i <= 4; $i++) {
+            $submission->reliabilities()->create([
+                'users_evaluation_id'       => $submission->id,
+                'question_number'           => $i,
+                'score'                     => $validated['reliabilityScore' . $i],
+                'comment'                   => $validated['reliabilityComments' . $i]
+            ]);
+        }
+
+        for ($i = 1; $i <= 4; $i++) {
+            $submission->ethicals()->create([
+                'users_evaluation_id'       => $submission->id,
+                'question_number'           => $i,
+                'score'                     => $validated['ethicalScore' . $i],
+                'explanation'               => $validated['ethicalExplanation' . $i]
+            ]);
+        }
+
+        for ($i = 1; $i <= 5; $i++) {
+            $submission->customerServices()->create([
+                'users_evaluation_id'       => $submission->id,
+                'question_number'           => $i,
+                'score'                     => $validated['customerServiceScore' . $i],
+                'explanation'               => $validated['customerServiceExplanation' . $i]
+            ]);
+        }
         //notification for employee
         $user->notify(new EvalNotifications(
             "An evaluation submitted by " . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . " is awaiting your approval.",

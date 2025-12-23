@@ -116,6 +116,7 @@ Route::middleware('auth:sanctum')->group(
         Route::get('evaluatorDashboard', [EvaluatorDashboardController::class, 'index']);
         Route::get('hrDashboard', [HrDashboardController::class, 'index']);
         Route::get('employeeDashboard', [EmployeeDashboardController::class, 'index']);
+        Route::get('employeeDashboard2/{user}', [EmployeeDashboardController::class, 'index2']);
 
         Route::get('getAllRoles', [RoleController::class, 'index']);
 

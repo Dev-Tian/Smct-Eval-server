@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,28 @@ class EmployeeDashboardController extends Controller
             ->first();
 
         return response()->json([
+            'total_evaluations'     =>  $total_evaluations,
+            'average'               =>  $average,
+            'recent_evaluation'     =>  $recent_evaluation,
+            'user_eval'             =>  $user_eval,
+        ], 200);
+    }
+
+    public function index2(User $user)
+    {
+        $user_eval = UsersEvaluation::where('employee_id', $user->id)->get();
+        $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->count() ?? 0;
+        $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->whereNotNull("rating")->sum('rating') ?? 0;
+        $average = empty(!$total_evaluations) ? round($sum_ratings / $total_evaluations, 2) : 0;
+        $recent_evaluation = UsersEvaluation::where('employee_id', $user->id)
+            ->latest('created_at')
+            ->select('id', 'rating')
+            ->first();
+        $highest_rating = UsersEvaluation::where('employee_id', $user->id)
+            ->max('rating');
+
+        return response()->json([
+            'highest_rating'        =>  $highest_rating,
             'total_evaluations'     =>  $total_evaluations,
             'average'               =>  $average,
             'recent_evaluation'     =>  $recent_evaluation,
