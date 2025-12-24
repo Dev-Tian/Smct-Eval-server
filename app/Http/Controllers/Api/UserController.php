@@ -370,7 +370,7 @@ class UserController extends Controller
             if (!$isHO && $manager->position_id == 16 && empty($manager->department_id)) {
                 $branches = $manager->branches()->pluck('branches.id');
 
-                $branchHeads = User::with('branches', 'positions', 'roles')
+                $branchHeads = User::with('departments', 'branches', 'positions', 'roles')
                     ->whereHas(
                         'branches',
                         fn($query)
@@ -409,7 +409,7 @@ class UserController extends Controller
             ) {
                 $branches = $manager->branches()->pluck('branches.id');
 
-                $employees = User::with('branches', 'positions', 'roles')
+                $employees = User::with('departments', 'branches', 'positions', 'roles')
                     ->whereHas(
                         'branches',
                         fn($query)
@@ -435,7 +435,7 @@ class UserController extends Controller
 
             //Department manager
             if ($isHO  && !empty($manager->department_id)) {
-                $employees = User::with('branches', 'positions', "roles")
+                $employees = User::with('departments', 'branches', 'positions', "roles")
                     ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
                     ->when(
                         $position_filter,

@@ -83,7 +83,6 @@ class UsersEvaluationController extends Controller
         $validated  = $request->validate([
             //main
             'hireDate'                              => ['required', 'date'],
-            'category'                              => ['required', 'string'],
             'rating'                                => ['required', 'numeric'],
             'coverageFrom'                          => ['required', 'date'],
             'coverageTo'                            => ['required', 'date'],
@@ -95,7 +94,6 @@ class UsersEvaluationController extends Controller
             'priorityArea2'                         => ['nullable', 'string'],
             'priorityArea3'                         => ['nullable', 'string'],
             'remarks'                               => ['nullable', 'string'],
-            'overallComments'                       => ['nullable', 'string'],
             //jobKnowledge
             'jobKnowledgeScore1'                    => ['required', 'numeric'],
             'jobKnowledgeScore2'                    => ['required', 'numeric'],
@@ -164,7 +162,6 @@ class UsersEvaluationController extends Controller
             'employee_id'                       =>  $user->id,
             'evaluator_id'                      =>  $auth_user_evaluator->id,
             'hireDate'                          =>  $validated['hireDate'],
-            'category'                          =>  $validated['category'],
             'rating'                            =>  $validated['rating'],
             'coverageFrom'                      =>  $validated['coverageFrom'],
             'coverageTo'                        =>  $validated['coverageTo'],
@@ -176,7 +173,6 @@ class UsersEvaluationController extends Controller
             'priorityArea2'                     =>  $validated['priorityArea2'] ?? null,
             'priorityArea3'                     =>  $validated['priorityArea3'] ?? null,
             'remarks'                           =>  $validated['remarks'] ?? null,
-            'overallComments'                   =>  $validated['overallComments'] ?? null,
             'evaluatorApprovedAt'               =>  now(),
         ]);
 

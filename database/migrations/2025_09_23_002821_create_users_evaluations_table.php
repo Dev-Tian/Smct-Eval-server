@@ -18,7 +18,6 @@ return new class extends Migration
             $table->date("hireDate");
             $table->foreignIdFor(User::class, 'evaluator_id')->nullable()->constrained()->nullOnDelete();
 
-            $table->string("category");
             $table->decimal('rating', 3, 2);
             $table->enum('status', ['pending', 'completed'])->default('pending');
 
@@ -36,7 +35,6 @@ return new class extends Migration
 
             $table->string("remarks")->nullable();
 
-            $table->string("overallComments")->nullable();
             $table->date('evaluatorApprovedAt')->nullable();
             $table->date('employeeApprovedAt')->nullable();
 
