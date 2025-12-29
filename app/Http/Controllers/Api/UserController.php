@@ -407,6 +407,8 @@ class UserController extends Controller
                 )
                 &&
                 empty($manager->department_id)
+                &&
+                $manager->position_id !== 16
             ) {
                 $branches = $manager->branches()->pluck('branches.id');
 
