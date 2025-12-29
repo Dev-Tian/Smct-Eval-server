@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -62,6 +63,21 @@ class UsersEvaluationController extends Controller
         ], 200);
     }
 
+    public function getQuarters(User $user)
+    {
+        $data = UsersEvaluation::where('employee_id', $user->id)
+            ->where(function ($q) {
+                $q->whereNotNull('reviewTypeProbationary')
+                    ->orWhereNotNull('reviewTypeRegular');
+            })
+            ->whereYear('created_at', Carbon::now()->year)
+            ->get(['reviewTypeProbationary', 'reviewTypeRegular']);
+
+        return response()->json([
+            'data'      =>  $data,
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -69,6 +85,7 @@ class UsersEvaluationController extends Controller
     {
         //
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -304,7 +321,11 @@ class UsersEvaluationController extends Controller
         $user = Auth::user();
         $user_eval = UsersEvaluation::with([
             'employee',
+            'employee.branches',
+            'employee.positions',
             'evaluator',
+            'evaluator.branches',
+            'evaluator.positions',
             'jobKnowledge',
             'adaptability',
             'qualityOfWorks',
@@ -317,7 +338,15 @@ class UsersEvaluationController extends Controller
             ->where('employee_id', $user->id)
             ->search($search)
             ->when($status,  fn($q) =>  $q->where('status', $status))
-            ->when($quarter, fn($q) =>  $q->where('reviewTypeProbationary', $quarter)->orWhere('reviewTypeRegular', $quarter))
+            ->when(
+                $quarter,
+                fn($q)
+                =>
+                $q->where(function ($subq) use ($quarter) {
+                    $subq->where('reviewTypeProbationary', $quarter)
+                        ->orWhere('reviewTypeRegular', $quarter);
+                })
+            )
             ->when($year,    fn($q) =>  $q->whereYear('created_at', $year))
             ->latest('updated_at')
             ->paginate($perPage);
@@ -337,16 +366,20 @@ class UsersEvaluationController extends Controller
 
     public function getEvalAuthEvaluator(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
         $status = $request->input('status');
         $quarter = $request->input('quarter');
         $year = $request->input('year');
 
         $user = Auth::user();
-        $user_eval = UsersEvaluation::with([
+        $user_eval = UsersEvaluation::with(
             'employee',
+            'employee.branches',
+            'employee.positions',
             'evaluator',
-            'quarterUsersEvaluations',
+            'evaluator.branches',
+            'evaluator.positions',
             'jobKnowledge',
             'adaptability',
             'qualityOfWorks',
@@ -354,15 +387,23 @@ class UsersEvaluationController extends Controller
             'reliabilities',
             'ethicals',
             'customerServices'
-        ])
+        )
             ->orderBy('id', 'desc')
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) =>  $q->where('status', $status))
-            ->when($quarter, fn($q) =>  $q->where('quarter_of_submission_id', $quarter))
+            ->when(
+                $quarter,
+                fn($q)
+                =>
+                $q->where(function ($subq) use ($quarter) {
+                    $subq->where('reviewTypeProbationary', $quarter)
+                        ->orWhere('reviewTypeRegular', $quarter);
+                })
+            )
             ->when($year,   fn($q) =>  $q->whereYear('created_at', $year))
             ->latest('updated_at')
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
             'myEval_as_Evaluator'         =>   $user_eval

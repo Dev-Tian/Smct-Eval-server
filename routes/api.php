@@ -31,6 +31,7 @@ Route::get('departments', [DepartmentController::class, 'index']);
 // Route::get('employeeDashboard', [EmployeeDashboardController::class, 'index']);
 
 // Route::post('submit/{user}', [UsersEvaluationController::class, 'store']);
+// Route::get('getQuarters/{user}', [UsersEvaluationController::class, 'getQuarters']);
 
 
 //sanctum routes
@@ -89,6 +90,7 @@ Route::middleware('auth:sanctum')->group(
         Route::controller(UsersEvaluationController::class)->group(
             function () {
                 Route::get('allEvaluations', 'index');
+                Route::get('getQuarters/{user}', 'getQuarters');
                 Route::get('getEvalAuthEvaluator', 'getEvalAuthEvaluator');
                 Route::get('getMyEvalAuthEmployee', 'getMyEvalAuthEmployee');
                 Route::get('getAllYears', 'getAllYears');
