@@ -249,6 +249,8 @@ class UserController extends Controller
         $perPage = $request->input('per_page', 10);
         $role_filter = $request->input('role');
         $search_filter = $request->input('search');
+        $branch_filter = $request->input('branch');
+        $department_filter = $request->input('department');
 
         $users  = User::with('branches', 'departments', 'positions', 'roles')
             ->where('is_active', "active")
@@ -258,6 +260,18 @@ class UserController extends Controller
                 fn($role)
                 =>
                 $role->whereRelation('roles', 'id', $role_filter)
+            )
+            ->when(
+                $branch_filter,
+                fn($q)
+                =>
+                $q->whereRelation('branches', 'branches.id', $branch_filter)
+            )
+            ->when(
+                $department_filter,
+                fn($q)
+                =>
+                $q->whereRelation('departments', 'departments.id', $department_filter)
             )
             ->search($search_filter)
             ->latest('updated_at')
@@ -384,7 +398,7 @@ class UserController extends Controller
                         =>
                         $q->where('position_id', $position_filter)
                     )
-                    ->whereNot('id', $manager->id)
+                    ->where('id', "!=", $manager->id)
                     ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
                     ->search($search)
                     ->latest('updated_at')

@@ -34,6 +34,7 @@ class UsersEvaluationController extends Controller
             'evaluator',
             'evaluator.branches',
             'evaluator.positions',
+            'evaluator.roles',
             'jobKnowledge',
             'adaptability',
             'qualityOfWorks',
