@@ -365,7 +365,7 @@ class UserController extends Controller
         $manager = Auth::user();
 
         $search  = $request->input('search');
-        $position_filter = $request->input('position');
+        $position_filter = $request->input('position_filter');
         $perPage = $request->input('per_page', 10);
 
 
@@ -476,7 +476,7 @@ class UserController extends Controller
                 ], 200);
             }
             return response()->json([
-                'message'   => "failed ifs"
+                'message'   => "failed conditions"
             ]);
         }
         return response()->json([
