@@ -352,7 +352,7 @@ class UsersEvaluationController extends Controller
 
         $years = UsersEvaluation::selectRaw("YEAR(created_at) as year")
             ->where('employee_id', $user->id)
-            ->latest('created_at')
+            ->groupBy('created_at')
             ->get();
 
         return response()->json([
