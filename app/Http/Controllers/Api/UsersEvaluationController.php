@@ -334,7 +334,6 @@ class UsersEvaluationController extends Controller
             'ethicals',
             'customerServices'
         ])
-            ->orderBy('id', 'desc')
             ->where('employee_id', $user->id)
             ->search($search)
             ->when($status,  fn($q) =>  $q->where('status', $status))
@@ -388,7 +387,6 @@ class UsersEvaluationController extends Controller
             'ethicals',
             'customerServices'
         )
-            ->orderBy('id', 'desc')
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) =>  $q->where('status', $status))
