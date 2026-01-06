@@ -308,6 +308,7 @@ class UserController extends Controller
             'positions',
             'roles'
         ])
+            ->where('is_active', "active")
             ->search($search)
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
             ->latest('updated_at')
@@ -327,6 +328,7 @@ class UserController extends Controller
             'positions',
             'roles'
         ])
+            ->where('is_active', "active")
             ->search($search)
             ->where('position_id', 16)
             ->latest('updated_at')
@@ -363,7 +365,7 @@ class UserController extends Controller
         $manager = Auth::user();
 
         $search  = $request->input('search');
-        $position_filter = $request->input('position');
+        $position_filter = $request->input('position_filter');
         $perPage = $request->input('per_page', 10);
 
 
@@ -386,6 +388,7 @@ class UserController extends Controller
                 $branches = $manager->branches()->pluck('branches.id');
 
                 $branchHeads = User::with('departments', 'branches', 'positions', 'roles')
+                    ->where('is_active', "active")
                     ->whereHas(
                         'branches',
                         fn($query)
@@ -427,6 +430,7 @@ class UserController extends Controller
                 $branches = $manager->branches()->pluck('branches.id');
 
                 $employees = User::with('departments', 'branches', 'positions', 'roles')
+                    ->where('is_active', "active")
                     ->whereHas(
                         'branches',
                         fn($query)
@@ -453,6 +457,7 @@ class UserController extends Controller
             //Department manager
             if ($isHO  && !empty($manager->department_id)) {
                 $employees = User::with('departments', 'branches', 'positions', "roles")
+                    ->where('is_active', "active")
                     ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
                     ->when(
                         $position_filter,
@@ -471,7 +476,7 @@ class UserController extends Controller
                 ], 200);
             }
             return response()->json([
-                'message'   => "failed ifs"
+                'message'   => "failed conditions"
             ]);
         }
         return response()->json([
