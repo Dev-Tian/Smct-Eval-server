@@ -439,8 +439,8 @@ class UserController extends Controller
                         =>
                         $q->where('position_id', $position_filter)
                     )
-                    ->whereNot('id', $manager->id)
-                    ->whereNot('position_id', 16) // <--- area manager id
+                    ->where('id', "!=", $manager->id)
+                    ->where('position_id', "!=", 16) // <--- area manager id
                     ->search($search)
                     ->latest('updated_at')
                     ->paginate($perPage);
