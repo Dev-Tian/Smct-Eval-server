@@ -56,7 +56,7 @@ class UsersEvaluationController extends Controller
                 )
             )
             ->when($year, fn($q)    => $q->whereYear('created_at', $year))
-            ->latest('updated_at')
+            ->latest('created_at')
             ->paginate($perPage);
 
         return response()->json([
@@ -348,13 +348,13 @@ class UsersEvaluationController extends Controller
                 })
             )
             ->when($year,    fn($q) =>  $q->whereYear('created_at', $year))
-            ->latest('updated_at')
+            ->latest('created_at')
             ->paginate($perPage);
 
         $years = UsersEvaluation::selectRaw("YEAR(created_at) as year")
             ->groupBy('year')
             ->where('employee_id', $user->id)
-            ->latest('updated_at')
+            ->latest('created_at')
             ->get();
 
         return response()->json([
@@ -402,7 +402,7 @@ class UsersEvaluationController extends Controller
                 })
             )
             ->when($year,   fn($q) =>  $q->whereYear('created_at', $year))
-            ->latest('updated_at')
+            ->latest('created_at')
             ->paginate($perPage);
 
         return response()->json([
