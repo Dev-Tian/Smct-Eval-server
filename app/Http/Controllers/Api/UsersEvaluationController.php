@@ -351,7 +351,6 @@ class UsersEvaluationController extends Controller
             ->paginate($perPage);
 
         $years = UsersEvaluation::selectRaw("YEAR(created_at) as year")
-            ->groupBy('year')
             ->where('employee_id', $user->id)
             ->latest('created_at')
             ->get();
