@@ -96,7 +96,6 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
-
         $validated  = $request->validate([
             //main
             'hireDate'                              => ['required', 'date'],
