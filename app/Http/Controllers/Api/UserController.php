@@ -19,8 +19,8 @@ class UserController extends Controller
     public function registerUser(Request $request)
     {
         $validate = $request->validate([
-            'fname'                     => ['required', 'string', 'alpha'],
-            'lname'                     => ['required', 'string', 'alpha'],
+            'fname'                     => ['required', 'string'],
+            'lname'                     => ['required', 'string'],
             'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
@@ -88,8 +88,8 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'fname'                     => ['required', 'string', 'alpha'],
-            'lname'                     => ['required', 'string', 'alpha'],
+            'fname'                     => ['required', 'string'],
+            'lname'                     => ['required', 'string'],
             'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
