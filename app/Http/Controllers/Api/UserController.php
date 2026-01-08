@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -100,6 +101,7 @@ class UserController extends Controller
             'password'                  => ['required', 'string', 'min: 8', 'max:20'],
             'role_id'                   => ['required', Rule::exists('roles', 'id')]
         ]);
+        $role  = Role::findOrFail($validate['role_id']);
 
         $user = User::create([
             'fname'                     => $validate['fname'],
@@ -114,7 +116,8 @@ class UserController extends Controller
             'is_active'                 => 'active'
         ]);
 
-        $user->assignRole($validate['role_id']);
+
+        $user->assignRole($role->name);
         $user->branches()->sync($validate['branch_id']);
 
         return response()->json([
