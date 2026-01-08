@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create('users_evaluations', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class, 'employee_id')->nullable()->constrained()->nullOnDelete();
-            $table->date("hireDate");
             $table->foreignIdFor(User::class, 'evaluator_id')->nullable()->constrained()->nullOnDelete();
 
             $table->decimal('rating', 3, 2);

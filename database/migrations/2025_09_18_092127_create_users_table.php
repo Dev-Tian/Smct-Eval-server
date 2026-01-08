@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Position::class, 'position_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(Department::class, 'department_id')->nullable()->constrained()->nullOnDelete();
+            $table->date("date_hired");
             $table->string("username");
             $table->string("fname");
             $table->string("lname");

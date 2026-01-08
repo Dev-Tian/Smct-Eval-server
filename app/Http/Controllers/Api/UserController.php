@@ -22,6 +22,7 @@ class UserController extends Controller
         $validate = $request->validate([
             'fname'                     => ['required', 'string'],
             'lname'                     => ['required', 'string'],
+            'date_hired'                 => ['required', 'date'],
             'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
@@ -49,6 +50,7 @@ class UserController extends Controller
         $user = User::create([
             'fname'                     => $validate['fname'],
             'lname'                     => $validate['lname'],
+            'date_hired'                => $validate['date_hired'],
             'email'                     => $validate['email'],
             'position_id'               => $validate['position_id'],
             'department_id'             => $validate['department_id'],
@@ -91,6 +93,7 @@ class UserController extends Controller
         $validate = $request->validate([
             'fname'                     => ['required', 'string'],
             'lname'                     => ['required', 'string'],
+            'date_hired'                => ['required', 'date'],
             'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
@@ -101,11 +104,11 @@ class UserController extends Controller
             'password'                  => ['required', 'string', 'min: 8', 'max:20'],
             'role_id'                   => ['required', Rule::exists('roles', 'id')]
         ]);
-        $role  = Role::findOrFail($validate['role_id']);
 
         $user = User::create([
             'fname'                     => $validate['fname'],
             'lname'                     => $validate['lname'],
+            'date_hired'                => $validate['date_hired'],
             'email'                     => $validate['email'],
             'position_id'               => $validate['position_id'],
             'department_id'             => $validate['department_id'] ?? null,
@@ -116,7 +119,7 @@ class UserController extends Controller
             'is_active'                 => 'active'
         ]);
 
-
+        $role  = Role::findOrFail($validate['role_id']);
         $user->assignRole($role->name);
         $user->branches()->sync($validate['branch_id']);
 
@@ -494,6 +497,7 @@ class UserController extends Controller
         $validate = $request->validate([
             'fname'                     => ['required', 'string', 'alpha'],
             'lname'                     => ['required', 'string', 'alpha'],
+            'date_hired'                => ['required', 'date_hired'],
             'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
@@ -511,6 +515,7 @@ class UserController extends Controller
         $updateData = [
             'fname'                     => $validate['fname'],
             'lname'                     => $validate['lname'],
+            'date_hired'                => $validate['date_hired'],
             'email'                     => $validate['email'],
             'position_id'               => $validate['position_id'],
             'department_id'             => $validate['department_id'] ?? $user->department_id ?? null,

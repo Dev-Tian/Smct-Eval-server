@@ -98,7 +98,6 @@ class UsersEvaluationController extends Controller
 
         $validated  = $request->validate([
             //main
-            'hireDate'                              => ['required', 'date'],
             'rating'                                => ['required', 'numeric'],
             'coverageFrom'                          => ['required', 'date'],
             'coverageTo'                            => ['required', 'date'],
@@ -177,7 +176,6 @@ class UsersEvaluationController extends Controller
         $submission  =  UsersEvaluation::create([
             'employee_id'                       =>  $user->id,
             'evaluator_id'                      =>  $auth_user_evaluator->id,
-            'hireDate'                          =>  $validated['hireDate'],
             'rating'                            =>  $validated['rating'],
             'coverageFrom'                      =>  $validated['coverageFrom'],
             'coverageTo'                        =>  $validated['coverageTo'],
