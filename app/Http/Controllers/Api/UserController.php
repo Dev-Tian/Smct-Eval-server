@@ -497,7 +497,7 @@ class UserController extends Controller
         $validate = $request->validate([
             'fname'                     => ['required', 'string', 'alpha'],
             'lname'                     => ['required', 'string', 'alpha'],
-            'date_hired'                => ['required', 'date_hired'],
+            'date_hired'                => ['required', 'date'],
             'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
