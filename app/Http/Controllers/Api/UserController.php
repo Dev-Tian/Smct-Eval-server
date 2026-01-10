@@ -22,7 +22,7 @@ class UserController extends Controller
         $validate = $request->validate([
             'fname'                     => ['required', 'string'],
             'lname'                     => ['required', 'string'],
-            'date_hired'                 => ['required', 'date'],
+            'date_hired'                => ['required', 'date'],
             'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],

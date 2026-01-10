@@ -8,7 +8,6 @@ use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-use function Symfony\Component\Clock\now;
 
 class EvalNotifications extends Notification implements ShouldBroadcastNow
 {
