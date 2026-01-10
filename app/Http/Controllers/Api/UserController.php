@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Notifications\EvalNotifications;
@@ -214,7 +215,7 @@ class UserController extends Controller
             )
             ->whereNot('id', Auth::id())
             ->latest('updated_at')
-            ->get();
+            ->get('positions');
 
         return response()->json([
             'message'       => 'Users fetched successfully',
@@ -413,8 +414,25 @@ class UserController extends Controller
                     ->latest('updated_at')
                     ->paginate($perPage);
 
+                $positions = Position::whereRelation(
+                    'users',
+                    fn($q)
+                    =>
+                    $q->where('is_active', "active")
+                        ->whereHas(
+                            'branches',
+                            fn($query)
+                            =>
+                            $query->whereIn('branch_id', $branches)
+                        )
+                        ->where('id', "!=", $manager->id)
+                        ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
+                )
+                    ->get();
+
                 return response()->json([
-                    'employees' => $branchHeads
+                    'employees' => $branchHeads,
+                    'positions' => $positions
                 ], 200);
             }
 
@@ -455,8 +473,25 @@ class UserController extends Controller
                     ->latest('updated_at')
                     ->paginate($perPage);
 
+                $positions = Position::whereRelation(
+                    'users',
+                    fn($q)
+                    =>
+                    $q->where('is_active', "active")
+                        ->whereHas(
+                            'branches',
+                            fn($query)
+                            =>
+                            $query->whereIn('branch_id', $branches)
+                        )
+                        ->where('id', "!=", $manager->id)
+                        ->where('position_id', "!=", 16) // <--- area manager id
+                )
+                    ->get();
+
                 return response()->json([
-                    'employees' => $employees
+                    'employees' => $employees,
+                    'positions' => $positions
                 ], 200);
             }
 
@@ -477,8 +512,20 @@ class UserController extends Controller
                     ->latest('updated_at')
                     ->paginate($perPage);
 
+                $positions = Position::whereRelation(
+                    'users',
+                    fn($q)
+                    =>
+                    $q->where('is_active', 'active')
+                        ->whereRelation('branches', 'branch_id', 126)
+                        ->whereNot('id', $manager->id)
+                        ->where('department_id', $manager->department_id)
+                )
+                    ->get();
+
                 return response()->json([
-                    'employees' => $employees
+                    'employees' => $employees,
+                    'positions' => $positions
                 ], 200);
             }
             return response()->json([
