@@ -26,14 +26,6 @@ Route::get('positions', [PositionController::class, 'index']);
 Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
 
-//test
-// Route::get('test', [UserController::class, 'test']);
-// Route::get('employeeDashboard', [EmployeeDashboardController::class, 'index']);
-
-// Route::post('submit/{user}', [UsersEvaluationController::class, 'store']);
-// Route::get('getQuarters/{user}', [UsersEvaluationController::class, 'getQuarters']);
-
-
 //sanctum routes
 Route::get('/profile', function (Request $request) {
     return $request->user()->load(
