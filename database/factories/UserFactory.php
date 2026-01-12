@@ -29,6 +29,7 @@ class UserFactory extends Factory
             'position_id' => Position::inRandomOrder()->first()->id ?? 1,  // fallback to 1 if none exists
             'department_id' => Department::inRandomOrder()->first()->id ?? 1,      // fallback to 1 if none exists
             'username' => $this->faker->unique()->userName(),
+            'date_hired' => $this->faker->date(),
             'fname' => $this->faker->firstName(),
             'lname' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
