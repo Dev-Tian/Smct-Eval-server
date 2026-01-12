@@ -9,4 +9,3 @@ enum EvalReviewType: string
     case Q3 = 'Q3';
     case Q4 = 'Q4';
 }
-
