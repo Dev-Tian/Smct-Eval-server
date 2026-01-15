@@ -23,8 +23,6 @@ class UsersEvaluationFactory extends Factory
         return [
             'employee_id' => User::inRandomOrder()->value('id') ?? 2,
             'evaluator_id' => User::inRandomOrder()->value('id') ?? 2,
-            'hireDate' => $this->faker->date(),
-            'category' => $this->faker->sentence(5),
             'rating' => $this->faker->randomFloat(2, 1, 5),
             'status' => $status,
             'coverageFrom' => $this->faker->date(),
@@ -44,7 +42,6 @@ class UsersEvaluationFactory extends Factory
             'priorityArea2' => $this->faker->optional()->sentence(3),
             'priorityArea3' => $this->faker->optional()->sentence(3),
             'remarks' => $this->faker->optional()->sentence(2),
-            'overallComments' => $this->faker->optional()->sentence(2),
             'evaluatorApprovedAt' => $this->faker->date(),
             'employeeApprovedAt' => $status === 'completed'
                 ? $this->faker->date()

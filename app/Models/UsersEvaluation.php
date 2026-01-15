@@ -63,6 +63,11 @@ class UsersEvaluation extends Model
         return $this->hasMany(CustomerService::class, 'users_evaluation_id');
     }
 
+    public function managerialSkills()
+    {
+        return $this->hasMany(ManagerialSkills::class, 'users_evaluation_id');
+    }
+
     #[Scope]
     public function search($query, $search)
     {

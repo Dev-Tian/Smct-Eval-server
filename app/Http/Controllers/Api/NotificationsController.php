@@ -20,7 +20,6 @@ class NotificationsController extends Controller
 
     public function markAllAsRead()
     {
-
         $user = Auth::user();
 
         $user->unreadNotifications->markAsRead();

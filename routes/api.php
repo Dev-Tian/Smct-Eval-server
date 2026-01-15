@@ -87,9 +87,17 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('getMyEvalAuthEmployee', 'getMyEvalAuthEmployee');
                 Route::get('getAllYears', 'getAllYears');
                 Route::get('submissions/{usersEvaluation}', 'show');
-                Route::post('submit/{user}', 'store');
                 Route::post('approvedByEmployee/{usersEvaluation}', 'approvedByEmployee');
                 Route::post('deleteEval/{usersEvaluation}', 'destroy');
+                //submissions
+                //brach rank n file
+                Route::post('BranchRankNFile/{user}', 'BranchRankNFile');
+                //branch basic
+                Route::post('BranchBasic/{user}', 'BranchBasic');
+                //ho basic
+                Route::post('HoBasic/{user}', 'HoBasic');
+                //ho rank n file
+                Route::post('HoRankNFile/{user}', 'HoRankNFile');
             }
         );
 
@@ -101,9 +109,13 @@ Route::middleware('auth:sanctum')->group(
             }
         );
 
-        Route::post('deleteNotification/{notification}', [NotificationsController::class, 'destroy']);
-        Route::post('isReadNotification/{notification}', [NotificationsController::class, 'isRead']);
-        Route::post('markAllAsRead', [NotificationsController::class, 'markAllAsRead']);
+        Route::controller(NotificationsController::class)->group(
+            function () {
+                Route::post('deleteNotification/{notification}', 'destroy');
+                Route::post('isReadNotification/{notification}', 'isRead');
+                Route::post('markAllAsRead', 'markAllAsRead');
+            }
+        );
 
         //Dashboards
         Route::get('adminDashboard', [AdminDashboardController::class, 'index']);

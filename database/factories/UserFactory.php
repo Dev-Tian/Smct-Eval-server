@@ -27,9 +27,9 @@ class UserFactory extends Factory
     {
         return [
             'position_id' => Position::inRandomOrder()->first()->id ?? 1,  // fallback to 1 if none exists
-            'department_id' => Department::inRandomOrder()->first()->id ?? 1,      // fallback to 1 if none exists
+            'department_id' => Department::inRandomOrder()->first()->id ?? 1,  // fallback to 1 if none exists
             'username' => $this->faker->unique()->userName(),
-            'date_hired' => $this->faker->date(),
+            'date_hired' => $this->faker->dateTime(),
             'fname' => $this->faker->firstName(),
             'lname' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
@@ -39,7 +39,6 @@ class UserFactory extends Factory
             'is_active' => fake()->randomElement(["pending", "active", "declined"]),
             'signature' => $this->faker->text(200),
             'avatar' => $this->faker->optional()->imageUrl(200, 200, 'people'),
-            // 'bio' => $this->faker->optional()->sentence(12),
         ];
     }
 
