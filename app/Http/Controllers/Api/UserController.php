@@ -15,7 +15,6 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-
     //Create
 
     public function registerUser(Request $request)
@@ -237,7 +236,7 @@ class UserController extends Controller
                 $status_filter,
                 fn($status)
                 =>
-                $status->where('is_active', '=', $status_filter)
+                $status->where('is_active', $status_filter)
             )
             ->search($search_filter)
             ->latest('updated_at')
