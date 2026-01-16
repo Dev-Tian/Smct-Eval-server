@@ -98,17 +98,7 @@ class UsersEvaluationController extends Controller
 
         $validated  = $request->validate([
             //main
-            'rating'                                => ['required', 'numeric'],
-            'coverageFrom'                          => ['required', 'date'],
-            'coverageTo'                            => ['required', 'date'],
-            'reviewTypeProbationary'                => ['nullable', 'numeric'],
-            'reviewTypeRegular'                     => ['nullable', 'string'],
-            'reviewTypeOthersImprovement'           => ['nullable', 'boolean'],
-            'reviewTypeOthersCustom'                => ['nullable', 'string'],
-            'priorityArea1'                         => ['nullable', 'string'],
-            'priorityArea2'                         => ['nullable', 'string'],
-            'priorityArea3'                         => ['nullable', 'string'],
-            'remarks'                               => ['nullable', 'string'],
+
             //jobKnowledge
             'jobKnowledgeScore1'                    => ['required', 'numeric'],
             'jobKnowledgeScore2'                    => ['required', 'numeric'],
