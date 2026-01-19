@@ -291,8 +291,8 @@ class UsersEvaluationController extends Controller
             $submission->managerialSkills()->create([
                 'users_evaluation_id'       => $submission->id,
                 'question_number'           => $i,
-                'score'                     => $validated['managerialSkillScore' . $i],
-                'explanation'               => $validated['managerialSkillExplanation' . $i]
+                'score'                     => $validated['managerialSkillsScore' . $i],
+                'explanation'               => $validated['managerialSkillsExplanation' . $i]
             ]);
         }
         //notification for employee
@@ -510,8 +510,8 @@ class UsersEvaluationController extends Controller
             $submission->managerialSkills()->create([
                 'users_evaluation_id'       => $submission->id,
                 'question_number'           => $i,
-                'score'                     => $validated['managerialSkillScore' . $i],
-                'explanation'               => $validated['managerialSkillExplanation' . $i]
+                'score'                     => $validated['managerialSkillsScore' . $i],
+                'explanation'               => $validated['managerialSkillsExplanation' . $i]
             ]);
         }
 
