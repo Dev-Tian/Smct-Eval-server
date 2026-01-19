@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BranchRankNFile extends FormRequest
+class HoRankNFile extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,7 @@ class BranchRankNFile extends FormRequest
             $this->teamworkRules(),
             $this->reliabilityRules(),
             $this->ethicalRules(),
-            $this->customerServiceRules(),
+
         );
     }
 
@@ -69,12 +69,10 @@ class BranchRankNFile extends FormRequest
             'qualityOfWorkScore2'                   => ['required', 'numeric'],
             'qualityOfWorkScore3'                   => ['required', 'numeric'],
             'qualityOfWorkScore4'                   => ['required', 'numeric'],
-            'qualityOfWorkScore5'                   => ['required', 'numeric'],
             'qualityOfWorkComments1'                => ['nullable', 'string'],
             'qualityOfWorkComments2'                => ['nullable', 'string'],
             'qualityOfWorkComments3'                => ['nullable', 'string'],
             'qualityOfWorkComments4'                => ['nullable', 'string'],
-            'qualityOfWorkComments5'                => ['nullable', 'string'],
         ];
     }
 
@@ -127,22 +125,6 @@ class BranchRankNFile extends FormRequest
             'ethicalExplanation2'                   => ['nullable', 'string'],
             'ethicalExplanation3'                   => ['nullable', 'string'],
             'ethicalExplanation4'                   => ['nullable', 'string'],
-        ];
-    }
-
-    public function customerServiceRules()
-    {
-        return [
-            'customerServiceScore1'                 => ['required', 'numeric'],
-            'customerServiceScore2'                 => ['required', 'numeric'],
-            'customerServiceScore3'                 => ['required', 'numeric'],
-            'customerServiceScore4'                 => ['required', 'numeric'],
-            'customerServiceScore5'                 => ['required', 'numeric'],
-            'customerServiceExplanation1'           => ['nullable', 'string'],
-            'customerServiceExplanation2'           => ['nullable', 'string'],
-            'customerServiceExplanation3'           => ['nullable', 'string'],
-            'customerServiceExplanation4'           => ['nullable', 'string'],
-            'customerServiceExplanation5'           => ['nullable', 'string'],
         ];
     }
 }

@@ -37,7 +37,6 @@ class UserFactory extends Factory
             'emp_id' => random_int(0000000000, 9999999999),
             'password' => Hash::make('password'),
             'is_active' => fake()->randomElement(["pending", "active", "declined"]),
-            'signature' => $this->faker->text(200),
             'avatar' => $this->faker->optional()->imageUrl(200, 200, 'people'),
         ];
     }

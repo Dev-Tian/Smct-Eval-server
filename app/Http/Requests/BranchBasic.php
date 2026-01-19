@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BranchRankNFile extends FormRequest
+class BranchBasic extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,6 +30,7 @@ class BranchRankNFile extends FormRequest
             $this->reliabilityRules(),
             $this->ethicalRules(),
             $this->customerServiceRules(),
+            $this->managerialSkillsRules(),
         );
     }
 
@@ -70,11 +71,23 @@ class BranchRankNFile extends FormRequest
             'qualityOfWorkScore3'                   => ['required', 'numeric'],
             'qualityOfWorkScore4'                   => ['required', 'numeric'],
             'qualityOfWorkScore5'                   => ['required', 'numeric'],
+            'qualityOfWorkScore6'                   => ['required', 'numeric'],
+            'qualityOfWorkScore7'                   => ['required', 'numeric'],
+            'qualityOfWorkScore8'                   => ['required', 'numeric'],
+            'qualityOfWorkScore9'                   => ['required', 'numeric'],
+            'qualityOfWorkScore10'                  => ['required', 'numeric'],
+            'qualityOfWorkScore11'                  => ['required', 'numeric'],
             'qualityOfWorkComments1'                => ['nullable', 'string'],
             'qualityOfWorkComments2'                => ['nullable', 'string'],
             'qualityOfWorkComments3'                => ['nullable', 'string'],
             'qualityOfWorkComments4'                => ['nullable', 'string'],
             'qualityOfWorkComments5'                => ['nullable', 'string'],
+            'qualityOfWorkComments6'                => ['nullable', 'string'],
+            'qualityOfWorkComments7'                => ['nullable', 'string'],
+            'qualityOfWorkComments8'                => ['nullable', 'string'],
+            'qualityOfWorkComments9'                => ['nullable', 'string'],
+            'qualityOfWorkComments10'               => ['nullable', 'string'],
+            'qualityOfWorkComments11'               => ['nullable', 'string'],
         ];
     }
 
@@ -143,6 +156,24 @@ class BranchRankNFile extends FormRequest
             'customerServiceExplanation3'           => ['nullable', 'string'],
             'customerServiceExplanation4'           => ['nullable', 'string'],
             'customerServiceExplanation5'           => ['nullable', 'string'],
+        ];
+    }
+
+    public function managerialSkillsRules()
+    {
+        return [
+            'managerialSkillsScore1'                 => ['required', 'numeric'],
+            'managerialSkillsScore2'                 => ['required', 'numeric'],
+            'managerialSkillsScore3'                 => ['required', 'numeric'],
+            'managerialSkillsScore4'                 => ['required', 'numeric'],
+            'managerialSkillsScore5'                 => ['required', 'numeric'],
+            'managerialSkillsScore6'                 => ['required', 'numeric'],
+            'managerialSkillsExplanation1'           => ['nullable', 'string'],
+            'managerialSkillsExplanation2'           => ['nullable', 'string'],
+            'managerialSkillsExplanation3'           => ['nullable', 'string'],
+            'managerialSkillsExplanation4'           => ['nullable', 'string'],
+            'managerialSkillsExplanation5'           => ['nullable', 'string'],
+            'managerialSkillsExplanation6'           => ['nullable', 'string'],
         ];
     }
 }

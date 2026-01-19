@@ -26,8 +26,7 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             PositionSeeder::class,
             RolesAndPermissionsSeeder::class,
-            UserSeeder::class,
-            UsersEvaluationsSeeder::class
+            UserSeeder::class
         ]);
     }
 }

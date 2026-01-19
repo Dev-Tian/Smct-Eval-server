@@ -19,6 +19,7 @@ return new class extends Migration
 
             $table->decimal('rating', 3, 2);
             $table->enum('status', ['pending', 'completed'])->default('pending');
+            $table->enum('evaluationType', ['HoBasic', 'HoRankNFile', 'BranchBasic', 'BranchRankNFile']);
 
             $table->date('coverageFrom');
             $table->date('coverageTo');

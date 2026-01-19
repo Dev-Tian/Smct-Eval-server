@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BranchBasic;
+use App\Http\Requests\BranchRankNFile;
+use App\Http\Requests\HoBasic;
+use App\Http\Requests\HoRankNFile;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
@@ -34,14 +38,7 @@ class UsersEvaluationController extends Controller
             'evaluator',
             'evaluator.branches',
             'evaluator.positions',
-            'evaluator.roles',
-            'jobKnowledge',
-            'adaptability',
-            'qualityOfWorks',
-            'teamworks',
-            'reliabilities',
-            'ethicals',
-            'customerServices'
+            'evaluator.roles'
         )
             ->orderBy('id', 'desc')
             ->search($search)
@@ -87,85 +84,18 @@ class UsersEvaluationController extends Controller
         //
     }
 
-
     /**
      * Store a newly created resource in storage.
      */
 
-    public function BranchRankNFile(Request $request, User $user)
+    public function BranchRankNFile(BranchRankNFile $validated, User $user)
     {
         $auth_user_evaluator = Auth::user();
-
-        $validated  = $request->validate([
-            //main
-
-            //jobKnowledge
-            'jobKnowledgeScore1'                    => ['required', 'numeric'],
-            'jobKnowledgeScore2'                    => ['required', 'numeric'],
-            'jobKnowledgeScore3'                    => ['required', 'numeric'],
-            'jobKnowledgeComments1'                 => ['nullable', 'string'],
-            'jobKnowledgeComments2'                 => ['nullable', 'string'],
-            'jobKnowledgeComments3'                 => ['nullable', 'string'],
-            //qualityOfWork
-            'qualityOfWorkScore1'                   => ['required', 'numeric'],
-            'qualityOfWorkScore2'                   => ['required', 'numeric'],
-            'qualityOfWorkScore3'                   => ['required', 'numeric'],
-            'qualityOfWorkScore4'                   => ['required', 'numeric'],
-            'qualityOfWorkScore5'                   => ['required', 'numeric'],
-            'qualityOfWorkComments1'                => ['nullable', 'string'],
-            'qualityOfWorkComments2'                => ['nullable', 'string'],
-            'qualityOfWorkComments3'                => ['nullable', 'string'],
-            'qualityOfWorkComments4'                => ['nullable', 'string'],
-            'qualityOfWorkComments5'                => ['nullable', 'string'],
-            //adaptability
-            'adaptabilityScore1'                    => ['required', 'numeric'],
-            'adaptabilityScore2'                    => ['required', 'numeric'],
-            'adaptabilityScore3'                    => ['required', 'numeric'],
-            'adaptabilityComments1'                 => ['nullable', 'string'],
-            'adaptabilityComments2'                 => ['nullable', 'string'],
-            'adaptabilityComments3'                 => ['nullable', 'string'],
-            //teamwork
-            'teamworkScore1'                        => ['required', 'numeric'],
-            'teamworkScore2'                        => ['required', 'numeric'],
-            'teamworkScore3'                        => ['required', 'numeric'],
-            'teamworkComments1'                     => ['nullable', 'string'],
-            'teamworkComments2'                     => ['nullable', 'string'],
-            'teamworkComments3'                     => ['nullable', 'string'],
-            //reliability
-            'reliabilityScore1'                     => ['required', 'numeric'],
-            'reliabilityScore2'                     => ['required', 'numeric'],
-            'reliabilityScore3'                     => ['required', 'numeric'],
-            'reliabilityScore4'                     => ['required', 'numeric'],
-            'reliabilityComments1'                  => ['nullable', 'string'],
-            'reliabilityComments2'                  => ['nullable', 'string'],
-            'reliabilityComments3'                  => ['nullable', 'string'],
-            'reliabilityComments4'                  => ['nullable', 'string'],
-            //ethical
-            'ethicalScore1'                         => ['required', 'numeric'],
-            'ethicalScore2'                         => ['required', 'numeric'],
-            'ethicalScore3'                         => ['required', 'numeric'],
-            'ethicalScore4'                         => ['required', 'numeric'],
-            'ethicalExplanation1'                   => ['nullable', 'string'],
-            'ethicalExplanation2'                   => ['nullable', 'string'],
-            'ethicalExplanation3'                   => ['nullable', 'string'],
-            'ethicalExplanation4'                   => ['nullable', 'string'],
-            //customerService
-            'customerServiceScore1'                 => ['required', 'numeric'],
-            'customerServiceScore2'                 => ['required', 'numeric'],
-            'customerServiceScore3'                 => ['required', 'numeric'],
-            'customerServiceScore4'                 => ['required', 'numeric'],
-            'customerServiceScore5'                 => ['required', 'numeric'],
-            'customerServiceExplanation1'           => ['nullable', 'string'],
-            'customerServiceExplanation2'           => ['nullable', 'string'],
-            'customerServiceExplanation3'           => ['nullable', 'string'],
-            'customerServiceExplanation4'           => ['nullable', 'string'],
-            'customerServiceExplanation5'           => ['nullable', 'string'],
-
-        ]);
 
         $submission  =  UsersEvaluation::create([
             'employee_id'                       =>  $user->id,
             'evaluator_id'                      =>  $auth_user_evaluator->id,
+            'evaluationType'                    =>  'BranchRankNFile',
             'rating'                            =>  $validated['rating'],
             'coverageFrom'                      =>  $validated['coverageFrom'],
             'coverageTo'                        =>  $validated['coverageTo'],
@@ -272,115 +202,14 @@ class UsersEvaluationController extends Controller
     }
 
 
-    public function BranchBasic(Request $request, User $user)
+    public function BranchBasic(BranchBasic $validated, User $user)
     {
         $auth_user_evaluator = Auth::user();
-
-        $validated  = $request->validate([
-            //main
-            'rating'                                => ['required', 'numeric'],
-            'coverageFrom'                          => ['required', 'date'],
-            'coverageTo'                            => ['required', 'date'],
-            'reviewTypeProbationary'                => ['nullable', 'numeric'],
-            'reviewTypeRegular'                     => ['nullable', 'string'],
-            'reviewTypeOthersImprovement'           => ['nullable', 'boolean'],
-            'reviewTypeOthersCustom'                => ['nullable', 'string'],
-            'priorityArea1'                         => ['nullable', 'string'],
-            'priorityArea2'                         => ['nullable', 'string'],
-            'priorityArea3'                         => ['nullable', 'string'],
-            'remarks'                               => ['nullable', 'string'],
-            //jobKnowledge
-            'jobKnowledgeScore1'                    => ['required', 'numeric'],
-            'jobKnowledgeScore2'                    => ['required', 'numeric'],
-            'jobKnowledgeScore3'                    => ['required', 'numeric'],
-            'jobKnowledgeComments1'                 => ['nullable', 'string'],
-            'jobKnowledgeComments2'                 => ['nullable', 'string'],
-            'jobKnowledgeComments3'                 => ['nullable', 'string'],
-            //qualityOfWork
-            'qualityOfWorkScore1'                   => ['required', 'numeric'],
-            'qualityOfWorkScore2'                   => ['required', 'numeric'],
-            'qualityOfWorkScore3'                   => ['required', 'numeric'],
-            'qualityOfWorkScore4'                   => ['required', 'numeric'],
-            'qualityOfWorkScore5'                   => ['required', 'numeric'],
-            'qualityOfWorkScore6'                   => ['required', 'numeric'],
-            'qualityOfWorkScore7'                   => ['required', 'numeric'],
-            'qualityOfWorkScore8'                   => ['required', 'numeric'],
-            'qualityOfWorkScore9'                   => ['required', 'numeric'],
-            'qualityOfWorkScore10'                  => ['required', 'numeric'],
-            'qualityOfWorkScore11'                  => ['required', 'numeric'],
-            'qualityOfWorkComments1'                => ['nullable', 'string'],
-            'qualityOfWorkComments2'                => ['nullable', 'string'],
-            'qualityOfWorkComments3'                => ['nullable', 'string'],
-            'qualityOfWorkComments4'                => ['nullable', 'string'],
-            'qualityOfWorkComments5'                => ['nullable', 'string'],
-            'qualityOfWorkComments6'                => ['nullable', 'string'],
-            'qualityOfWorkComments7'                => ['nullable', 'string'],
-            'qualityOfWorkComments8'                => ['nullable', 'string'],
-            'qualityOfWorkComments9'                => ['nullable', 'string'],
-            'qualityOfWorkComments10'               => ['nullable', 'string'],
-            'qualityOfWorkComments11'               => ['nullable', 'string'],
-            //adaptability
-            'adaptabilityScore1'                    => ['required', 'numeric'],
-            'adaptabilityScore2'                    => ['required', 'numeric'],
-            'adaptabilityScore3'                    => ['required', 'numeric'],
-            'adaptabilityComments1'                 => ['nullable', 'string'],
-            'adaptabilityComments2'                 => ['nullable', 'string'],
-            'adaptabilityComments3'                 => ['nullable', 'string'],
-            //teamwork
-            'teamworkScore1'                        => ['required', 'numeric'],
-            'teamworkScore2'                        => ['required', 'numeric'],
-            'teamworkScore3'                        => ['required', 'numeric'],
-            'teamworkComments1'                     => ['nullable', 'string'],
-            'teamworkComments2'                     => ['nullable', 'string'],
-            'teamworkComments3'                     => ['nullable', 'string'],
-            //reliability
-            'reliabilityScore1'                     => ['required', 'numeric'],
-            'reliabilityScore2'                     => ['required', 'numeric'],
-            'reliabilityScore3'                     => ['required', 'numeric'],
-            'reliabilityScore4'                     => ['required', 'numeric'],
-            'reliabilityComments1'                  => ['nullable', 'string'],
-            'reliabilityComments2'                  => ['nullable', 'string'],
-            'reliabilityComments3'                  => ['nullable', 'string'],
-            'reliabilityComments4'                  => ['nullable', 'string'],
-            //ethical
-            'ethicalScore1'                         => ['required', 'numeric'],
-            'ethicalScore2'                         => ['required', 'numeric'],
-            'ethicalScore3'                         => ['required', 'numeric'],
-            'ethicalScore4'                         => ['required', 'numeric'],
-            'ethicalExplanation1'                   => ['nullable', 'string'],
-            'ethicalExplanation2'                   => ['nullable', 'string'],
-            'ethicalExplanation3'                   => ['nullable', 'string'],
-            'ethicalExplanation4'                   => ['nullable', 'string'],
-            //customerService
-            'customerServiceScore1'                 => ['required', 'numeric'],
-            'customerServiceScore2'                 => ['required', 'numeric'],
-            'customerServiceScore3'                 => ['required', 'numeric'],
-            'customerServiceScore4'                 => ['required', 'numeric'],
-            'customerServiceScore5'                 => ['required', 'numeric'],
-            'customerServiceExplanation1'           => ['nullable', 'string'],
-            'customerServiceExplanation2'           => ['nullable', 'string'],
-            'customerServiceExplanation3'           => ['nullable', 'string'],
-            'customerServiceExplanation4'           => ['nullable', 'string'],
-            'customerServiceExplanation5'           => ['nullable', 'string'],
-            //managerialSkills
-            'managerialSkillScore1'                 => ['required', 'numeric'],
-            'managerialSkillScore2'                 => ['required', 'numeric'],
-            'managerialSkillScore3'                 => ['required', 'numeric'],
-            'managerialSkillScore4'                 => ['required', 'numeric'],
-            'managerialSkillScore5'                 => ['required', 'numeric'],
-            'managerialSkillScore6'                 => ['required', 'numeric'],
-            'managerialSkillExplanation1'           => ['nullable', 'string'],
-            'managerialSkillExplanation2'           => ['nullable', 'string'],
-            'managerialSkillExplanation3'           => ['nullable', 'string'],
-            'managerialSkillExplanation4'           => ['nullable', 'string'],
-            'managerialSkillExplanation5'           => ['nullable', 'string'],
-            'managerialSkillExplanation6'           => ['nullable', 'string'],
-
-        ]);
 
         $submission  =  UsersEvaluation::create([
             'employee_id'                       =>  $user->id,
             'evaluator_id'                      =>  $auth_user_evaluator->id,
+            'evaluationType'                    =>  'BranchBasic',
             'rating'                            =>  $validated['rating'],
             'coverageFrom'                      =>  $validated['coverageFrom'],
             'coverageTo'                        =>  $validated['coverageTo'],
@@ -495,76 +324,14 @@ class UsersEvaluationController extends Controller
         ], 201);
     }
 
-    public function HoRankNFile(Request $request, User $user)
+    public function HoRankNFile(HoRankNFile $validated, User $user)
     {
         $auth_user_evaluator = Auth::user();
-
-        $validated  = $request->validate([
-            //main
-            'rating'                                => ['required', 'numeric'],
-            'coverageFrom'                          => ['required', 'date'],
-            'coverageTo'                            => ['required', 'date'],
-            'reviewTypeProbationary'                => ['nullable', 'numeric'],
-            'reviewTypeRegular'                     => ['nullable', 'string'],
-            'reviewTypeOthersImprovement'           => ['nullable', 'boolean'],
-            'reviewTypeOthersCustom'                => ['nullable', 'string'],
-            'priorityArea1'                         => ['nullable', 'string'],
-            'priorityArea2'                         => ['nullable', 'string'],
-            'priorityArea3'                         => ['nullable', 'string'],
-            'remarks'                               => ['nullable', 'string'],
-            //jobKnowledge
-            'jobKnowledgeScore1'                    => ['required', 'numeric'],
-            'jobKnowledgeScore2'                    => ['required', 'numeric'],
-            'jobKnowledgeScore3'                    => ['required', 'numeric'],
-            'jobKnowledgeComments1'                 => ['nullable', 'string'],
-            'jobKnowledgeComments2'                 => ['nullable', 'string'],
-            'jobKnowledgeComments3'                 => ['nullable', 'string'],
-            //qualityOfWork
-            'qualityOfWorkScore1'                   => ['required', 'numeric'],
-            'qualityOfWorkScore2'                   => ['required', 'numeric'],
-            'qualityOfWorkScore3'                   => ['required', 'numeric'],
-            'qualityOfWorkScore4'                   => ['required', 'numeric'],
-            'qualityOfWorkComments1'                => ['nullable', 'string'],
-            'qualityOfWorkComments2'                => ['nullable', 'string'],
-            'qualityOfWorkComments3'                => ['nullable', 'string'],
-            'qualityOfWorkComments4'                => ['nullable', 'string'],
-            //adaptability
-            'adaptabilityScore1'                    => ['required', 'numeric'],
-            'adaptabilityScore2'                    => ['required', 'numeric'],
-            'adaptabilityScore3'                    => ['required', 'numeric'],
-            'adaptabilityComments1'                 => ['nullable', 'string'],
-            'adaptabilityComments2'                 => ['nullable', 'string'],
-            'adaptabilityComments3'                 => ['nullable', 'string'],
-            //teamwork
-            'teamworkScore1'                        => ['required', 'numeric'],
-            'teamworkScore2'                        => ['required', 'numeric'],
-            'teamworkScore3'                        => ['required', 'numeric'],
-            'teamworkComments1'                     => ['nullable', 'string'],
-            'teamworkComments2'                     => ['nullable', 'string'],
-            'teamworkComments3'                     => ['nullable', 'string'],
-            //reliability
-            'reliabilityScore1'                     => ['required', 'numeric'],
-            'reliabilityScore2'                     => ['required', 'numeric'],
-            'reliabilityScore3'                     => ['required', 'numeric'],
-            'reliabilityScore4'                     => ['required', 'numeric'],
-            'reliabilityComments1'                  => ['nullable', 'string'],
-            'reliabilityComments2'                  => ['nullable', 'string'],
-            'reliabilityComments3'                  => ['nullable', 'string'],
-            'reliabilityComments4'                  => ['nullable', 'string'],
-            //ethical
-            'ethicalScore1'                         => ['required', 'numeric'],
-            'ethicalScore2'                         => ['required', 'numeric'],
-            'ethicalScore3'                         => ['required', 'numeric'],
-            'ethicalScore4'                         => ['required', 'numeric'],
-            'ethicalExplanation1'                   => ['nullable', 'string'],
-            'ethicalExplanation2'                   => ['nullable', 'string'],
-            'ethicalExplanation3'                   => ['nullable', 'string'],
-            'ethicalExplanation4'                   => ['nullable', 'string'],
-        ]);
 
         $submission  =  UsersEvaluation::create([
             'employee_id'                       =>  $user->id,
             'evaluator_id'                      =>  $auth_user_evaluator->id,
+            'evaluationType'                    =>  'HoRankNFile',
             'rating'                            =>  $validated['rating'],
             'coverageFrom'                      =>  $validated['coverageFrom'],
             'coverageTo'                        =>  $validated['coverageTo'],
@@ -663,89 +430,14 @@ class UsersEvaluationController extends Controller
     }
 
 
-    public function HoBasic(Request $request, User $user)
+    public function HoBasic(HoBasic $validated, User $user)
     {
         $auth_user_evaluator = Auth::user();
-
-        $validated  = $request->validate([
-            //main
-            'rating'                                => ['required', 'numeric'],
-            'coverageFrom'                          => ['required', 'date'],
-            'coverageTo'                            => ['required', 'date'],
-            'reviewTypeProbationary'                => ['nullable', 'numeric'],
-            'reviewTypeRegular'                     => ['nullable', 'string'],
-            'reviewTypeOthersImprovement'           => ['nullable', 'boolean'],
-            'reviewTypeOthersCustom'                => ['nullable', 'string'],
-            'priorityArea1'                         => ['nullable', 'string'],
-            'priorityArea2'                         => ['nullable', 'string'],
-            'priorityArea3'                         => ['nullable', 'string'],
-            'remarks'                               => ['nullable', 'string'],
-            //jobKnowledge
-            'jobKnowledgeScore1'                    => ['required', 'numeric'],
-            'jobKnowledgeScore2'                    => ['required', 'numeric'],
-            'jobKnowledgeScore3'                    => ['required', 'numeric'],
-            'jobKnowledgeComments1'                 => ['nullable', 'string'],
-            'jobKnowledgeComments2'                 => ['nullable', 'string'],
-            'jobKnowledgeComments3'                 => ['nullable', 'string'],
-            //qualityOfWork
-            'qualityOfWorkScore1'                   => ['required', 'numeric'],
-            'qualityOfWorkScore2'                   => ['required', 'numeric'],
-            'qualityOfWorkScore3'                   => ['required', 'numeric'],
-            'qualityOfWorkScore4'                   => ['required', 'numeric'],
-            'qualityOfWorkComments1'                => ['nullable', 'string'],
-            'qualityOfWorkComments2'                => ['nullable', 'string'],
-            'qualityOfWorkComments3'                => ['nullable', 'string'],
-            'qualityOfWorkComments4'                => ['nullable', 'string'],
-            //adaptability
-            'adaptabilityScore1'                    => ['required', 'numeric'],
-            'adaptabilityScore2'                    => ['required', 'numeric'],
-            'adaptabilityScore3'                    => ['required', 'numeric'],
-            'adaptabilityComments1'                 => ['nullable', 'string'],
-            'adaptabilityComments2'                 => ['nullable', 'string'],
-            'adaptabilityComments3'                 => ['nullable', 'string'],
-            //teamwork
-            'teamworkScore1'                        => ['required', 'numeric'],
-            'teamworkScore2'                        => ['required', 'numeric'],
-            'teamworkScore3'                        => ['required', 'numeric'],
-            'teamworkComments1'                     => ['nullable', 'string'],
-            'teamworkComments2'                     => ['nullable', 'string'],
-            'teamworkComments3'                     => ['nullable', 'string'],
-            //reliability
-            'reliabilityScore1'                     => ['required', 'numeric'],
-            'reliabilityScore2'                     => ['required', 'numeric'],
-            'reliabilityScore3'                     => ['required', 'numeric'],
-            'reliabilityScore4'                     => ['required', 'numeric'],
-            'reliabilityComments1'                  => ['nullable', 'string'],
-            'reliabilityComments2'                  => ['nullable', 'string'],
-            'reliabilityComments3'                  => ['nullable', 'string'],
-            'reliabilityComments4'                  => ['nullable', 'string'],
-            //ethical
-            'ethicalScore1'                         => ['required', 'numeric'],
-            'ethicalScore2'                         => ['required', 'numeric'],
-            'ethicalScore3'                         => ['required', 'numeric'],
-            'ethicalScore4'                         => ['required', 'numeric'],
-            'ethicalExplanation1'                   => ['nullable', 'string'],
-            'ethicalExplanation2'                   => ['nullable', 'string'],
-            'ethicalExplanation3'                   => ['nullable', 'string'],
-            'ethicalExplanation4'                   => ['nullable', 'string'],
-            //managerialSkills
-            'managerialSkillScore1'                 => ['required', 'numeric'],
-            'managerialSkillScore2'                 => ['required', 'numeric'],
-            'managerialSkillScore3'                 => ['required', 'numeric'],
-            'managerialSkillScore4'                 => ['required', 'numeric'],
-            'managerialSkillScore5'                 => ['required', 'numeric'],
-            'managerialSkillScore6'                 => ['required', 'numeric'],
-            'managerialSkillExplanation1'           => ['nullable', 'string'],
-            'managerialSkillExplanation2'           => ['nullable', 'string'],
-            'managerialSkillExplanation3'           => ['nullable', 'string'],
-            'managerialSkillExplanation4'           => ['nullable', 'string'],
-            'managerialSkillExplanation5'           => ['nullable', 'string'],
-            'managerialSkillExplanation6'           => ['nullable', 'string'],
-        ]);
 
         $submission  =  UsersEvaluation::create([
             'employee_id'                       =>  $user->id,
             'evaluator_id'                      =>  $auth_user_evaluator->id,
+            'evaluationType'                    =>  'HoBasic',
             'rating'                            =>  $validated['rating'],
             'coverageFrom'                      =>  $validated['coverageFrom'],
             'coverageTo'                        =>  $validated['coverageTo'],
@@ -857,7 +549,8 @@ class UsersEvaluationController extends Controller
      */
     public function show(UsersEvaluation $usersEvaluation)
     {
-        $user_eval = $usersEvaluation->load(
+
+        $relations = [
             'employee',
             'employee.branches',
             'employee.positions',
@@ -870,8 +563,22 @@ class UsersEvaluationController extends Controller
             'teamworks',
             'reliabilities',
             'ethicals',
-            'customerServices'
-        );
+        ];
+
+        if ($usersEvaluation->evaluationType === 'BranchBasic') {
+            $relations[] = 'customerServices';
+            $relations[] = 'managerialSkills';
+        }
+
+        if ($usersEvaluation->evaluationType === 'BranchRankNFile') {
+            $relations[] = 'customerServices';
+        }
+
+        if ($usersEvaluation->evaluationType === 'HoBasic') {
+            $relations[] = 'managerialSkills';
+        }
+
+        $user_eval = $usersEvaluation->load($relations);
 
         return response()->json([
             'user_eval'         =>   $user_eval
