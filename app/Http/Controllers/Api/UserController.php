@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Position;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -738,6 +739,10 @@ class UserController extends Controller
     //destroy || delete
     public function deleteUser(User $user)
     {
+        UsersEvaluation::where('employee_id', $user->id)
+            ->orWhere('evaluator_id', $user->id)
+            ->delete();
+
         $user->delete();
 
         return response()->json([

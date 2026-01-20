@@ -68,6 +68,41 @@ class UsersEvaluation extends Model
         return $this->hasMany(ManagerialSkills::class, 'users_evaluation_id');
     }
 
+    public function loadRelations()
+    {
+        $relations = [
+            'employee',
+            'employee.branches',
+            'employee.positions',
+            'evaluator',
+            'evaluator.branches',
+            'evaluator.positions',
+            'jobKnowledge',
+            'adaptability',
+            'qualityOfWorks',
+            'teamworks',
+            'reliabilities',
+            'ethicals',
+        ];
+
+        if ($this->evaluationType === 'BranchBasic') {
+            $relations[] = 'customerServices';
+            $relations[] = 'managerialSkills';
+        }
+
+        if ($this->evaluationType === 'BranchRankNFile') {
+            $relations[] = 'customerServices';
+        }
+
+        if ($this->evaluationType === 'HoBasic') {
+            $relations[] = 'managerialSkills';
+        }
+
+        $user_eval = $this->load($relations);
+
+        return $user_eval;
+    }
+
     #[Scope]
     public function search($query, $search)
     {

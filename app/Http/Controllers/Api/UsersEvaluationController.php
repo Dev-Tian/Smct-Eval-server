@@ -549,39 +549,8 @@ class UsersEvaluationController extends Controller
      */
     public function show(UsersEvaluation $usersEvaluation)
     {
-
-        $relations = [
-            'employee',
-            'employee.branches',
-            'employee.positions',
-            'evaluator',
-            'evaluator.branches',
-            'evaluator.positions',
-            'jobKnowledge',
-            'adaptability',
-            'qualityOfWorks',
-            'teamworks',
-            'reliabilities',
-            'ethicals',
-        ];
-
-        if ($usersEvaluation->evaluationType === 'BranchBasic') {
-            $relations[] = 'customerServices';
-            $relations[] = 'managerialSkills';
-        }
-
-        if ($usersEvaluation->evaluationType === 'BranchRankNFile') {
-            $relations[] = 'customerServices';
-        }
-
-        if ($usersEvaluation->evaluationType === 'HoBasic') {
-            $relations[] = 'managerialSkills';
-        }
-
-        $user_eval = $usersEvaluation->load($relations);
-
         return response()->json([
-            'user_eval'         =>   $user_eval
+            'user_eval'         =>   $usersEvaluation->loadRelations()
         ], 200);
     }
 
