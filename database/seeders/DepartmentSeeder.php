@@ -21,7 +21,6 @@ class DepartmentSeeder extends Seeder
             ['department_name' => 'Accounting',                 'created_at' => now(), 'updated_at' => now()],
             ['department_name' => 'Tax and Legal',              'created_at' => now(), 'updated_at' => now()],
             ['department_name' => 'IT',                         'created_at' => now(), 'updated_at' => now()],
-
         ];
         DB::table('departments')->insert($departments);
     }

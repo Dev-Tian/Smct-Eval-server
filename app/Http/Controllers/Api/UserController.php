@@ -539,13 +539,13 @@ class UserController extends Controller
 
 
     //update
-    public function updateUser(User $user, Request $request)
+    public function updateUser(Request $request, User $user)
     {
         $validate = $request->validate([
-            'fname'                     => ['required', 'string', 'alpha'],
-            'lname'                     => ['required', 'string', 'alpha'],
+            'fname'                     => ['required', 'string'],
+            'lname'                     => ['required', 'string'],
             'date_hired'                => ['required', 'date'],
-            'email'                     => ['required', Rule::unique('users', 'email')->ignore($user->id), 'email', 'string', 'lowercase'],
+            'email'                     => ['required', 'string', 'email', 'lowercase', Rule::unique('users', 'email')->ignore($user->id)],
             'position_id'               => ['required', Rule::exists('positions', 'id')],
             'branch_id'                 => ['required', Rule::exists('branches', 'id')],
             'department_id'             => ['nullable', Rule::exists('departments', 'id')],
