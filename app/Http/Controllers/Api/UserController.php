@@ -389,7 +389,7 @@ class UserController extends Controller
             $isHO = $manager->branches()->where('branch_id', 126)->exists();
 
             //area manager
-            if ($manager->position_id === 16 && empty($manager->department_id)) {
+            if ($manager->position_id === 16) {
                 $branches = $manager->branches()->pluck('branches.id');
 
                 $branchHeads = User::with('departments', 'branches', 'positions', 'roles')
