@@ -375,18 +375,16 @@ class UserController extends Controller
         $position_filter = $request->input('position_filter');
         $perPage = $request->input('per_page', 10);
 
-
-
         //first test if it is manager
-        $isManagerOrSupervisor =
-            $manager->positions()
-            ->where(function ($q) {
-                $q->where('label', 'LIKE', '%manager%')
-                    ->orWhere('label', 'LIKE', '%supervisor%');
-            })
-            ->exists();
+        // $isManagerOrSupervisor =
+        //     $manager->positions()
+        //     ->where(function ($q) {
+        //         $q->where('label', 'LIKE', '%manager%')
+        //             ->orWhere('label', 'LIKE', '%supervisor%');
+        //     })
+        //     ->exists();
 
-        if ($isManagerOrSupervisor) {
+        if ($manager->roles()->where('name', 'evaluator')->exists()) {
 
             $isHO = $manager->branches()->where('branch_id', 126)->exists();
 
@@ -468,7 +466,7 @@ class UserController extends Controller
                         $q->where('position_id', $position_filter)
                     )
                     ->where('id', "!=", $manager->id)
-                    ->where('position_id', "!=", 16) // <--- area manager id
+                    ->whereNotIn('position_id', [16, 35, 36, 37, 38])
                     ->search($search)
                     ->latest('updated_at')
                     ->paginate($perPage);
@@ -485,7 +483,7 @@ class UserController extends Controller
                             $query->whereIn('branch_id', $branches)
                         )
                         ->where('id', "!=", $manager->id)
-                        ->where('position_id', "!=", 16) // <--- area manager id
+                        ->whereNotIn('position_id', [16, 35, 36, 37, 38])
                 )
                     ->get();
 
@@ -500,6 +498,7 @@ class UserController extends Controller
                 $employees = User::with('departments', 'branches', 'positions', "roles")
                     ->where('is_active', "active")
                     ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
+                    ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%')
                     ->when(
                         $position_filter,
                         fn($q)
@@ -518,6 +517,7 @@ class UserController extends Controller
                     =>
                     $q->where('is_active', 'active')
                         ->whereRelation('branches', 'branch_id', 126)
+                        ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%')
                         ->whereNot('id', $manager->id)
                         ->where('department_id', $manager->department_id)
                 )
@@ -528,6 +528,61 @@ class UserController extends Controller
                     'positions' => $positions
                 ], 200);
             }
+
+            // for employees act like branch manager
+            if (
+                !$isHO &&
+                empty($manager->department_id) &&
+                $manager->position_id !== 16 &&
+                ($manager->position_id !== 35 ||
+                    $manager->position_id !== 36 ||
+                    $manager->position_id !== 37 ||
+                    $manager->position_id !== 38)
+            ) {
+                $branches = $manager->branches()->pluck('branches.id');
+
+                $employees = User::with('departments', 'branches', 'positions', 'roles')
+                    ->where('is_active', "active")
+                    ->whereHas(
+                        'branches',
+                        fn($query)
+                        =>
+                        $query->whereIn('branch_id', $branches)
+                    )
+                    ->when(
+                        $position_filter,
+                        fn($q)
+                        =>
+                        $q->where('position_id', $position_filter)
+                    )
+                    ->where('id', "!=", $manager->id)
+                    ->whereNotIn('position_id', [16, 35, 36, 37, 38])
+                    ->search($search)
+                    ->latest('updated_at')
+                    ->paginate($perPage);
+
+                $positions = Position::whereRelation(
+                    'users',
+                    fn($q)
+                    =>
+                    $q->where('is_active', "active")
+                        ->whereHas(
+                            'branches',
+                            fn($query)
+                            =>
+                            $query->whereIn('branch_id', $branches)
+                        )
+                        ->where('id', "!=", $manager->id)
+                        ->whereNotIn('position_id', [16, 35, 36, 37, 38])
+                )
+                    ->get();
+
+                return response()->json([
+                    'employees' => $employees,
+                    'positions' => $positions
+                ], 200);
+            }
+
             return response()->json([
                 'message'   => "failed conditions"
             ]);
