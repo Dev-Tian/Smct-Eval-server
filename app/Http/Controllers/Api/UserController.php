@@ -620,7 +620,7 @@ class UserController extends Controller
             'date_hired'                => $validate['date_hired'],
             'email'                     => $validate['email'],
             'position_id'               => $validate['position_id'],
-            'department_id'             => $validate['department_id'] ?? $user->department_id ?? null,
+            'department_id'             => $validate['department_id'] ?? null,
             'username'                  => $validate['username'],
             'contact'                   => $validate['contact'],
             'contact'                   => $validate['contact'],
