@@ -91,7 +91,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('approvedByEmployee/{usersEvaluation}', 'approvedByEmployee');
                 Route::post('deleteEval/{usersEvaluation}', 'destroy');
                 //submissions
-                //brach rank n file
+                //branch rank n file
                 Route::post('BranchRankNFile/{user}', 'BranchRankNFile');
                 //branch basic
                 Route::post('BranchBasic/{user}', 'BranchBasic');

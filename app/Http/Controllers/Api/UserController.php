@@ -375,221 +375,79 @@ class UserController extends Controller
         $position_filter = $request->input('position_filter');
         $perPage = $request->input('per_page', 10);
 
-        //first test if it is manager
-        // $isManagerOrSupervisor =
-        //     $manager->positions()
-        //     ->where(function ($q) {
-        //         $q->where('label', 'LIKE', '%manager%')
-        //             ->orWhere('label', 'LIKE', '%supervisor%');
-        //     })
-        //     ->exists();
+        if (!$manager->roles()->where('name', 'evaluator')->exists()) {
+            return response()->json([
+                'error' => 'Auth user is not a evaluator.',
+                $manager->roles()->pluck('name')
+            ], 401);
+        }
 
-        if ($manager->roles()->where('name', 'evaluator')->exists()) {
+        //check if true conditions
+        $isHO = $manager->branches()->where('branch_id', 126)->exists();
+        $hasDepartment = !empty($manager->department_id);
+        $isAreaManager = $manager->position_id === 16;
+        //array collections
+        $branches = $manager->branches()->pluck('branches.id');
+        $areaManagerPositionId = [16];
+        $branchManagerPositionsId = [35, 36, 37, 38];
 
-            $isHO = $manager->branches()->where('branch_id', 126)->exists();
-
-            //area manager
-            if ($manager->position_id === 16) {
-                $branches = $manager->branches()->pluck('branches.id');
-
-                $branchHeads = User::with('departments', 'branches', 'positions', 'roles')
-                    ->where('is_active', "active")
-                    ->whereHas(
-                        'branches',
-                        fn($query)
-                        =>
-                        $query->whereIn('branch_id', $branches)
-                    )
-                    ->when(
-                        $position_filter,
-                        fn($q)
-                        =>
-                        $q->where('position_id', $position_filter)
-                    )
-                    ->where('id', "!=", $manager->id)
-                    ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
-                    ->search($search)
-                    ->latest('updated_at')
-                    ->paginate($perPage);
-
-                $positions = Position::whereRelation(
-                    'users',
-                    fn($q)
-                    =>
-                    $q->where('is_active', "active")
-                        ->whereHas(
-                            'branches',
-                            fn($query)
-                            =>
-                            $query->whereIn('branch_id', $branches)
-                        )
-                        ->where('id', "!=", $manager->id)
-                        ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
-                )
-                    ->get();
-
-                return response()->json([
-                    'employees' => $branchHeads,
-                    'positions' => $positions
-                ], 200);
-            }
-
-            //branch manager/supervisor
-            if (
-                !$isHO
-                &&
-                (
-                    $manager->position_id === 35 ||
-                    $manager->position_id === 36 ||
-                    $manager->position_id === 37 ||
-                    $manager->position_id === 38
-                )
-                &&
-                empty($manager->department_id)
-                &&
-                $manager->position_id !== 16
-            ) {
-                $branches = $manager->branches()->pluck('branches.id');
-
-                $employees = User::with('departments', 'branches', 'positions', 'roles')
-                    ->where('is_active', "active")
-                    ->whereHas(
-                        'branches',
-                        fn($query)
-                        =>
-                        $query->whereIn('branch_id', $branches)
-                    )
-                    ->when(
-                        $position_filter,
-                        fn($q)
-                        =>
-                        $q->where('position_id', $position_filter)
-                    )
-                    ->where('id', "!=", $manager->id)
-                    ->whereNotIn('position_id', [16, 35, 36, 37, 38])
-                    ->search($search)
-                    ->latest('updated_at')
-                    ->paginate($perPage);
-
-                $positions = Position::whereRelation(
-                    'users',
-                    fn($q)
-                    =>
-                    $q->where('is_active', "active")
-                        ->whereHas(
-                            'branches',
-                            fn($query)
-                            =>
-                            $query->whereIn('branch_id', $branches)
-                        )
-                        ->where('id', "!=", $manager->id)
-                        ->whereNotIn('position_id', [16, 35, 36, 37, 38])
-                )
-                    ->get();
-
-                return response()->json([
-                    'employees' => $employees,
-                    'positions' => $positions
-                ], 200);
-            }
-
-            //Department manager
-            if ($isHO  && !empty($manager->department_id)) {
-                $employees = User::with('departments', 'branches', 'positions', "roles")
-                    ->where('is_active', "active")
-                    ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
-                    ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%')
-                    ->when(
-                        $position_filter,
-                        fn($q)
-                        =>
-                        $q->where('position_id', $position_filter)
-                    )
-                    ->whereNot('id', $manager->id)
-                    ->where('department_id', $manager->department_id) // <--- must the same department
-                    ->search($search)
-                    ->latest('updated_at')
-                    ->paginate($perPage);
-
-                $positions = Position::whereRelation(
-                    'users',
-                    fn($q)
-                    =>
-                    $q->where('is_active', 'active')
-                        ->whereRelation('branches', 'branch_id', 126)
-                        ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%')
-                        ->whereNot('id', $manager->id)
-                        ->where('department_id', $manager->department_id)
-                )
-                    ->get();
-
-                return response()->json([
-                    'employees' => $employees,
-                    'positions' => $positions
-                ], 200);
-            }
-
-            // for employees act like branch manager
-            if (
-                !$isHO &&
-                empty($manager->department_id) &&
-                $manager->position_id !== 16 &&
-                ($manager->position_id !== 35 ||
-                    $manager->position_id !== 36 ||
-                    $manager->position_id !== 37 ||
-                    $manager->position_id !== 38)
-            ) {
-                $branches = $manager->branches()->pluck('branches.id');
-
-                $employees = User::with('departments', 'branches', 'positions', 'roles')
-                    ->where('is_active', "active")
-                    ->whereHas(
-                        'branches',
-                        fn($query)
-                        =>
-                        $query->whereIn('branch_id', $branches)
-                    )
-                    ->when(
-                        $position_filter,
-                        fn($q)
-                        =>
-                        $q->where('position_id', $position_filter)
-                    )
-                    ->where('id', "!=", $manager->id)
-                    ->whereNotIn('position_id', [16, 35, 36, 37, 38])
-                    ->search($search)
-                    ->latest('updated_at')
-                    ->paginate($perPage);
-
-                $positions = Position::whereRelation(
-                    'users',
-                    fn($q)
-                    =>
-                    $q->where('is_active', "active")
-                        ->whereHas(
-                            'branches',
-                            fn($query)
-                            =>
-                            $query->whereIn('branch_id', $branches)
-                        )
-                        ->where('id', "!=", $manager->id)
-                        ->whereNotIn('position_id', [16, 35, 36, 37, 38])
-                )
-                    ->get();
-
-                return response()->json([
-                    'employees' => $employees,
-                    'positions' => $positions
-                ], 200);
-            }
-
+        if ($isAreaManager) {
+            $userQuery = User::whereIn('position_id', $branchManagerPositionsId);
+        } elseif (!$isHO && in_array($manager->position_id, $branchManagerPositionsId) && !$hasDepartment) {
+            $userQuery = User::whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+        } elseif ($isHO && $hasDepartment) {
+            $userQuery = User::where('department_id', $manager->department_id)
+                ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%');
+        } elseif (!$isHO && !$hasDepartment && !in_array($manager->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId))) {
+            $userQuery = User::whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+        } else {
             return response()->json([
                 'message'   => "failed conditions"
             ]);
         }
+
+        // final query
+        $userQuery->with('departments', 'branches', 'positions', 'roles')
+            ->where('is_active', "active")
+            ->whereHas(
+                'branches',
+                fn($query)
+                =>
+                $query->whereIn('branch_id', $branches)
+            )
+            ->when(
+                $position_filter,
+                fn($q)
+                =>
+                $q->where('position_id', $position_filter)
+            )
+            ->where('id', "!=", $manager->id)
+            ->search($search)
+            ->latest('updated_at');
+
+        $branchHeads = $userQuery->paginate($perPage);
+
+        $positions = Position::whereRelation('users', function ($q) use ($branches, $manager, $isAreaManager, $branchManagerPositionsId, $areaManagerPositionId, $isHO, $hasDepartment) {
+            $q->where('is_active', 'active')
+                ->whereHas('branches', fn($query) => $query->whereIn('branch_id', $branches))
+                ->where('id', '!=', $manager->id);
+
+            if ($isAreaManager) {
+                $q->whereIn('position_id', $branchManagerPositionsId);
+            } elseif (!$isHO && in_array($manager->position_id, $branchManagerPositionsId) && !$hasDepartment) {
+                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+            } elseif ($isHO && $hasDepartment) {
+                $q->where('department_id', $manager->department_id)
+                    ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%');
+            } elseif (!$isHO && !$hasDepartment && !in_array($manager->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId))) {
+                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+            }
+        })->get();
+
         return response()->json([
-            'error' => 'Auth user is not a evaluator.'
-        ], 401);
+            'employees' => $branchHeads,
+            'positions' => $positions
+        ], 200);
     }
 
 
@@ -731,6 +589,7 @@ class UserController extends Controller
         $user->notify(new EvalNotifications("Your signature reset request has been approved."));
 
         return response()->json([
+
             'message'       =>  'Approved'
         ], 201);
     }
