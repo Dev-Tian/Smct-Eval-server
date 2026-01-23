@@ -80,7 +80,7 @@ class User extends Authenticatable
 
     public function getFullNameAttribute()
     {
-        return $this->fname . $this->lname;
+        return $this->fname . " " . $this->lname;
     }
 
     #[Scope]

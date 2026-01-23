@@ -382,7 +382,7 @@ class UserController extends Controller
             ], 401);
         }
 
-        //check if true conditions
+        //boolean conditions
         $isHO = $manager->branches()->where('branch_id', 126)->exists();
         $hasDepartment = !empty($manager->department_id);
         $isAreaManager = $manager->position_id === 16;
@@ -427,22 +427,26 @@ class UserController extends Controller
 
         $branchHeads = $userQuery->paginate($perPage);
 
-        $positions = Position::whereRelation('users', function ($q) use ($branches, $manager, $isAreaManager, $branchManagerPositionsId, $areaManagerPositionId, $isHO, $hasDepartment) {
-            $q->where('is_active', 'active')
-                ->whereHas('branches', fn($query) => $query->whereIn('branch_id', $branches))
-                ->where('id', '!=', $manager->id);
+        $positions = Position::whereRelation(
+            'users',
+            function ($q)
+            use ($branches, $manager, $isAreaManager, $branchManagerPositionsId, $areaManagerPositionId, $isHO, $hasDepartment) {
+                $q->where('is_active', 'active')
+                    ->whereHas('branches', fn($query) => $query->whereIn('branch_id', $branches))
+                    ->where('id', '!=', $manager->id);
 
-            if ($isAreaManager) {
-                $q->whereIn('position_id', $branchManagerPositionsId);
-            } elseif (!$isHO && in_array($manager->position_id, $branchManagerPositionsId) && !$hasDepartment) {
-                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
-            } elseif ($isHO && $hasDepartment) {
-                $q->where('department_id', $manager->department_id)
-                    ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%');
-            } elseif (!$isHO && !$hasDepartment && !in_array($manager->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId))) {
-                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+                if ($isAreaManager) {
+                    $q->whereIn('position_id', $branchManagerPositionsId);
+                } elseif (!$isHO && in_array($manager->position_id, $branchManagerPositionsId) && !$hasDepartment) {
+                    $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+                } elseif ($isHO && $hasDepartment) {
+                    $q->where('department_id', $manager->department_id)
+                        ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%');
+                } elseif (!$isHO && !$hasDepartment && !in_array($manager->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId))) {
+                    $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+                }
             }
-        })->get();
+        )->get();
 
         return response()->json([
             'employees' => $branchHeads,
@@ -673,4 +677,5 @@ class UserController extends Controller
     //         'data'  =>  "success"
     //     ], 200);
     // }
+
 }
