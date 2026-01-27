@@ -31,15 +31,8 @@ class UsersEvaluationController extends Controller
         $quarter = $request->input('quarter');
         $year = $request->input('year');
 
-        $all_evaluations = UsersEvaluation::with(
-            'employee',
-            'employee.branches',
-            'employee.positions',
-            'evaluator',
-            'evaluator.branches',
-            'evaluator.positions',
-            'evaluator.roles'
-        )
+         $relations =  UsersEvaluation::relations();
+        $all_evaluations = UsersEvaluation::with($relations)
             ->orderBy('id', 'desc')
             ->search($search)
             ->when($status, fn($q)  => $q->where('status', $status))
@@ -549,8 +542,10 @@ class UsersEvaluationController extends Controller
      */
     public function show(UsersEvaluation $usersEvaluation)
     {
+        $relations =  $usersEvaluation->relations();
+
         return response()->json([
-            'user_eval'         =>   $usersEvaluation->loadRelations()
+            'user_eval'         =>   $usersEvaluation->load($relations)
         ], 200);
     }
 
@@ -563,21 +558,8 @@ class UsersEvaluationController extends Controller
         $year = $request->input('year');
 
         $user = Auth::user();
-        $user_eval = UsersEvaluation::with([
-            'employee',
-            'employee.branches',
-            'employee.positions',
-            'evaluator',
-            'evaluator.branches',
-            'evaluator.positions',
-            'jobKnowledge',
-            'adaptability',
-            'qualityOfWorks',
-            'teamworks',
-            'reliabilities',
-            'ethicals',
-            'customerServices'
-        ])
+        $relations = UsersEvaluation::relations();
+        $user_eval = UsersEvaluation::with($relations)
             ->where('employee_id', $user->id)
             ->search($search)
             ->when($status,  fn($q) =>  $q->where('status', $status))
@@ -615,21 +597,8 @@ class UsersEvaluationController extends Controller
         $year = $request->input('year');
 
         $user = Auth::user();
-        $user_eval = UsersEvaluation::with(
-            'employee',
-            'employee.branches',
-            'employee.positions',
-            'evaluator',
-            'evaluator.branches',
-            'evaluator.positions',
-            'jobKnowledge',
-            'adaptability',
-            'qualityOfWorks',
-            'teamworks',
-            'reliabilities',
-            'ethicals',
-            'customerServices'
-        )
+        $relations = UsersEvaluation::relations();
+        $user_eval = UsersEvaluation::with($relations)
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) =>  $q->where('status', $status))

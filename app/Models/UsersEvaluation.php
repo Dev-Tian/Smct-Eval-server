@@ -68,7 +68,7 @@ class UsersEvaluation extends Model
         return $this->hasMany(ManagerialSkills::class, 'users_evaluation_id');
     }
 
-    public function loadRelations()
+    public function relations():array
     {
         $relations = [
             'employee',
@@ -98,9 +98,7 @@ class UsersEvaluation extends Model
             $relations[] = 'managerialSkills';
         }
 
-        $user_eval = $this->load($relations);
-
-        return $user_eval;
+        return $relations;
     }
 
     #[Scope]
