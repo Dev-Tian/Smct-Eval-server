@@ -233,7 +233,7 @@ class UsersEvaluationController extends Controller
             ]);
         }
 
-        for ($i = 1; $i <= 11; $i++) {
+        for ($i = 1; $i <= 12; $i++) {
             $submission->qualityOfWorks()->create([
                 'users_evaluation_id'       => $submission->id,
                 'question_number'           => $i,

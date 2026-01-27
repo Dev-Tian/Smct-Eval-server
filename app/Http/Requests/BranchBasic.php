@@ -77,6 +77,7 @@ class BranchBasic extends FormRequest
             'qualityOfWorkScore9'                   => ['required', 'numeric'],
             'qualityOfWorkScore10'                  => ['required', 'numeric'],
             'qualityOfWorkScore11'                  => ['required', 'numeric'],
+            'qualityOfWorkScore12'                  => ['required', 'numeric'],
             'qualityOfWorkComments1'                => ['nullable', 'string'],
             'qualityOfWorkComments2'                => ['nullable', 'string'],
             'qualityOfWorkComments3'                => ['nullable', 'string'],
@@ -88,6 +89,7 @@ class BranchBasic extends FormRequest
             'qualityOfWorkComments9'                => ['nullable', 'string'],
             'qualityOfWorkComments10'               => ['nullable', 'string'],
             'qualityOfWorkComments11'               => ['nullable', 'string'],
+            'qualityOfWorkComments12'               => ['nullable', 'string'],
         ];
     }
 
