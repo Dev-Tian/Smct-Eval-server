@@ -622,8 +622,8 @@ class UserController extends Controller
         $user->update([
             'requestSignatureReset'     =>  false,
         ]);
-        $user->notify(new EvalNotifications("Unfortunately, your signature reset request has been declined."));
 
+        $user->notify(new EvalNotifications("Unfortunately, your signature reset request has been declined."));
 
         return response()->json([
             'message'       =>  'Rejected Successfully'
