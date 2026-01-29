@@ -513,6 +513,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'username'                 => ['nullable', 'string'],
             'email'                    => ['nullable', 'email'],
+            // 'signature'                => ['required'],
             'current_password'         => ['required', 'current_password:sanctum'],
             'new_password'             => ['nullable', 'required_with:confirm_password'],
             'confirm_password'         => ['nullable', 'required_with:new_password', 'same:new_password'],
@@ -587,15 +588,27 @@ class UserController extends Controller
 
     public function approvedSignatureReset(User $user)
     {
-        $user->update([
-            'approvedSignatureReset'     =>  true,
-        ]);
-        $user->notify(new EvalNotifications("Your signature reset request has been approved."));
+        if ($user->signature) {
+            if (Storage::disk('public')->fileExists($user->signature)) {
+                Storage::disk('public')->delete($user->signature);
+
+                $user->update([
+                    'approvedSignatureReset'     =>  true,
+                    'signature'                  => null
+                ]);
+                $user->notify(new EvalNotifications("Your signature reset request has been approved."));
+
+                return response()->json([
+
+                    'message'       =>  'Approved'
+                ], 201);
+            }
+        }
 
         return response()->json([
+            'message'       =>  "User signature not found"
+        ], 402);
 
-            'message'       =>  'Approved'
-        ], 201);
     }
 
     public function rejectSignatureReset(User $user)

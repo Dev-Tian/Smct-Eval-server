@@ -31,8 +31,15 @@ class UsersEvaluationController extends Controller
         $quarter = $request->input('quarter');
         $year = $request->input('year');
 
-         $relations =  UsersEvaluation::relations();
-        $all_evaluations = UsersEvaluation::with($relations)
+        $all_evaluations = UsersEvaluation::with(
+            'employee',
+            'employee.branches',
+            'employee.positions',
+            'evaluator',
+            'evaluator.branches',
+            'evaluator.positions',
+            'evaluator.roles'
+        )
             ->orderBy('id', 'desc')
             ->search($search)
             ->when($status, fn($q)  => $q->where('status', $status))
@@ -542,10 +549,8 @@ class UsersEvaluationController extends Controller
      */
     public function show(UsersEvaluation $usersEvaluation)
     {
-        $relations =  $usersEvaluation->relations();
-
         return response()->json([
-            'user_eval'         =>   $usersEvaluation->load($relations)
+            'user_eval'         =>   $usersEvaluation->loadRelations()
         ], 200);
     }
 
@@ -558,8 +563,21 @@ class UsersEvaluationController extends Controller
         $year = $request->input('year');
 
         $user = Auth::user();
-        $relations = UsersEvaluation::relations();
-        $user_eval = UsersEvaluation::with($relations)
+        $user_eval = UsersEvaluation::with([
+            'employee',
+            'employee.branches',
+            'employee.positions',
+            'evaluator',
+            'evaluator.branches',
+            'evaluator.positions',
+            'jobKnowledge',
+            'adaptability',
+            'qualityOfWorks',
+            'teamworks',
+            'reliabilities',
+            'ethicals',
+            'customerServices'
+        ])
             ->where('employee_id', $user->id)
             ->search($search)
             ->when($status,  fn($q) =>  $q->where('status', $status))
@@ -597,8 +615,21 @@ class UsersEvaluationController extends Controller
         $year = $request->input('year');
 
         $user = Auth::user();
-        $relations = UsersEvaluation::relations();
-        $user_eval = UsersEvaluation::with($relations)
+        $user_eval = UsersEvaluation::with(
+            'employee',
+            'employee.branches',
+            'employee.positions',
+            'evaluator',
+            'evaluator.branches',
+            'evaluator.positions',
+            'jobKnowledge',
+            'adaptability',
+            'qualityOfWorks',
+            'teamworks',
+            'reliabilities',
+            'ethicals',
+            'customerServices'
+        )
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) =>  $q->where('status', $status))
@@ -635,7 +666,7 @@ class UsersEvaluationController extends Controller
     {
         $usersEvaluation->update([
             'status'                => 'completed',
-            'employeeApprovedAt'    => now()
+            'employeeApprovedAt'    => Carbon::now()
         ]);
 
         $evaluator = User::findOrFail($usersEvaluation->evaluator_id);
@@ -665,7 +696,8 @@ class UsersEvaluationController extends Controller
             );
 
         return response()->json([
-            'message'       => 'Evaluation approved by employee successfully'
+            'message'       => 'Evaluation approved by employee successfully',
+            'data'          =>  $usersEvaluation->loadRelations()
         ], 200);
     }
 
