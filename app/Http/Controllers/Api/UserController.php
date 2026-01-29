@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
+use Symfony\Component\Mime\Message;
 
 class UserController extends Controller
 {
@@ -510,10 +511,15 @@ class UserController extends Controller
             ], 401);
         }
 
+        if(empty($request->signature) && empty($request->signature)){
+            return response()->json([
+                "message"       =>  "Signature is required"
+            ], 422);
+        }
+
         $validated = $request->validate([
             'username'                 => ['nullable', 'string'],
             'email'                    => ['nullable', 'email'],
-            // 'signature'                => ['required'],
             'current_password'         => ['required', 'current_password:sanctum'],
             'new_password'             => ['nullable', 'required_with:confirm_password'],
             'confirm_password'         => ['nullable', 'required_with:new_password', 'same:new_password'],
@@ -589,12 +595,12 @@ class UserController extends Controller
     public function approvedSignatureReset(User $user)
     {
         if ($user->signature) {
-            if (Storage::disk('public')->fileExists($user->signature)) {
+            if (Storage::disk('public')->exists($user->signature)) {
                 Storage::disk('public')->delete($user->signature);
 
                 $user->update([
                     'approvedSignatureReset'     =>  true,
-                    'signature'                  => null
+                    'signature'                  =>  null
                 ]);
                 $user->notify(new EvalNotifications("Your signature reset request has been approved."));
 

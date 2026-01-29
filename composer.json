@@ -20,6 +20,7 @@
     "require-dev": {
         "barryvdh/laravel-ide-helper": "*",
         "fakerphp/faker": "^1.23",
+        "friendsofphp/php-cs-fixer": "^3.93",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.25",
         "laravel/sail": "^1.41",
