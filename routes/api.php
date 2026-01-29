@@ -29,7 +29,7 @@ Route::get('departments', [DepartmentController::class, 'index']);
 
 //sanctum routes
 Route::get('/profile', function (Request $request) {
-    return $request->user()->load(
+   $user = $request->user()->load(
         [
             'roles',
             'departments',
@@ -37,8 +37,13 @@ Route::get('/profile', function (Request $request) {
             'positions',
             'notifications' => function($q) { $q->latest()->limit(20); },
         ]
-    )->loadCount('unreadNotifications as notification_counts');
+    );
+
+    $user->notification_counts = $user->unreadNotifications()->limit(20)->count();
+
+    return $user;
 })->middleware('auth:sanctum');
+
 
 Route::middleware('auth:sanctum')->group(
     function () {
