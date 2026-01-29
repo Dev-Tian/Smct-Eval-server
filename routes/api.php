@@ -35,10 +35,9 @@ Route::get('/profile', function (Request $request) {
             'departments',
             'branches',
             'positions',
-            'notifications'
+            'notifications' => function($q) { $q->latest()->limit(20); },
         ]
-    )
-        ->loadCount('unreadNotifications as notification_counts');
+    )->loadCount('unreadNotifications as notification_counts');
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(
