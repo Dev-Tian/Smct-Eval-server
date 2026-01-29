@@ -35,11 +35,13 @@ Route::get('/profile', function (Request $request) {
             'departments',
             'branches',
             'positions',
-            'notifications' => function($q) { $q->latest()->limit(20); },
+            'notifications' => function($q) { $q->latest()->limit(15); },
         ]
     );
 
-    $user->notification_counts = $user->unreadNotifications()->limit(20)->count();
+    $counts = $user->notifications()->latest()->limit(15)->get();
+
+    $user->notification_counts =  $counts->where("read_at", null)->count();
 
     return $user;
 })->middleware('auth:sanctum');
