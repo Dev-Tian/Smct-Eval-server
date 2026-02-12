@@ -214,6 +214,8 @@ class UserController extends Controller
                     );
                 }
             )
+            ->whereRelation('roles' , fn($q)=> $q->whereNot("name", "admin")
+            )
             ->whereNot('id', Auth::id())
             ->latest('updated_at')
             ->get('positions');
@@ -239,6 +241,8 @@ class UserController extends Controller
                 fn($status)
                 =>
                 $status->where('is_active', $status_filter)
+            )
+            ->whereRelation('roles' , fn($q)=> $q->whereNot("name", "admin")
             )
             ->search($search_filter)
             ->latest('updated_at')
@@ -280,6 +284,8 @@ class UserController extends Controller
                 fn($q)
                 =>
                 $q->whereRelation('departments', 'departments.id', $department_filter)
+            )
+            ->whereRelation('roles' , fn($q)=> $q->whereNot("name", "admin")
             )
             ->search($search_filter)
             ->latest('updated_at')
@@ -544,6 +550,10 @@ class UserController extends Controller
             if ($user->signature) {
                 if (Storage::disk('public')->exists($user->signature)) {
                     Storage::disk('public')->delete($user->signature);
+                }else{
+                return response()->json([
+                    "message"       =>  "signature not found"
+                    ],402);
                 }
             }
 
@@ -605,16 +615,18 @@ class UserController extends Controller
                 $user->notify(new EvalNotifications("Your signature reset request has been approved."));
 
                 return response()->json([
-
                     'message'       =>  'Approved'
                 ], 201);
+            }else{
+                return response()->json([
+                    "message"       =>  "User signature not found"
+                ]);
             }
         }
 
         return response()->json([
             'message'       =>  "User signature not found"
         ], 402);
-
     }
 
     public function rejectSignatureReset(User $user)

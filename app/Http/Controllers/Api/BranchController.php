@@ -53,9 +53,9 @@ class BranchController extends Controller
                 fn($q)
                 =>
                 $q->where('branch_code', 'LIKE', "%{$search}%")
-                    ->orWhere('branch_name', 'LIKE', "%{$search}%")
-                    ->orWhere('branch', 'LIKE', "%{$search}%")
-                    ->orWhere('acronym', 'LIKE', "%{$search}%")
+                   ->orWhere('branch_name', 'LIKE', "%{$search}%")
+                   ->orWhere('branch', 'LIKE', "%{$search}%")
+                   ->orWhere('acronym', 'LIKE', "%{$search}%")
             )
             ->paginate($paginate);
 
