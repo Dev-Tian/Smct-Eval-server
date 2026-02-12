@@ -16,8 +16,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
-use function Symfony\Component\Clock\now;
-
 class UsersEvaluationController extends Controller
 {
     /**
@@ -107,7 +105,7 @@ class UsersEvaluationController extends Controller
             'priorityArea2'                     =>  $validated['priorityArea2'] ?? null,
             'priorityArea3'                     =>  $validated['priorityArea3'] ?? null,
             'remarks'                           =>  $validated['remarks'] ?? null,
-            'evaluatorApprovedAt'               =>  now(),
+            'evaluatorApprovedAt'               =>  Carbon::now(),
         ]);
 
         for ($i = 1; $i <= 3; $i++) {
@@ -221,7 +219,7 @@ class UsersEvaluationController extends Controller
             'priorityArea2'                     =>  $validated['priorityArea2'] ?? null,
             'priorityArea3'                     =>  $validated['priorityArea3'] ?? null,
             'remarks'                           =>  $validated['remarks'] ?? null,
-            'evaluatorApprovedAt'               =>  now(),
+            'evaluatorApprovedAt'               =>  Carbon::now(),
         ]);
 
         for ($i = 1; $i <= 3; $i++) {
@@ -343,7 +341,7 @@ class UsersEvaluationController extends Controller
             'priorityArea2'                     =>  $validated['priorityArea2'] ?? null,
             'priorityArea3'                     =>  $validated['priorityArea3'] ?? null,
             'remarks'                           =>  $validated['remarks'] ?? null,
-            'evaluatorApprovedAt'               =>  now(),
+            'evaluatorApprovedAt'               =>  Carbon::now(),
         ]);
 
         for ($i = 1; $i <= 3; $i++) {
@@ -449,7 +447,7 @@ class UsersEvaluationController extends Controller
             'priorityArea2'                     =>  $validated['priorityArea2'] ?? null,
             'priorityArea3'                     =>  $validated['priorityArea3'] ?? null,
             'remarks'                           =>  $validated['remarks'] ?? null,
-            'evaluatorApprovedAt'               =>  now(),
+            'evaluatorApprovedAt'               =>  Carbon::now(),
         ]);
 
         for ($i = 1; $i <= 3; $i++) {

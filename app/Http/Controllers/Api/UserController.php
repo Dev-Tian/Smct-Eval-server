@@ -536,7 +536,6 @@ class UserController extends Controller
             'email'                     => $validated['email'] ?? $user->email,
         ];
 
-
         if ($request->filled('new_password') && $request->filled('confirm_password')) {
             $items["password"] = $validated["confirm_password"];
         }
@@ -557,7 +556,7 @@ class UserController extends Controller
                 }
             }
 
-            $items['signature'] = $path ?? null;
+            $items['signature'] = $path;
             $items['requestSignatureReset'] = false;
             $items['approvedSignatureReset'] = false;
         }
@@ -667,7 +666,6 @@ class UserController extends Controller
 
     public function updateUserBranch(User $user, Request $request)
     {
-
         $user->branches()->syncWithoutDetaching($request->branch_ids);
 
         return response()->json([
