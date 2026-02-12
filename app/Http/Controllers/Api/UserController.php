@@ -517,7 +517,7 @@ class UserController extends Controller
             ], 401);
         }
 
-        if(empty($request->signature) && empty($request->signature)){
+        if(empty($request->signature) && empty($user->signature)){
             return response()->json([
                 "message"       =>  "Signature is required"
             ], 422);
