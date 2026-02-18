@@ -585,11 +585,12 @@ class UsersEvaluationController extends Controller
                 =>
                 $q->where(function ($subq) use ($quarter) {
                     if($quarter === "Others"){
-                        $subq->whereNot('	reviewTypeOthersImprovement', 0)
+                        $subq->whereNot('reviewTypeOthersImprovement', 0)
                             ->orWhereNot('reviewTypeOthersCustom', null);
-                    }
-                    $subq->where('reviewTypeProbationary', $quarter)
+                    }else{
+                        $subq->where('reviewTypeProbationary', $quarter)
                         ->orWhere('reviewTypeRegular', $quarter);
+                    }
                 })
             )
             ->when($year,    fn($q) =>  $q->whereYear('created_at', $year))
@@ -641,11 +642,12 @@ class UsersEvaluationController extends Controller
                 =>
                 $q->where(function ($subq) use ($quarter) {
                     if($quarter === "Others"){
-                        $subq->whereNot('	reviewTypeOthersImprovement', 0)
+                        $subq->whereNot('reviewTypeOthersImprovement', 0)
                             ->orWhereNot('reviewTypeOthersCustom', null);
-                    }
-                    $subq->where('reviewTypeProbationary', $quarter)
+                    }else{
+                        $subq->where('reviewTypeProbationary', $quarter)
                         ->orWhere('reviewTypeRegular', $quarter);
+                    }
                 })
             )
             ->when($year,   fn($q) =>  $q->whereYear('created_at', $year))
