@@ -585,8 +585,8 @@ class UsersEvaluationController extends Controller
                 =>
                 $q->where(function ($subq) use ($quarter) {
                     if($quarter === "Others"){
-                        $subq->where('reviewTypeProbationary', null)
-                            ->where('reviewTypeRegular', null);
+                        $subq->whereNot('	reviewTypeOthersImprovement', 0)
+                            ->orWhereNot('reviewTypeOthersCustom', null);
                     }
                     $subq->where('reviewTypeProbationary', $quarter)
                         ->orWhere('reviewTypeRegular', $quarter);
@@ -640,6 +640,10 @@ class UsersEvaluationController extends Controller
                 fn($q)
                 =>
                 $q->where(function ($subq) use ($quarter) {
+                    if($quarter === "Others"){
+                        $subq->whereNot('	reviewTypeOthersImprovement', 0)
+                            ->orWhereNot('reviewTypeOthersCustom', null);
+                    }
                     $subq->where('reviewTypeProbationary', $quarter)
                         ->orWhere('reviewTypeRegular', $quarter);
                 })

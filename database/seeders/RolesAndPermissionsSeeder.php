@@ -74,7 +74,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'contact'           => '09123456789',
             'password'          => 'password',
             'is_active'         => 'active',
-            'date_hired'        => now(),
+            'date_hired'        =>  now(),
             'emp_id'            => "ADMIN-12345"
         ];
 
@@ -88,7 +88,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'contact'           => '09123456789',
             'password'          => 'password',
             'is_active'         => 'active',
-            'date_hired'        => now(),
+            'date_hired'        =>  now(),
             'emp_id'            => "HR-12345"
         ];
 
@@ -102,7 +102,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'contact'           => '09123456789',
             'password'          => 'password',
             'is_active'         => 'active',
-            'date_hired'        => now(),
+            'date_hired'        =>  now(),
             'emp_id'            => "EVALUATOR-12345"
         ];
 
@@ -116,7 +116,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'contact'           => '09123456789',
             'password'          => 'password',
             'is_active'         => 'active',
-            'date_hired'        => now(),
+            'date_hired'        =>  now(),
             'emp_id'            => "EMPLOYEE-12345"
         ];
 
