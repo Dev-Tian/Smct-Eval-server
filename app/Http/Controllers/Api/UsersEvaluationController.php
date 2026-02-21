@@ -584,13 +584,12 @@ class UsersEvaluationController extends Controller
                 fn($q)
                 =>
                 $q->where(function ($subq) use ($quarter) {
-                    if($quarter === "Others"){
-                        $subq->whereNot('reviewTypeOthersImprovement', 0)
-                            ->orWhereNot('reviewTypeOthersCustom', null);
-                    }else{
-                        $subq->where('reviewTypeProbationary', $quarter)
-                        ->orWhere('reviewTypeRegular', $quarter);
-                    }
+                    match($quarter){
+                        "Others"    =>      $subq->whereNot('reviewTypeOthersImprovement', 0)
+                                                ->orWhereNotNull('reviewTypeOthersCustom'),
+                        default     =>      $subq->where('reviewTypeProbationary', $quarter)
+                                                ->orWhere('reviewTypeRegular', $quarter)
+                        };
                 })
             )
             ->when($year,    fn($q) =>  $q->whereYear('created_at', $year))
@@ -641,13 +640,12 @@ class UsersEvaluationController extends Controller
                 fn($q)
                 =>
                 $q->where(function ($subq) use ($quarter) {
-                    if($quarter === "Others"){
-                        $subq->whereNot('reviewTypeOthersImprovement', 0)
-                            ->orWhereNot('reviewTypeOthersCustom', null);
-                    }else{
-                        $subq->where('reviewTypeProbationary', $quarter)
-                        ->orWhere('reviewTypeRegular', $quarter);
-                    }
+                    match($quarter){
+                        'Others'    =>  $subq->whereNot('reviewTypeOthersImprovement', 0)
+                                            ->orWhereNotNull('reviewTypeOthersCustom'),
+                        default     =>  $subq->where('reviewTypeProbationary', $quarter)
+                                            ->orWhere('reviewTypeRegular', $quarter)
+                    };
                 })
             )
             ->when($year,   fn($q) =>  $q->whereYear('created_at', $year))
