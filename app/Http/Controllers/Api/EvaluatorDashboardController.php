@@ -44,9 +44,9 @@ class EvaluatorDashboardController extends Controller
             ->orderBy('id', 'desc')
             ->where('evaluator_id', $user->id)
             ->search($search)
-            ->when($status, fn($q) =>  $q->where('status', $status))
+            ->when($status, fn($q)  =>  $q->where('status', $status))
             ->when($quarter, fn($q) =>  $q->where('quarter_of_submission_id', $quarter))
-            ->when($year,   fn($q) =>  $q->whereYear('created_at', $year))
+            ->when($year,   fn($q)  =>  $q->whereYear('created_at', $year))
             ->latest('updated_at')
             ->paginate($page);
 

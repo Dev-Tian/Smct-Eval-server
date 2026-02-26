@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\EvaluatorDashboardController;
 use App\Http\Controllers\Api\HrDashboardController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\UsersEvaluationController;
-
+use Illuminate\Support\Facades\Auth;
 
 //public routes
 
@@ -38,11 +38,8 @@ Route::get('/profile', function (Request $request) {
             'notifications' => function($q) { $q->latest()->limit(15); },
         ]
     );
-
     $counts = $user->notifications()->latest()->limit(15)->get();
-
     $user->notification_counts =  $counts->where("read_at", null)->count();
-
     return $user;
 })->middleware('auth:sanctum');
 
