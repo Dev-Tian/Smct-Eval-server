@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-
+use Illuminate\Support\Facades\Auth;
 
 class HrDashboardController extends Controller
 {
@@ -16,6 +16,7 @@ class HrDashboardController extends Controller
      */
     public function index()
     {
+        $authUser = Auth::user()->id;
         // totals
         $new_eval = UsersEvaluation::where('status', 'pending')
             ->where('evaluatorApprovedAt', '>=', Carbon::now()->subHours(24))
@@ -25,10 +26,12 @@ class HrDashboardController extends Controller
         $pending_eval = UsersEvaluation::where('status', 'pending')->whereNotNull('rating')->count() ?? 0;
         $completed_eval = UsersEvaluation::where('status', 'completed')->whereNotNull('rating')->count() ?? 0;
         $employees = User::where('is_active', 'active')
-                        ->whereRelation('roles',
-                            fn($q)
-                            =>
-                            $q->whereNot('name', 'admin')->whereNot('name','hr')
+                        ->whereNot('id', $authUser)
+                        ->whereRelation(
+                            'roles',
+                                fn($q)
+                                =>
+                                $q->whereNot('name', 'admin')->whereNot('name','hr')
                         )
                         ->count();
 

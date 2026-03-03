@@ -8,11 +8,14 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
+
+use function Symfony\Component\Clock\now;
 
 class UserController extends Controller
 {
@@ -394,20 +397,23 @@ class UserController extends Controller
         $areaManagerPositionId = [16];
         $branchManagerPositionsId = [35, 36, 37, 38];
 
+        $userQuery = User::query();
+
         if ($isAreaManager) {
-            $userQuery = User::whereIn('position_id', $branchManagerPositionsId);
+            $userQuery->whereIn('position_id', $branchManagerPositionsId);
         } elseif (!$isHO && in_array($manager->position_id, $branchManagerPositionsId) && !$hasDepartment) {
-            $userQuery = User::whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+            $userQuery->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
         } elseif ($isHO && $hasDepartment) {
-            $userQuery = User::where('department_id', $manager->department_id)
+            $userQuery->where('department_id', $manager->department_id)
                 ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%');
         } elseif (!$isHO && !$hasDepartment && !in_array($manager->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId))) {
-            $userQuery = User::whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+            $userQuery->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
         } else {
             return response()->json([
                 'message'   => "failed conditions"
             ]);
         }
+
 
         // final query
         $userQuery->with('departments', 'branches', 'positions', 'roles')
@@ -428,7 +434,8 @@ class UserController extends Controller
             ->search($search)
             ->latest('updated_at');
 
-        $branchHeads = $userQuery->paginate($perPage);
+            $new_hires =(clone $userQuery)->whereBetween('created_at', [Carbon::now()->subDays(7),now()])->count();
+            $employees = $userQuery->paginate($perPage);
 
         $positions = Position::whereRelation(
             'users',
@@ -452,8 +459,9 @@ class UserController extends Controller
         )->get();
 
         return response()->json([
-            'employees' => $branchHeads,
-            'positions' => $positions
+            'employees' => $employees,
+            'positions' => $positions,
+            'new_count' => $new_hires
         ], 200);
     }
 

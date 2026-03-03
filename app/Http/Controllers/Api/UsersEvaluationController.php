@@ -38,7 +38,6 @@ class UsersEvaluationController extends Controller
             'evaluator.positions',
             'evaluator.roles'
         )
-            ->orderBy('id', 'desc')
             ->search($search)
             ->when($status, fn($q)  => $q->where('status', $status))
             ->when(

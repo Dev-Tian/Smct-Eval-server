@@ -26,18 +26,18 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'position_id' => Position::inRandomOrder()->first()->id ?? 1,  // fallback to 1 if none exists
+            'position_id'   => Position::inRandomOrder()->first()->id ?? 1,  // fallback to 1 if none exists
             'department_id' => Department::inRandomOrder()->first()->id ?? 1,  // fallback to 1 if none exists
-            'username' => $this->faker->unique()->userName(),
-            'date_hired' => $this->faker->dateTime(),
-            'fname' => $this->faker->firstName(),
-            'lname' => $this->faker->lastName(),
-            'email' => $this->faker->unique()->safeEmail(),
-            'contact' => $this->faker->phoneNumber(),
-            'emp_id' => random_int(0000000000, 9999999999),
-            'password' => Hash::make('password'),
-            'is_active' => fake()->randomElement(["pending", "active", "declined"]),
-            'avatar' => $this->faker->optional()->imageUrl(200, 200, 'people'),
+            'username'      => $this->faker->unique()->userName(),
+            'date_hired'    => $this->faker->dateTime(),
+            'fname'         => $this->faker->firstName(),
+            'lname'         => $this->faker->lastName(),
+            'email'         => $this->faker->unique()->safeEmail(),
+            'contact'       => '09'.rand(000000000,111111111),
+            'emp_id'        => random_int(0000000000, 9999999999),
+            'password'      => Hash::make('password'),
+            'is_active'     => fake()->randomElement(["pending", "active", "declined"]),
+            'avatar'        => null,
         ];
     }
 

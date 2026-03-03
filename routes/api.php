@@ -39,7 +39,7 @@ Route::get('/profile', function (Request $request) {
         ]
     );
     $counts = $user->notifications()->latest()->limit(15)->get();
-    $user->notification_counts =  $counts->where("read_at", null)->count();
+    $user->notification_counts = $counts->where("read_at", null)->count();
     return $user;
 })->middleware('auth:sanctum');
 

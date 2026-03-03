@@ -38,12 +38,11 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'system_administration']);
         Permission::create(['name' => 'user_management']);
 
-
         // Create roles and assign created permissions
         $role_employee = Role::create(['name' => 'employee']);
         $role_employee->givePermissionTo('view_own_profile');
         $role_employee->givePermissionTo('view_own_evaluations');
-        $role_employee->givePermissionTo('submit_self_assessment');
+            $role_employee->givePermissionTo('submit_self_assessment');
 
         $role_hr_manager = Role::create(['name' => 'hr']);
         $role_hr_manager->givePermissionTo('view_all_profiles');
@@ -71,11 +70,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'fname'             => 'System',
             'lname'             => 'Administrator',
             'email'             => 'admin@smct.com',
-            'contact'           => '09123456789',
+            'contact'           => '09'.rand(000000000,111111111),
             'password'          => 'password',
             'is_active'         => 'active',
             'date_hired'        =>  now(),
-            'emp_id'            => "ADMIN-12345"
+            'emp_id'            => rand(1000000000,9999999999)
         ];
 
         $hr = [
@@ -85,11 +84,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'fname'             => 'HR',
             'lname'             => 'Administrator',
             'email'             => 'hr@smct.com',
-            'contact'           => '09123456789',
+            'contact'           => '09'.rand(000000000,111111111),
             'password'          => 'password',
             'is_active'         => 'active',
             'date_hired'        =>  now(),
-            'emp_id'            => "HR-12345"
+            'emp_id'            => rand(1000000000,9999999999)
         ];
 
         $evaluator = [
@@ -99,11 +98,11 @@ class RolesAndPermissionsSeeder extends Seeder
             'fname'             => 'EVALUATOR',
             'lname'             => 'EVALUATOR',
             'email'             => 'evaluator@smct.com',
-            'contact'           => '09123456789',
+            'contact'           => '09'.rand(000000000,111111111),
             'password'          => 'password',
             'is_active'         => 'active',
             'date_hired'        =>  now(),
-            'emp_id'            => "EVALUATOR-12345"
+            'emp_id'            => rand(1000000000,9999999999)
         ];
 
         $employee = [
@@ -112,12 +111,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'username'          => 'employee',
             'fname'             => 'EMPLOYEE',
             'lname'             => 'EMPLOYEE',
-            'email'             => 'admin@smct.com',
-            'contact'           => '09123456789',
+            'email'             => 'employee@smct.com',
+            'contact'           => '09'.rand(000000000,111111111),
             'password'          => 'password',
             'is_active'         => 'active',
             'date_hired'        =>  now(),
-            'emp_id'            => "EMPLOYEE-12345"
+            'emp_id'            => rand(1000000000,9999999999)
         ];
 
         $role_admin->users()->create($admin);
