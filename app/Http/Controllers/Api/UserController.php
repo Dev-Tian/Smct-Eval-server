@@ -241,7 +241,11 @@ class UserController extends Controller
                 =>
                 $status->where('is_active', $status_filter)
             )
-            ->whereRelation('roles' , fn($q)=> $q->whereNot("name", "admin")
+            ->whereRelation(
+                'roles' ,
+                fn($q)
+                =>
+                $q->whereNot("name", "admin")
             )
             ->search($search_filter)
             ->latest('updated_at')
@@ -284,7 +288,10 @@ class UserController extends Controller
                 =>
                 $q->whereRelation('departments', 'departments.id', $department_filter)
             )
-            ->whereRelation('roles' , fn($q)=> $q->whereNot("name", "admin")
+            ->whereRelation('roles' ,
+                fn($q)
+                =>
+                $q->whereNot("name", "admin")
             )
             ->search($search_filter)
             ->latest('updated_at')
@@ -371,7 +378,6 @@ class UserController extends Controller
         ], 200);
     }
 
-
     //applicable for area manager / branch manager/supervisor /department manager
     public function getAllEmployeeByAuth(Request $request)
     {
@@ -413,7 +419,6 @@ class UserController extends Controller
                 'message'   => "failed conditions"
             ]);
         }
-
 
         // final query
         $userQuery->with('departments', 'branches', 'positions', 'roles')

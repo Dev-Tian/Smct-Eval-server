@@ -13,7 +13,7 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        $departments = Department::all();
+        $departments = Department::select('id','department_name')->get();
 
         return response()->json([
             'departments' => $departments
@@ -78,7 +78,7 @@ class DepartmentController extends Controller
         ]);
 
         return response()->json([
-            'message'       =>  'Added Successfully '
+            'message'       =>  'Added Successfully'
         ], 201);
     }
 
