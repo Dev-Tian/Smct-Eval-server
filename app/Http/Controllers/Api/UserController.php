@@ -188,7 +188,7 @@ class UserController extends Controller
         $department_filter = $request->input('department');
         $branch_filter = $request->input('branch');
 
-        $users  = User::with([
+        $users = User::query()->with([
             'branches',
             'departments',
             'positions',
@@ -232,7 +232,7 @@ class UserController extends Controller
         $search_filter = $request->input('search');
         $status_filter = $request->input('status');
 
-        $pending_users  = User::with('positions', 'branches', 'departments', 'roles')
+        $pending_users  = User::query()->with('positions', 'branches', 'departments', 'roles')
             ->whereNot('is_active', "active")
             ->whereNot('id', Auth::id())
             ->when(
@@ -267,7 +267,7 @@ class UserController extends Controller
         $branch_filter = $request->input('branch');
         $department_filter = $request->input('department');
 
-        $users  = User::with('branches', 'departments', 'positions', 'roles')
+        $users = User::query()->with('branches', 'departments', 'positions', 'roles')
             ->where('is_active', "active")
             ->whereNot('id', Auth::id())
             ->when(
@@ -322,7 +322,7 @@ class UserController extends Controller
     public function getAllBranchHeads(Request $request)
     {
         $search  = $request->input('search');
-        $users = User::with([
+        $users = User::query()->with([
             'branches',
             'departments',
             'positions',
@@ -341,8 +341,8 @@ class UserController extends Controller
 
     public function getAllAreaManager(Request $request)
     {
-        $search  = $request->input('search');
-        $users = User::with([
+        $search = $request->input('search');
+        $users = User::query()->with([
             'branches',
             'departments',
             'positions',
@@ -362,7 +362,7 @@ class UserController extends Controller
     public function getAllSignatureRequest(Request $request)
     {
         $search = $request->input("search");
-        $users = User::with(
+        $users = User::query()->with(
             'branches',
             'departments',
             'positions',
@@ -442,7 +442,7 @@ class UserController extends Controller
             $new_hires =(clone $userQuery)->whereBetween('created_at', [Carbon::now()->subDays(7),now()])->count();
             $employees = $userQuery->paginate($perPage);
 
-        $positions = Position::whereRelation(
+        $positions = Position::query()->whereRelation(
             'users',
             function ($q)
             use ($branches, $manager, $isAreaManager, $branchManagerPositionsId, $areaManagerPositionId, $isHO, $hasDepartment) {

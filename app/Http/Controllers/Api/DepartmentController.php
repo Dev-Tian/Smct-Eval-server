@@ -25,7 +25,7 @@ class DepartmentController extends Controller
         $paginate = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $all = Department::withCount([
+        $all = Department::query()->withCount([
             'users as managers_count'
             =>
             fn($user)
@@ -49,7 +49,6 @@ class DepartmentController extends Controller
         ])
             ->when($search, fn($q) => $q->where('department_name', 'LIKE', "%{$search}%"))
             ->paginate($paginate);
-
 
         return response()->json([
             'departments'       => $all

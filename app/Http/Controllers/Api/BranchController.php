@@ -26,7 +26,7 @@ class BranchController extends Controller
         $paginate = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $all = Branch::withCount([
+        $all = Branch::query()->withCount([
             'users as managers_count'
             =>
             fn($user)

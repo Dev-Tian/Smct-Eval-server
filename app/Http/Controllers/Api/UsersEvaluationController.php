@@ -29,7 +29,7 @@ class UsersEvaluationController extends Controller
         $quarter = $request->input('quarter');
         $year = $request->input('year');
 
-        $all_evaluations = UsersEvaluation::with(
+        $all_evaluations = UsersEvaluation::query()->with(
             'employee',
             'employee.branches',
             'employee.positions',
@@ -616,7 +616,7 @@ class UsersEvaluationController extends Controller
         $year = $request->input('year');
 
         $user = Auth::user();
-        $user_eval = UsersEvaluation::with(
+        $user_eval = UsersEvaluation::query()->with(
             'employee',
             'employee.branches',
             'employee.positions',
