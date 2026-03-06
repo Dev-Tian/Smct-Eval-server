@@ -154,11 +154,7 @@ class UserController extends Controller
             return response()->json([
                 "message"   => "Your account is not activated yet. Please wait for admin to approve."
             ], 401);
-        }elseif($user->is_active === 'declined'){
-           return response()->json([
-                "message"   => "Your account has been rejected."
-            ], 401);
-       }
+        }
 
         $credentials = [
             'username' => !filter_var($request->email, FILTER_VALIDATE_EMAIL) ? $request->email : $user->username,
@@ -230,17 +226,10 @@ class UserController extends Controller
     {
         $perPage = $request->input('per_page', 10);
         $search_filter = $request->input('search');
-        $status_filter = $request->input('status');
 
         $pending_users  = User::query()->with('positions', 'branches', 'departments', 'roles')
             ->whereNot('is_active', "active")
             ->whereNot('id', Auth::id())
-            ->when(
-                $status_filter,
-                fn($status)
-                =>
-                $status->where('is_active', $status_filter)
-            )
             ->whereRelation(
                 'roles' ,
                 fn($q)
@@ -252,7 +241,6 @@ class UserController extends Controller
             ->paginate($perPage);
 
         return response()->json([
-            'user_status'       => $status_filter,
             'message'      => 'ok',
             'users'        => $pending_users
         ], 200);
@@ -658,18 +646,6 @@ class UserController extends Controller
 
         return response()->json([
             'message'       =>  'Approved'
-        ], 201);
-    }
-
-
-    public function rejectRegistration(User $user)
-    {
-        $user->update([
-            'is_active'      =>  'declined'
-        ]);
-
-        return response()->json([
-            'message'       =>  'Declined successfully'
         ], 201);
     }
 

@@ -66,7 +66,6 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('updateUserBranch/{user}', 'updateUserBranch');
                 Route::post('removeUserBranches/{user}', 'removeUserBranches');
                 Route::post('approveRegistration/{user}', 'approveRegistration');
-                Route::post('rejectRegistration/{user}', 'rejectRegistration');
                 Route::post('deleteUser/{user}', 'deleteUser');
             }
         );

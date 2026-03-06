@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string("password");
             $table->string("contact");
             $table->string("emp_id");
-            $table->enum('is_active', ["pending", "active", "declined"])->default('pending');
+            $table->enum('is_active', ["pending", "active"])->default('pending');
             $table->longText("signature")->nullable();
             $table->string("avatar")->nullable();
             $table->boolean('requestSignatureReset')->default(false);
