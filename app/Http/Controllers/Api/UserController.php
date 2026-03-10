@@ -21,6 +21,46 @@ class UserController extends Controller
 {
     //Create
 
+    public function bulkRegisterUser(Request $request)
+    {
+        // Ive found collect and mapping method is not aplicable since there are some models
+        // to make a condition and use insert for another table like position and branch.
+        // roles default is employee
+
+        //option 1
+        $data = collect($request->users)->map( function ($item) {
+
+                // use Str methods to manipulate strings
+
+                return [
+                        // this were the final mapping happens
+                ];
+
+                })->toArray();
+
+        // option one inserting
+
+        // -------------------------------------------------------------
+
+        //option 2
+        $data = $request->users;
+        $users = [];
+
+        foreach($data as $item){
+            // logic here
+
+            $users[] = [
+                // final mapping here
+            ] ;
+
+            // and inserting
+
+            }
+
+        return response()->json([], 201);
+
+    }
+
     public function registerUser(Request $request)
     {
         $validate = $request->validate([
@@ -89,7 +129,7 @@ class UserController extends Controller
 
         return response()->json([
             "message"       => "Registered Successfully",
-        ], 200);
+        ], 201);
     }
 
     public function store(Request $request)
@@ -129,7 +169,7 @@ class UserController extends Controller
 
         return response()->json([
             "message"       => "Registered Successfully",
-        ], 200);
+        ], 201);
     }
 
 
@@ -547,12 +587,11 @@ class UserController extends Controller
                 if (Storage::disk('public')->exists($user->signature)) {
                     Storage::disk('public')->delete($user->signature);
                 }else{
-                return response()->json([
-                    "message"       =>  "signature not found"
-                    ],402);
+                    return response()->json([
+                        "message"       =>  "signature not found"
+                        ],402);
                 }
             }
-
             $items['signature'] = $path;
             $items['requestSignatureReset'] = false;
             $items['approvedSignatureReset'] = false;
@@ -563,9 +602,8 @@ class UserController extends Controller
         return response()->json([
             "status"        => true,
             "message"       => "Uploaded Successfully",
-        ], 201);
+        ], 200);
     }
-
 
     public function requestSignatureReset()
     {
@@ -592,10 +630,9 @@ class UserController extends Controller
                     Notification::send($hrs, $notificationData);
                 }
             );
-
         return response()->json([
             'message'       =>  'Approved'
-        ], 201);
+        ], 200);
     }
 
     public function approvedSignatureReset(User $user)
@@ -635,7 +672,7 @@ class UserController extends Controller
 
         return response()->json([
             'message'       =>  'Rejected Successfully'
-        ], 201);
+        ], 200);
     }
 
     public function approveRegistration(User $user)
@@ -646,7 +683,7 @@ class UserController extends Controller
 
         return response()->json([
             'message'       =>  'Approved'
-        ], 201);
+        ], 200);
     }
 
     public function updateUserBranch(User $user, Request $request)
@@ -655,7 +692,7 @@ class UserController extends Controller
 
         return response()->json([
             'message'       =>  'User Branch Updated'
-        ], 201);
+        ], 200);
     }
 
     public function removeUserBranches(User $user)
@@ -679,7 +716,7 @@ class UserController extends Controller
 
         return response()->json([
             'message'       => 'Deleted Successfully'
-        ], 200);
+        ], 204);
     }
 
     // public function test()

@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('showUser/{user}', 'showUser');
                 Route::get('getAllSignatureReset', 'getAllSignatureRequest');
                 Route::post('requestSignatureReset', 'requestSignatureReset');
+                Route::post('bulkRegisterUser', 'bulkRegisterUser');
                 Route::post('approvedSignatureReset/{user}', 'approvedSignatureReset');
                 Route::post('rejectSignatureReset/{user}', 'rejectSignatureReset');
                 Route::post('updateUser/{user}', 'updateUser');
