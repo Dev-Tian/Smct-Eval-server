@@ -39,14 +39,14 @@ class HoBasic extends FormRequest
             'rating'                                => ['required', 'numeric'],
             'coverageFrom'                          => ['required', 'date'],
             'coverageTo'                            => ['required', 'date'],
-            'reviewTypeProbationary'                => ['nullable', 'numeric'],
-            'reviewTypeRegular'                     => ['nullable', 'string'],
-            'reviewTypeOthersImprovement'           => ['nullable', 'boolean'],
-            'reviewTypeOthersCustom'                => ['nullable', 'string'],
-            'priorityArea1'                         => ['nullable', 'string'],
-            'priorityArea2'                         => ['nullable', 'string'],
-            'priorityArea3'                         => ['nullable', 'string'],
-            'remarks'                               => ['nullable', 'string'],
+            'reviewTypeProbationary'                => ['required', 'numeric'],
+            'reviewTypeRegular'                     => ['required', 'string'],
+            'reviewTypeOthersImprovement'           => ['required', 'boolean'],
+            'reviewTypeOthersCustom'                => ['required', 'string'],
+            'priorityArea1'                         => ['required', 'string', 'min-20'],
+            'priorityArea2'                         => ['nullable', 'string', 'min-20'],
+            'priorityArea3'                         => ['nullable', 'string', 'min-20'],
+            'remarks'                               => ['nullable', 'string', 'min-20'],
         ];
     }
 
@@ -56,9 +56,9 @@ class HoBasic extends FormRequest
             'jobKnowledgeScore1'                    => ['required', 'numeric'],
             'jobKnowledgeScore2'                    => ['required', 'numeric'],
             'jobKnowledgeScore3'                    => ['required', 'numeric'],
-            'jobKnowledgeComments1'                 => ['nullable', 'string'],
-            'jobKnowledgeComments2'                 => ['nullable', 'string'],
-            'jobKnowledgeComments3'                 => ['nullable', 'string'],
+            'jobKnowledgeComments1'                 => ['required', 'string'],
+            'jobKnowledgeComments2'                 => ['required', 'string'],
+            'jobKnowledgeComments3'                 => ['required', 'string'],
         ];
     }
 
@@ -69,10 +69,10 @@ class HoBasic extends FormRequest
             'qualityOfWorkScore2'                   => ['required', 'numeric'],
             'qualityOfWorkScore3'                   => ['required', 'numeric'],
             'qualityOfWorkScore4'                   => ['required', 'numeric'],
-            'qualityOfWorkComments1'                => ['nullable', 'string'],
-            'qualityOfWorkComments2'                => ['nullable', 'string'],
-            'qualityOfWorkComments3'                => ['nullable', 'string'],
-            'qualityOfWorkComments4'                => ['nullable', 'string'],
+            'qualityOfWorkComments1'                => ['required', 'string'],
+            'qualityOfWorkComments2'                => ['required', 'string'],
+            'qualityOfWorkComments3'                => ['required', 'string'],
+            'qualityOfWorkComments4'                => ['required', 'string'],
         ];
     }
 
@@ -82,9 +82,9 @@ class HoBasic extends FormRequest
             'adaptabilityScore1'                    => ['required', 'numeric'],
             'adaptabilityScore2'                    => ['required', 'numeric'],
             'adaptabilityScore3'                    => ['required', 'numeric'],
-            'adaptabilityComments1'                 => ['nullable', 'string'],
-            'adaptabilityComments2'                 => ['nullable', 'string'],
-            'adaptabilityComments3'                 => ['nullable', 'string'],
+            'adaptabilityComments1'                 => ['required', 'string'],
+            'adaptabilityComments2'                 => ['required', 'string'],
+            'adaptabilityComments3'                 => ['required', 'string'],
         ];
     }
 
@@ -94,9 +94,9 @@ class HoBasic extends FormRequest
             'teamworkScore1'                        => ['required', 'numeric'],
             'teamworkScore2'                        => ['required', 'numeric'],
             'teamworkScore3'                        => ['required', 'numeric'],
-            'teamworkComments1'                     => ['nullable', 'string'],
-            'teamworkComments2'                     => ['nullable', 'string'],
-            'teamworkComments3'                     => ['nullable', 'string'],
+            'teamworkComments1'                     => ['required', 'string'],
+            'teamworkComments2'                     => ['required', 'string'],
+            'teamworkComments3'                     => ['required', 'string'],
         ];
     }
 
@@ -107,10 +107,10 @@ class HoBasic extends FormRequest
             'reliabilityScore2'                     => ['required', 'numeric'],
             'reliabilityScore3'                     => ['required', 'numeric'],
             'reliabilityScore4'                     => ['required', 'numeric'],
-            'reliabilityComments1'                  => ['nullable', 'string'],
-            'reliabilityComments2'                  => ['nullable', 'string'],
-            'reliabilityComments3'                  => ['nullable', 'string'],
-            'reliabilityComments4'                  => ['nullable', 'string'],
+            'reliabilityComments1'                  => ['required', 'string'],
+            'reliabilityComments2'                  => ['required', 'string'],
+            'reliabilityComments3'                  => ['required', 'string'],
+            'reliabilityComments4'                  => ['required', 'string'],
         ];
     }
 
@@ -121,10 +121,10 @@ class HoBasic extends FormRequest
             'ethicalScore2'                         => ['required', 'numeric'],
             'ethicalScore3'                         => ['required', 'numeric'],
             'ethicalScore4'                         => ['required', 'numeric'],
-            'ethicalExplanation1'                   => ['nullable', 'string'],
-            'ethicalExplanation2'                   => ['nullable', 'string'],
-            'ethicalExplanation3'                   => ['nullable', 'string'],
-            'ethicalExplanation4'                   => ['nullable', 'string'],
+            'ethicalExplanation1'                   => ['required', 'string'],
+            'ethicalExplanation2'                   => ['required', 'string'],
+            'ethicalExplanation3'                   => ['required', 'string'],
+            'ethicalExplanation4'                   => ['required', 'string'],
         ];
     }
 
@@ -137,12 +137,12 @@ class HoBasic extends FormRequest
             'managerialSkillsScore4'                 => ['required', 'numeric'],
             'managerialSkillsScore5'                 => ['required', 'numeric'],
             'managerialSkillsScore6'                 => ['required', 'numeric'],
-            'managerialSkillsExplanation1'           => ['nullable', 'string'],
-            'managerialSkillsExplanation2'           => ['nullable', 'string'],
-            'managerialSkillsExplanation3'           => ['nullable', 'string'],
-            'managerialSkillsExplanation4'           => ['nullable', 'string'],
-            'managerialSkillsExplanation5'           => ['nullable', 'string'],
-            'managerialSkillsExplanation6'           => ['nullable', 'string'],
+            'managerialSkillsExplanation1'           => ['required', 'string'],
+            'managerialSkillsExplanation2'           => ['required', 'string'],
+            'managerialSkillsExplanation3'           => ['required', 'string'],
+            'managerialSkillsExplanation4'           => ['required', 'string'],
+            'managerialSkillsExplanation5'           => ['required', 'string'],
+            'managerialSkillsExplanation6'           => ['required', 'string'],
         ];
     }
 }

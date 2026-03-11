@@ -23,7 +23,7 @@ class UserController extends Controller
 
     public function bulkRegisterUser(Request $request)
     {
-        // Ive found collect and mapping method is not aplicable since there are some models
+        // Ive found that collect and mapping method is not aplicable since there are some models
         // to make a condition and use insert for another table like position and branch.
         // roles default is employee
 
@@ -33,7 +33,7 @@ class UserController extends Controller
                 // use Str methods to manipulate strings
 
                 return [
-                        // this were the final mapping happens
+                    // this were the final mapping happens
                 ];
 
                 })->toArray();
@@ -176,7 +176,6 @@ class UserController extends Controller
     //Auth
     public function userLogin(Request $request)
     {
-
         $request->validate([
             'email' => ['required', 'string', 'lowercase'],
             'password' => ['required', 'string'],
