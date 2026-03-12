@@ -43,10 +43,10 @@ class BranchRankNFile extends FormRequest
             'reviewTypeRegular'                     => ['required', 'string'],
             'reviewTypeOthersImprovement'           => ['required', 'boolean'],
             'reviewTypeOthersCustom'                => ['required', 'string'],
-            'priorityArea1'                         => ['required', 'string', 'min-20'],
-            'priorityArea2'                         => ['nullable', 'string', 'min-20'],
-            'priorityArea3'                         => ['nullable', 'string', 'min-20'],
-            'remarks'                               => ['nullable', 'string', 'min-20'],
+            'priorityArea1'                         => ['required', 'string', 'min:20'],
+            'priorityArea2'                         => ['nullable', 'string', 'min:20'],
+            'priorityArea3'                         => ['nullable', 'string', 'min:20'],
+            'remarks'                               => ['nullable', 'string', 'min:20'],
         ];
     }
 
