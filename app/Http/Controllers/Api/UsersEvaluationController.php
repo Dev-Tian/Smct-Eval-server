@@ -28,6 +28,8 @@ class UsersEvaluationController extends Controller
         $status = $request->input('status');
         $quarter = $request->input('quarter');
         $year = $request->input('year');
+        $rating = $request->input('rating');
+        $branch = $request->input('branch');
 
         $all_evaluations = UsersEvaluation::query()->with(
             'employee',
@@ -50,6 +52,26 @@ class UsersEvaluationController extends Controller
                 )
             )
             ->when($year, fn($q)    => $q->whereYear('created_at', $year))
+            ->when($rating,
+                function($q) use ($rating){
+                    match($rating){
+                        'poor'          =>  $q->where('rating', '<', 2.5),
+                        'low'           =>  $q->where('rating', '<', 3),
+                        'good'          =>  $q->whereBetween('rating', [3,3.9 ] ),
+                        'excellent'     =>  $q->where('rating', '>=' , 4),
+                        default         =>  $q->where('rating', 5)
+                    };
+                }
+            )
+            ->when($branch,
+                function($q) use ($branch) {
+                     $q->whereRelation('employee', function ($sub) use ($branch){
+                         $sub->whereHas('branches', function($fin) use ($branch){
+                            $fin->where('branches.id', $branch);
+                        });
+                    });
+                }
+            )
             ->latest('created_at')
             ->paginate($perPage);
 
