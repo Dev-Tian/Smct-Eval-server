@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -32,7 +31,6 @@ class PositionSeeder extends Seeder
             ['label' => 'Area Manager', 'value' => 'Area Manager', 'created_at' => now(), 'updated_at' => now()],
             ['label' => 'Assembler', 'value' => 'Assembler', 'created_at' => now(), 'updated_at' => now()],
             ['label' => 'Assistant Accounting Manager', 'value' => 'Assistant Accounting Manager', 'created_at' => now(), 'updated_at' => now()],
-            ['label' => 'Assistant Automation Manager', 'value' => 'Assistant Automation Manager', 'created_at' => now(), 'updated_at' => now()],
             ['label' => 'Assistant Compliance/Audit Manager', 'value' => 'Assistant Compliance/Audit Manager', 'created_at' => now(), 'updated_at' => now()],
             ['label' => 'Assistant Marketing Manager', 'value' => 'Assistant Marketing Manager', 'created_at' => now(), 'updated_at' => now()],
             ['label' => 'Audit Supervisor', 'value' => 'Audit Supervisor', 'created_at' => now(), 'updated_at' => now()],

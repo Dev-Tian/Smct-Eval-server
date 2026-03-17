@@ -398,7 +398,7 @@ class UserController extends Controller
                 $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
             })
             ->when($isAVP && $isHO && $hasDepartment, function ($q) use ($manager, $position_filter) {
-                $q->where('department_id', $manager->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);
+                  $q->where('department_id', $manager->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);
             })
             ->search($search)
             ->latest('updated_at');
