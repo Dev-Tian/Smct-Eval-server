@@ -36,7 +36,7 @@ class UserFactory extends Factory
             'contact'       => '09'.rand(000000000,999999999),
             'emp_id'        => random_int(0000000000, 9999999999),
             'password'      => Hash::make('password'),
-            'is_active'     => fake()->randomElement(["pending", "active", "declined"]),
+            'is_active'     => fake()->randomElement(["pending", "active"]),
             'avatar'        => null,
         ];
     }
