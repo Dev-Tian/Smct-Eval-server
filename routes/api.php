@@ -101,7 +101,6 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('HoRankNFile/{user}', 'HoRankNFile');
                 // area managers
                 Route::post('BranchBasicAreaManager/{user}', 'BranchBasicAreaManager');
-
             }
         );
 
