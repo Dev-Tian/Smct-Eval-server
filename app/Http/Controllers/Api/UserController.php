@@ -477,30 +477,8 @@ class UserController extends Controller
             $new_hires =(clone $userQuery)->whereBetween('created_at', [Carbon::now()->subDays(7),now()])->count();
             $employees = $userQuery->paginate($perPage);
 
-        $positions = Position::query()->whereRelation(
-            'users',
-            function ($q)
-            use ($branches, $manager, $isAreaManager, $branchManagerPositionsId, $areaManagerPositionId, $isHO, $hasDepartment) {
-                $q->where('is_active', 'active')
-                    ->whereHas('branches', fn($query) => $query->whereIn('branch_id', $branches))
-                    ->where('id', '!=', $manager->id);
-
-                if ($isAreaManager) {
-                    $q->whereIn('position_id', $branchManagerPositionsId);
-                } elseif (!$isHO && in_array($manager->position_id, $branchManagerPositionsId) && !$hasDepartment) {
-                    $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
-                } elseif ($isHO && $hasDepartment) {
-                    $q->where('department_id', $manager->department_id)
-                        ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%');
-                } elseif (!$isHO && !$hasDepartment && !in_array($manager->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId))) {
-                    $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
-                }
-            }
-        )->get();
-
         return response()->json([
             'employees' => $employees,
-            'positions' => $positions,
             'new_count' => $new_hires
         ], 200);
     }
