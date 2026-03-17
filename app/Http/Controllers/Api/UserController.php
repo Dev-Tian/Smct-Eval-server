@@ -405,7 +405,7 @@ class UserController extends Controller
         ], 200);
     }
 
-    //applicable for area manager / branch manager/supervisor /department manager
+    //applicable for area manager / branch manager/supervisor /department manager / avp manager
     public function getAllEmployeeByAuth(Request $request)
     {
         $manager = Auth::user();
@@ -425,6 +425,8 @@ class UserController extends Controller
         $isHO = $manager->branches()->where('branch_id', 126)->exists();
         $hasDepartment = !empty($manager->department_id);
         $isAreaManager = $manager->position_id === 16;
+        $isAVP = $manager->position_id === 31;
+
         //array collections
         $branches = $manager->branches()->pluck('branches.id');
         $areaManagerPositionId = [16];
@@ -436,10 +438,13 @@ class UserController extends Controller
             $userQuery->whereIn('position_id', $branchManagerPositionsId);
         } elseif (!$isHO && in_array($manager->position_id, $branchManagerPositionsId) && !$hasDepartment) {
             $userQuery->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
-        } elseif ($isHO && $hasDepartment) {
+        } elseif ($isHO && $hasDepartment && !$isAVP) {
             $userQuery->where('department_id', $manager->department_id)
                 ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%');
-        } elseif (!$isHO && !$hasDepartment && !in_array($manager->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId))) {
+        }elseif ( $isAVP && $isHO && $hasDepartment) {
+            $userQuery->whereRelation('positions', 'positions.id', 16)
+                ->orWhere('department_id', $manager->department_id);
+        }elseif (!$isHO && !$hasDepartment && !in_array($manager->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId))) {
             $userQuery->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
         } else {
             return response()->json([
@@ -450,18 +455,21 @@ class UserController extends Controller
         // final query
         $userQuery->with('departments', 'branches', 'positions', 'roles')
             ->where('is_active', "active")
-            ->whereHas(
-                'branches',
-                fn($query)
-                =>
-                $query->whereIn('branch_id', $branches)
-            )
             ->when(
                 $position_filter,
                 fn($q)
                 =>
                 $q->where('position_id', $position_filter)
             )
+            ->when(!$isAVP ,
+            function ($q) use ($branches) {
+                $q->whereHas(
+                    'branches',
+                    fn($query)
+                    =>
+                    $query->whereIn('branch_id', $branches)
+                );
+            })
             ->where('id', "!=", $manager->id)
             ->search($search)
             ->latest('updated_at');
