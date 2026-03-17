@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BranchBasic;
+use App\Http\Requests\BranchBasicAreaManager;
 use App\Http\Requests\BranchRankNFile;
 use App\Http\Requests\HoBasic;
 use App\Http\Requests\HoRankNFile;
@@ -220,7 +221,7 @@ class UsersEvaluationController extends Controller
         ], 201);
     }
 
- public function BranchBasicAreaManager(BranchBasic $validated, User $user)
+ public function BranchBasicAreaManager(BranchBasicAreaManager $validated, User $user)
     {
         $auth_user_evaluator = Auth::user();
 
@@ -293,15 +294,6 @@ class UsersEvaluationController extends Controller
                 'question_number'           => $i,
                 'score'                     => $validated['ethicalScore' . $i],
                 'explanation'               => $validated['ethicalExplanation' . $i] ?? null
-            ]);
-        }
-
-        for ($i = 1; $i <= 5; $i++) {
-            $submission->customerServices()->create([
-                'users_evaluation_id'       => $submission->id,
-                'question_number'           => $i,
-                'score'                     => $validated['customerServiceScore' . $i],
-                'explanation'               => $validated['customerServiceExplanation' . $i] ?? null
             ]);
         }
 
