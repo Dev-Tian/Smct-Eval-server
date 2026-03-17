@@ -99,6 +99,9 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('HoBasic/{user}', 'HoBasic');
                 //ho rank n file
                 Route::post('HoRankNFile/{user}', 'HoRankNFile');
+                // area managers
+                Route::post('BranchBasicAreaManager/{user}', 'BranchBasicAreaManager');
+
             }
         );
 
