@@ -94,7 +94,7 @@ class UsersEvaluation extends Model
             $relations[] = 'customerServices';
         }
 
-        if ($this->evaluationType === 'HoBasic') {
+        if ($this->evaluationType === 'HoBasic' || $this->evaluationType === 'BranchBasicAreaManager') {
             $relations[] = 'managerialSkills';
         }
 

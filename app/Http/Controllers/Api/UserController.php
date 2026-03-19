@@ -379,7 +379,7 @@ class UserController extends Controller
         $branches = $manager->branches->pluck('id');
         $areaManagerPositionId = [16];
         $branchManagerPositionsId = [35, 36, 37, 38];
-         $userQuery = User::query()
+        $userQuery = User::query()
             ->with('departments', 'branches', 'positions', 'roles')
             ->where('is_active', 'active')
             ->whereHas('branches', fn($query) => $query->whereIn('branch_id', $branches))
@@ -398,7 +398,7 @@ class UserController extends Controller
                 $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
             })
             ->when($isAVP && $isHO && $hasDepartment, function ($q) use ($manager, $position_filter) {
-                  $q->where('department_id', $manager->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);
+                $q->where('department_id', $manager->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);
             })
             ->search($search)
             ->latest('updated_at');
@@ -407,7 +407,6 @@ class UserController extends Controller
 
         // final query
         $employees = $userQuery->paginate($perPage);
-
 
         return response()->json(
             [
@@ -553,6 +552,7 @@ class UserController extends Controller
             ->chunk(100, function ($hrs) use ($notificationData) {
                 Notification::send($hrs, $notificationData);
             });
+
         return response()->json(
             [
                 'message' => 'Approved',
@@ -591,7 +591,7 @@ class UserController extends Controller
 
         return response()->json(
             [
-                'message' => 'User signature not found',
+                'message' => 'User doesnt have a signature',
             ],
             402,
         );
