@@ -85,16 +85,11 @@ class UsersEvaluation extends Model
             'ethicals',
         ];
 
-        if ($this->evaluationType === 'BranchBasic') {
-            $relations[] = 'customerServices';
-            $relations[] = 'managerialSkills';
-        }
-
-        if ($this->evaluationType === 'BranchRankNFile') {
+        if ($this->evaluationType === 'BranchRankNFile' || $this->evaluationType === 'BranchBasic') {
             $relations[] = 'customerServices';
         }
 
-        if ($this->evaluationType === 'HoBasic' || $this->evaluationType === 'BranchBasicAreaManager') {
+        if ($this->evaluationType === 'HoBasic' || $this->evaluationType === 'BranchBasicAreaManager' || $this->evaluationType === 'BranchBasic') {
             $relations[] = 'managerialSkills';
         }
 
