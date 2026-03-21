@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\BulkRegister;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -22,39 +24,17 @@ class UserController extends Controller
 
     public function bulkRegisterUser(Request $request)
     {
-        // Ive found that collect and mapping method is not aplicable since there are some models
-        // to make a condition and use insert for another table like position and branch.
-        // roles default is employee
-
-        //option 1
-        $data = collect($request->users)
-            ->map(function ($item) {
-                // use Str methods to manipulate strings
-
-                return [
-                        // this were the final mapping happens
-                    ];
-            })
-            ->toArray();
-
-        // option one inserting
-
-        // -------------------------------------------------------------
-
-        //option 2
         $data = $request->users;
         $users = [];
 
         foreach ($data as $item) {
-            // logic here
-
-            $users[] = [
-                // final mapping here
-            ];
+            Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $item['username'], 'password'));
+            // $users[] = [
+            //     // final mapping here
+            // ];
 
             // and inserting
         }
-
         return response()->json([], 201);
     }
 
@@ -70,7 +50,7 @@ class UserController extends Controller
             'department_id' => ['nullable', Rule::exists('departments', 'id')],
             'signature' => ['required'],
             'employee_id' => ['required', Rule::unique('users', 'emp_id')],
-            'username' => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
+            'username' => ['required', 'string', Rule::unique('users', 'username')],
             'contact' => ['required', 'string'],
             'password' => ['required', 'string', 'min: 8', 'max:20'],
         ]);
@@ -136,7 +116,7 @@ class UserController extends Controller
             'branch_id' => ['required', Rule::exists('branches', 'id')],
             'department_id' => ['nullable', Rule::exists('departments', 'id')],
             'employee_id' => ['required', Rule::unique('users', 'emp_id')],
-            'username' => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
+            'username' => ['required', 'string', Rule::unique('users', 'username')],
             'contact' => ['required', 'string'],
             'password' => ['required', 'string', 'min: 8', 'max:20'],
             'role_id' => ['required', Rule::exists('roles', 'id')],

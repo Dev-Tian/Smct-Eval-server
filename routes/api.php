@@ -46,6 +46,7 @@ Route::get('/profile', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(
     function () {
+
         Route::controller(UserController::class)->group(
             function () {
                 Route::get('getAllUsers', 'getAllUsers');
