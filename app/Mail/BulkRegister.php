@@ -19,6 +19,7 @@ class BulkRegister extends Mailable
         public string $fname = "",
         public string $lname = "",
         public string $username = "",
+        public string $email = "",
         public string $password = "" )
     {
 
@@ -45,6 +46,7 @@ class BulkRegister extends Mailable
                 $this->fname,
                 $this->lname,
                 $this->username,
+                $this->email,
                 $this->password
             ]
         );

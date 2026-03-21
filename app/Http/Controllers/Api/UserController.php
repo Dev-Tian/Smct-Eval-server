@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
@@ -28,7 +29,8 @@ class UserController extends Controller
         $users = [];
 
         foreach ($data as $item) {
-            Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $item['username'], 'password'));
+            $temp_pass = Str::random(10);
+            Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $item['username'] , $item['email'], $temp_pass));
             // $users[] = [
             //     // final mapping here
             // ];

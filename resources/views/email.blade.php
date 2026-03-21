@@ -51,6 +51,7 @@
                                                         You can now try to log into the system.
                                                         <br> <br>
                                                         Here are your credentials:<br>
+                                                        <b>Email: </b> {{ $email }}<br>
                                                         <b>Username: </b> {{ $username }}<br>
                                                         <b>Temporary Password: </b> {{ $password }}<br>
                                                         <br> <br>
