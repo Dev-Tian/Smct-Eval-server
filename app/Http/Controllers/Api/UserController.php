@@ -4,12 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\BulkRegister;
+use App\Models\Branch;
+use App\Models\Department;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -25,27 +29,99 @@ class UserController extends Controller
 
     public function bulkRegisterUser(Request $request)
     {
-        // $validate = $request->validate([
-        //     'users'                 => ['required', 'array'],
-        //     'users.*.fname'         => ['required', 'string'],
-        //     'users.*.lname'         => ['required', 'string'],
-        //     'users.*.date_hired'    => ['required', 'date'],
-        //     'users.*.email'         => ['required', 'email', 'string', 'lowercase'],
-        //     'users.*.branch_id'     => ['required', 'string'],
-        // ]);
+        $request->validate([
+            'users'                 => ['required', 'array'],
+            'users.*.fname'         => ['required', 'string'],
+            'users.*.lname'         => ['required', 'string'],
+            'users.*.date_hired'    => ['required', 'date'],
+            'users.*.email'         => ['required', 'email', 'string', 'lowercase'],
+            'users.*.branch_id'     => ['required', 'string'],
+            'users.*.position_id'   => ['required', 'string'],
+            'users.*.employee_id'   => ['required', 'string'],
+        ]);
+
         $data = $request->users;
-        $users = [];
+        $user = [];
 
         foreach ($data as $item) {
-            $temp_pass = Str::random(10);
-            Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $item['username'], $item['email'], $temp_pass));
-            // $users[] = [
-            //     // final mapping here
-            // ];
 
-            // and inserting
+            $temp_pass = Str::random(10);
+
+            $position_id = Position::firstOrCreate(
+                [
+                    'label' =>  $item['position_id']
+                ],[
+                    'label'         =>  $item['position_id'],
+                    'value'         =>  $item['position_id'],
+                    'created_at'    =>  now(),
+                    'updated_at'    =>  now()
+                ]);
+
+            $department_id = null ;
+            if(!empty($item['department_id'])){
+                $department = Department::firstOrCreate(
+                    [
+                        'department_name' =>  $item['department_id']
+                    ],[
+                        'department_name' =>  $item['department_id'],
+                        'created_at'      =>  now(),
+                        'updated_at'      =>  now()
+                    ]);
+                $department_id = $department->id;
+            }
+
+            $username = $item['username'] ?: Str::lower($item['fname'])."_".Str::substr($item['employee_id'], 0, 4 );
+
+            $clean_contact = preg_replace('/[^0-9]/', '', $item['contact']);
+            $contact = Str::startsWith($clean_contact, '9')
+                ? '0' . $clean_contact
+                : (Str::startsWith($clean_contact, '63') ? '0' . Str::substr($clean_contact, 2)
+                : $clean_contact
+            );
+
+            $branch_id = Branch::firstOrCreate(
+                [
+                    'branch_code'       =>  $item['branch_id']
+                ],[
+                    'branch_code'       =>  $item['branch_id'],
+                    'branch_name'       =>  $item['branch_id'].'_SMCT',
+                    'branch'            =>  'Strong Moto Centrum, Inc.',
+                    'acronym'           =>  'SMCT',
+                    'created_at'        =>  now(),
+                    'updated_at'        =>  now()
+                ]
+            );
+
+            $user[] = [
+               'position_id'        =>  $position_id->id,
+               'department_id'      =>  $department_id ?: null ,
+               'date_hired'         =>  $item['date_hired'],
+               'username'           =>  $username,
+               'fname'              =>  $item['fname'],
+               'lname'              =>  $item['lname'],
+               'email'              =>  $item['email'],
+               'password'           =>  $temp_pass,
+               'contact'            =>  $contact,
+               'emp_id'             =>  preg_replace('/[^0-9]/', '',$item['employee_id']),
+               'is_active'          =>  'active',
+               'signature'          =>  null,
+               'avatar'             =>  null
+            ];
+
+            $isUserExist = User::where('fname', $item['fname'])
+                        ->where('lname', $item['lname'])
+                        ->where('email', $item['email'])
+                        ->exists();
+
+            if(!$isUserExist){
+                $user = User::create($user);
+                $user->branches()->sync([$branch_id]);
+                Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $username, $item['email'], $temp_pass));
+            }
         }
-        return response()->json([], 201);
+        return response()->json([
+            'message'   =>  'users successfully created'
+        ], 201);
     }
 
     public function registerUser(Request $request)
