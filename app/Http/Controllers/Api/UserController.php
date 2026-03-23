@@ -25,12 +25,20 @@ class UserController extends Controller
 
     public function bulkRegisterUser(Request $request)
     {
+        // $validate = $request->validate([
+        //     'users'                 => ['required', 'array'],
+        //     'users.*.fname'         => ['required', 'string'],
+        //     'users.*.lname'         => ['required', 'string'],
+        //     'users.*.date_hired'    => ['required', 'date'],
+        //     'users.*.email'         => ['required', 'email', 'string', 'lowercase'],
+        //     'users.*.branch_id'     => ['required', 'string'],
+        // ]);
         $data = $request->users;
         $users = [];
 
         foreach ($data as $item) {
             $temp_pass = Str::random(10);
-            Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $item['username'] , $item['email'], $temp_pass));
+            Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $item['username'], $item['email'], $temp_pass));
             // $users[] = [
             //     // final mapping here
             // ];
