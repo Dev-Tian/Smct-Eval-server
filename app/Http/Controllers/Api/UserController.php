@@ -13,6 +13,7 @@ use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -28,102 +29,96 @@ class UserController extends Controller
 
     public function bulkRegisterUser(Request $request)
     {
-        $request->validate([
-            'users'                 => ['required', 'array'],
-            'users.*.fname'         => ['required', 'string'],
-            'users.*.lname'         => ['required', 'string'],
-            'users.*.date_hired'    => ['required', 'date'],
-            'users.*.email'         => ['required', 'email', 'string', 'lowercase'],
-            'users.*.branch_id'     => ['required', 'string'],
-            'users.*.position_id'   => ['required', 'string'],
-            'users.*.employee_id'   => ['required', 'string'],
-        ]);
-
         $data = $request->users;
-        // $user = [];
+        $user = [];
+        $temp_pass = Hash::make('Smct123456');
 
         foreach ($data as $item) {
-
             // $temp_pass = Str::random(10);
-            $temp_pass = 'Smct123456';
 
             $position_id = Position::firstOrCreate(
                 [
-                    'label' =>  $item['position_id']
-                ],[
-                    'label'         =>  $item['position_id'],
-                    'value'         =>  $item['position_id'],
-                    'created_at'    =>  now(),
-                    'updated_at'    =>  now()
-                ]);
+                    'label' => $item['position_id'],
+                ],
+                [
+                    'label' => $item['position_id'],
+                    'value' => $item['position_id'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            );
 
-            $department_id = null ;
-            if(!empty($item['department_id'])){
+            $department_id = null;
+            if (!empty($item['department_id'])) {
                 $department = Department::firstOrCreate(
                     [
-                        'department_name' =>  $item['department_id']
-                    ],[
-                        'department_name' =>  $item['department_id'],
-                        'created_at'      =>  now(),
-                        'updated_at'      =>  now()
-                    ]);
+                        'department_name' => $item['department_id'],
+                    ],
+                    [
+                        'department_name' => $item['department_id'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ],
+                );
                 $department_id = $department->id;
             }
 
-            $username = $item['username'] ?: Str::lower($item['fname'])."_".Str::substr($item['employee_id'], 0, 4 );
+            $username = $item['username'] ?: Str::lower($item['fname']) . '_' . Str::substr($item['employee_id'], 0, 4);
 
-            $clean_contact = preg_replace('/[^0-9]/', '', $item['contact']);
-            $contact = Str::startsWith($clean_contact, '9')
-                ? '0' . $clean_contact
-                : (Str::startsWith($clean_contact, '63') ? '0' . Str::substr($clean_contact, 2)
-                : $clean_contact
-            );
+            $clean_contact = "0" . Str::substr($item['contact'], -10);
 
             $branch_id = Branch::firstOrCreate(
                 [
-                    'branch_code'       =>  $item['branch_id']
-                ],[
-                    'branch_code'       =>  $item['branch_id'],
-                    'branch_name'       =>  $item['branch_id'].'_SMCT',
-                    'branch'            =>  'Strong Moto Centrum, Inc.',
-                    'acronym'           =>  'SMCT',
-                    'created_at'        =>  now(),
-                    'updated_at'        =>  now()
-                ]
+                    'branch_code' => $item['branch_id'],
+                ],
+                [
+                    'branch_code' => $item['branch_id'],
+                    'branch_name' => $item['branch_id'] . '_SMCT',
+                    'branch' => 'Strong Moto Centrum, Inc.',
+                    'acronym' => 'SMCT',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
             );
 
-            $user = [
-               'position_id'        =>  $position_id->id,
-               'department_id'      =>  $department_id ?: null ,
-               'date_hired'         =>  Carbon::parse($item['date_hired'])->toDateString(),
-               'username'           =>  $username,
-               'fname'              =>  $item['fname'],
-               'lname'              =>  $item['lname'],
-               'email'              =>  $item['email'],
-               'password'           =>  $temp_pass,
-               'contact'            =>  $contact,
-               'emp_id'             =>  preg_replace('/[^0-9]/', '',$item['employee_id']),
-               'is_active'          =>  'active',
-               'signature'          =>  null,
-               'avatar'             =>  null
-            ];
+            $isUserExist = User::where('fname', $item['fname'])->where('lname', $item['lname'])->where('email', $item['email'])->exists();
 
-            $isUserExist = User::where('fname', $item['fname'])
-                        ->where('lname', $item['lname'])
-                        ->where('email', $item['email'])
-                        ->exists();
-
-            if(!$isUserExist){
-                $user = User::create($user);
-                $user->branches()->sync([$branch_id]);
-                $user->assignRole('employee');
-                // Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $username, $item['email'], $temp_pass));
+            if (!$isUserExist) {
+                $user[] = [
+                    'position_id' => $position_id->id,
+                    'department_id' => $department_id ?: null,
+                    'date_hired' => Carbon::parse($item['date_hired'])->toDateString(),
+                    'username' => $username,
+                    'fname' => $item['fname'],
+                    'lname' => $item['lname'],
+                    'email' => $item['email'],
+                    'password' => $temp_pass,
+                    'contact' => $clean_contact,
+                    'emp_id' => preg_replace('/[^0-9]/', '', $item['employee_id']),
+                    'is_active' => 'active',
+                    'signature' => null,
+                    'avatar' => null,
+                    'branch_id' => $branch_id?->id,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
             }
         }
+
+        User::insert($user);
+
+        $userItems = User::whereIn('username', collect($user)->pluck('username'))->get();
+
+        $userItems->each(function ($user) {
+            $user->assignRole('employee');
+        });
+
         return response()->json(
             [
-                'message'   =>  'users successfully created'
-            ],201);
+                'message' => 'users successfully created',
+            ],
+            201,
+        );
     }
 
     public function registerUser(Request $request)
@@ -146,9 +141,7 @@ class UserController extends Controller
         //file handling | storing
         if ($request->hasFile('signature')) {
             $signature = $request->file('signature');
-
             $name = time() . '-' . $validate['username'] . '.' . $signature->getClientOriginalExtension();
-
             $path = $signature->storeAs('user-signatures', $name, 'public');
         } else {
             return response()->json(
@@ -345,7 +338,7 @@ class UserController extends Controller
         $branch_filter = $request->input('branch');
         $department_filter = $request->input('department');
 
-        $users = User::query()->with('branches', 'departments', 'positions', 'roles')->where('is_active', 'active')->whereNot('id', Auth::id())->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))->when($branch_filter, fn($q) => $q->whereRelation('branches', 'branches.id', $branch_filter))->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))->search($search_filter)->latest('updated_at')->paginate($perPage);
+        $users = User::query()->with('branches', 'departments', 'positions', 'roles')->where('is_active', 'active')->whereNot('id', Auth::id())->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))->when($branch_filter, fn($q) => $q->whereRelation('branch', 'id', $branch_filter))->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))->search($search_filter)->latest('updated_at')->paginate($perPage);
 
         return response()->json(
             [

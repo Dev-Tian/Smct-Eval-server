@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Branch;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Position;
@@ -38,6 +39,7 @@ class UserFactory extends Factory
             'password'      => Hash::make('password'),
             'is_active'     => fake()->randomElement(["pending", "active"]),
             'avatar'        => null,
+            'branch_id'     => Branch::all()->random()->id
         ];
     }
 
