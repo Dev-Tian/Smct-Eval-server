@@ -73,9 +73,11 @@ class UsersEvaluation extends Model
         $relations = [
             'employee',
             'employee.branches',
+            'employee.branch',
             'employee.positions',
             'evaluator',
             'evaluator.branches',
+            'evaluator.branch',
             'evaluator.positions',
             'jobKnowledge',
             'adaptability',

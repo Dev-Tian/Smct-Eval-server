@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\BulkRegister;
 // use App\Mail\BulkRegister;
 use App\Models\Branch;
 use App\Models\Department;
@@ -65,7 +66,7 @@ class UserController extends Controller
 
             $username = $item['username'] ?: Str::lower($item['fname']) . '_' . Str::substr($item['employee_id'], 0, 4);
 
-            $clean_contact = "0" . Str::substr($item['contact'], -10);
+            $clean_contact = '0' . Str::substr($item['contact'], -10);
 
             $branch_id = Branch::firstOrCreate(
                 [
@@ -87,20 +88,20 @@ class UserController extends Controller
                 $user[] = [
                     'position_id' => $position_id->id,
                     'department_id' => $department_id ?: null,
-                    'date_hired' => Carbon::parse($item['date_hired'])->toDateString(),
+                    'date_hired' => Carbon::parse($item['date_hired'])->toDateString() ?: null,
                     'username' => $username,
                     'fname' => $item['fname'],
                     'lname' => $item['lname'],
-                    'email' => $item['email'],
+                    'email' => Str::lower($item['email']),
                     'password' => $temp_pass,
-                    'contact' => $clean_contact,
-                    'emp_id' => preg_replace('/[^0-9]/', '', $item['employee_id']),
+                    'contact' => $clean_contact ?: null,
+                    'emp_id' => preg_replace('/[^0-9]/', '', $item['employee_id']) ?: null,
                     'is_active' => 'active',
                     'signature' => null,
                     'avatar' => null,
                     'branch_id' => $branch_id?->id,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ];
             }
         }
@@ -111,6 +112,7 @@ class UserController extends Controller
 
         $userItems->each(function ($user) {
             $user->assignRole('employee');
+            // Mail::to($user->email)->queue(new BulkRegister($user->fname, $user->lname, $user->username, $user->email, $user->password));
         });
 
         return response()->json(
@@ -164,10 +166,10 @@ class UserController extends Controller
             'username' => $validate['username'],
             'contact' => $validate['contact'],
             'password' => $validate['password'],
+            'branch_id' => $validate['branch_id'],
         ]);
 
         $user->assignRole('employee');
-        $user->branches()->sync($validate['branch_id']);
 
         //notification for admin and hr
         $notificationData = new EvalNotifications('New user registration: ' . $user->fname . ' ' . $user->lname);
@@ -215,11 +217,11 @@ class UserController extends Controller
             'contact' => $validate['contact'],
             'password' => $validate['password'],
             'is_active' => 'active',
+            'branch_id' => $validate['branch_id'],
         ]);
 
         $role = Role::findOrFail($validate['role_id']);
         $user->assignRole($role->name);
-        $user->branches()->sync($validate['branch_id']);
 
         return response()->json(
             [
@@ -292,11 +294,14 @@ class UserController extends Controller
         $branch_filter = $request->input('branch');
 
         $users = User::query()
-            ->with(['branches', 'departments', 'positions', 'evaluations', 'doesEvaluated', 'roles'])
+            ->with(['branch', 'branches', 'departments', 'positions', 'evaluations', 'doesEvaluated', 'roles'])
             ->search($search_filter)
             ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
             ->when($branch_filter, function ($q) use ($branch_filter) {
                 $q->whereHas('branches', function ($subq) use ($branch_filter) {
+                    $subq->where('branch_id', $branch_filter);
+                });
+                $q->whereHas('branch', function ($subq) use ($branch_filter) {
                     $subq->where('branch_id', $branch_filter);
                 });
             })
@@ -338,7 +343,7 @@ class UserController extends Controller
         $branch_filter = $request->input('branch');
         $department_filter = $request->input('department');
 
-        $users = User::query()->with('branch' ,'branches', 'departments', 'positions', 'roles')->where('is_active', 'active')->whereNot('id', Auth::id())->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))->when($branch_filter, fn($q) => $q->whereRelation('branch', 'id', $branch_filter))->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))->search($search_filter)->latest('updated_at')->paginate($perPage);
+        $users = User::query()->with('branch', 'branches', 'departments', 'positions', 'roles')->where('is_active', 'active')->whereNot('id', Auth::id())->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))->when($branch_filter, fn($q) => $q->whereRelation('branch', 'id', $branch_filter))->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))->search($search_filter)->latest('updated_at')->paginate($perPage);
 
         return response()->json(
             [
@@ -364,7 +369,7 @@ class UserController extends Controller
     {
         $search = $request->input('search');
         $users = User::query()
-            ->with(['branch' ,'branches', 'departments', 'positions', 'roles'])
+            ->with(['branch', 'branches', 'departments', 'positions', 'roles'])
             ->where('is_active', 'active')
             ->search($search)
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
@@ -383,7 +388,7 @@ class UserController extends Controller
     {
         $search = $request->input('search');
         $users = User::query()
-            ->with(['branch' ,'branches', 'departments', 'positions', 'roles'])
+            ->with(['branch', 'branches', 'departments', 'positions', 'roles'])
             ->where('is_active', 'active')
             ->search($search)
             ->where('position_id', 16)
@@ -401,7 +406,7 @@ class UserController extends Controller
     public function getAllSignatureRequest(Request $request)
     {
         $search = $request->input('search');
-        $users = User::query()->with('branch' ,'branches', 'departments', 'positions')->where('requestSignatureReset', true)->whereNot('approvedSignatureReset', true)->search($search)->latest('updated_at')->get();
+        $users = User::query()->with('branch', 'branches', 'departments', 'positions')->where('requestSignatureReset', true)->whereNot('approvedSignatureReset', true)->search($search)->latest('updated_at')->get();
 
         return response()->json(
             [
@@ -431,7 +436,7 @@ class UserController extends Controller
         }
 
         //boolean conditions
-        $isHO = $manager->branches()->where('branch_id', 126)->exists();
+        $isHO = ($manager->branches()->where('branch_id', 126)->exists() || $manager->branch_id === 126 );
         $hasDepartment = !empty($manager->department_id);
         $isAreaManager = $manager->position_id === 16;
         $isAVP = $manager->position_id === 31;
@@ -441,9 +446,10 @@ class UserController extends Controller
         $areaManagerPositionId = [16];
         $branchManagerPositionsId = [35, 36, 37, 38];
         $userQuery = User::query()
-            ->with('departments', 'branch' ,'branches', 'positions', 'roles')
+            ->with('departments', 'branch', 'branches', 'positions', 'roles')
             ->where('is_active', 'active')
-            ->whereHas('branches', fn($query) => $query->whereIn('branch_id', $branches))
+            ->whereHas('branches', fn($query) => $query->whereIn('branch_id', array_merge([$manager->branch_id],[$branches])))
+            ->whereHas('branch', fn($query) => $query->whereIn('id', array_merge([$manager->branch_id],[$branches])))
             ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
             ->where('id', '!=', $manager->id)
             ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {
@@ -497,7 +503,6 @@ class UserController extends Controller
         ]);
 
         $user->syncRoles([$validate['roles']]);
-        $user->branches()->sync([$validate['branch_id']]);
 
         $updateData = [
             'fname' => $validate['fname'],
@@ -510,6 +515,7 @@ class UserController extends Controller
             'contact' => $validate['contact'],
             'contact' => $validate['contact'],
             'emp_id' => $validate['employeeId'],
+            'branch_id' => $validate['branch_id'],
         ];
 
         if ($request->filled('password')) {
