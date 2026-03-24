@@ -34,6 +34,7 @@ Route::get('/profile', function (Request $request) {
             'roles',
             'departments',
             'branches',
+            'branch',
             'positions',
             'notifications' => function($q) { $q->latest()->limit(15); },
         ]

@@ -52,13 +52,11 @@ class UsersEvaluationController extends Controller
                     $sub->whereHas('branches', function ($fin) use ($branch) {
                         $fin->where('id', $branch);
                     });
-                });
-
-                $q->whereRelation('employee', function ($sub) use ($branch) {
                     $sub->whereHas('branch', function ($fin) use ($branch) {
                         $fin->where('id', $branch);
                     });
                 });
+
             })
             ->latest('created_at')
             ->paginate($perPage);
@@ -641,7 +639,7 @@ class UsersEvaluationController extends Controller
         $year = $request->input('year');
 
         $user = Auth::user();
-        $user_eval = UsersEvaluation::with(['employee', 'employee.branches',  'employee.branch', 'employee.positions', 'evaluator', 'evaluator.branches', 'evaluator.branches', 'evaluator.positions', 'jobKnowledge', 'adaptability', 'qualityOfWorks', 'teamworks', 'reliabilities', 'ethicals', 'customerServices'])
+        $user_eval = UsersEvaluation::with(['employee', 'employee.branches',  'employee.branch', 'employee.positions', 'evaluator', 'evaluator.branches', 'evaluator.branch', 'evaluator.positions', 'jobKnowledge', 'adaptability', 'qualityOfWorks', 'teamworks', 'reliabilities', 'ethicals', 'customerServices'])
             ->where('employee_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
