@@ -319,7 +319,7 @@ class UserController extends Controller
         $perPage = $request->input('per_page', 10);
         $search_filter = $request->input('search');
 
-        $pending_users = User::query()->with('positions', 'branches', 'departments', 'roles')->whereNot('is_active', 'active')->whereNot('id', Auth::id())->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))->search($search_filter)->latest('updated_at')->paginate($perPage);
+        $pending_users = User::query()->with('positions', 'branch', 'branches', 'departments', 'roles')->whereNot('is_active', 'active')->whereNot('id', Auth::id())->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))->search($search_filter)->latest('updated_at')->paginate($perPage);
 
         return response()->json(
             [
@@ -338,7 +338,7 @@ class UserController extends Controller
         $branch_filter = $request->input('branch');
         $department_filter = $request->input('department');
 
-        $users = User::query()->with('branches', 'departments', 'positions', 'roles')->where('is_active', 'active')->whereNot('id', Auth::id())->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))->when($branch_filter, fn($q) => $q->whereRelation('branch', 'id', $branch_filter))->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))->search($search_filter)->latest('updated_at')->paginate($perPage);
+        $users = User::query()->with('branch' ,'branches', 'departments', 'positions', 'roles')->where('is_active', 'active')->whereNot('id', Auth::id())->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))->when($branch_filter, fn($q) => $q->whereRelation('branch', 'id', $branch_filter))->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))->search($search_filter)->latest('updated_at')->paginate($perPage);
 
         return response()->json(
             [
@@ -364,7 +364,7 @@ class UserController extends Controller
     {
         $search = $request->input('search');
         $users = User::query()
-            ->with(['branches', 'departments', 'positions', 'roles'])
+            ->with(['branch' ,'branches', 'departments', 'positions', 'roles'])
             ->where('is_active', 'active')
             ->search($search)
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
@@ -383,7 +383,7 @@ class UserController extends Controller
     {
         $search = $request->input('search');
         $users = User::query()
-            ->with(['branches', 'departments', 'positions', 'roles'])
+            ->with(['branch' ,'branches', 'departments', 'positions', 'roles'])
             ->where('is_active', 'active')
             ->search($search)
             ->where('position_id', 16)
@@ -401,7 +401,7 @@ class UserController extends Controller
     public function getAllSignatureRequest(Request $request)
     {
         $search = $request->input('search');
-        $users = User::query()->with('branches', 'departments', 'positions')->where('requestSignatureReset', true)->whereNot('approvedSignatureReset', true)->search($search)->latest('updated_at')->get();
+        $users = User::query()->with('branch' ,'branches', 'departments', 'positions')->where('requestSignatureReset', true)->whereNot('approvedSignatureReset', true)->search($search)->latest('updated_at')->get();
 
         return response()->json(
             [
@@ -441,7 +441,7 @@ class UserController extends Controller
         $areaManagerPositionId = [16];
         $branchManagerPositionsId = [35, 36, 37, 38];
         $userQuery = User::query()
-            ->with('departments', 'branches', 'positions', 'roles')
+            ->with('departments', 'branch' ,'branches', 'positions', 'roles')
             ->where('is_active', 'active')
             ->whereHas('branches', fn($query) => $query->whereIn('branch_id', $branches))
             ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))

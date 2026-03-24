@@ -33,7 +33,7 @@ class UsersEvaluationController extends Controller
         $branch = $request->input('branch');
 
         $all_evaluations = UsersEvaluation::query()
-            ->with('employee', 'employee.branches', 'employee.positions', 'evaluator', 'evaluator.branches', 'evaluator.positions', 'evaluator.roles')
+            ->with('employee', 'employee.branches','employee.branch' , 'employee.positions', 'evaluator', 'evaluator.branches', 'evaluator.branch', 'evaluator.positions', 'evaluator.roles')
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when($quarter, fn($q) => $q->where(fn($sub) => $sub->where('reviewTypeRegular', $quarter)->orWhere('reviewTypeProbationary', $quarter)))
@@ -50,7 +50,13 @@ class UsersEvaluationController extends Controller
             ->when($branch, function ($q) use ($branch) {
                 $q->whereRelation('employee', function ($sub) use ($branch) {
                     $sub->whereHas('branches', function ($fin) use ($branch) {
-                        $fin->where('branches.id', $branch);
+                        $fin->where('id', $branch);
+                    });
+                });
+
+                $q->whereRelation('employee', function ($sub) use ($branch) {
+                    $sub->whereHas('branch', function ($fin) use ($branch) {
+                        $fin->where('id', $branch);
                     });
                 });
             })
@@ -635,7 +641,7 @@ class UsersEvaluationController extends Controller
         $year = $request->input('year');
 
         $user = Auth::user();
-        $user_eval = UsersEvaluation::with(['employee', 'employee.branches', 'employee.positions', 'evaluator', 'evaluator.branches', 'evaluator.positions', 'jobKnowledge', 'adaptability', 'qualityOfWorks', 'teamworks', 'reliabilities', 'ethicals', 'customerServices'])
+        $user_eval = UsersEvaluation::with(['employee', 'employee.branches',  'employee.branch', 'employee.positions', 'evaluator', 'evaluator.branches', 'evaluator.branches', 'evaluator.positions', 'jobKnowledge', 'adaptability', 'qualityOfWorks', 'teamworks', 'reliabilities', 'ethicals', 'customerServices'])
             ->where('employee_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
@@ -673,7 +679,7 @@ class UsersEvaluationController extends Controller
 
         $user = Auth::user();
         $user_eval = UsersEvaluation::query()
-            ->with('employee', 'employee.branches', 'employee.positions', 'evaluator', 'evaluator.branches', 'evaluator.positions', 'jobKnowledge', 'adaptability', 'qualityOfWorks', 'teamworks', 'reliabilities', 'ethicals', 'customerServices')
+            ->with('employee', 'employee.branches', 'employee.branch', 'employee.positions', 'evaluator', 'evaluator.branches', 'evaluator.branch', 'evaluator.positions', 'jobKnowledge', 'adaptability', 'qualityOfWorks', 'teamworks', 'reliabilities', 'ethicals', 'customerServices')
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
