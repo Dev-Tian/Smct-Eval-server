@@ -13,7 +13,6 @@ use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -92,10 +91,10 @@ class UserController extends Controller
                 ]
             );
 
-            $user[] = [
+            $user = [
                'position_id'        =>  $position_id->id,
                'department_id'      =>  $department_id ?: null ,
-               'date_hired'         =>  $item['date_hired'],
+               'date_hired'         =>  Carbon::parse($item['date_hired'])->toDateString(),
                'username'           =>  $username,
                'fname'              =>  $item['fname'],
                'lname'              =>  $item['lname'],
@@ -119,9 +118,10 @@ class UserController extends Controller
                 Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $username, $item['email'], $temp_pass));
             }
         }
-        return response()->json([
-            'message'   =>  'users successfully created'
-        ], 201);
+        return response()->json(
+            [
+                'message'   =>  'users successfully created'
+            ],201);
     }
 
     public function registerUser(Request $request)
