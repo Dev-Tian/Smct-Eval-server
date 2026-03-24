@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Mail\BulkRegister;
+// use App\Mail\BulkRegister;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Position;
@@ -40,11 +40,12 @@ class UserController extends Controller
         ]);
 
         $data = $request->users;
-        $user = [];
+        // $user = [];
 
         foreach ($data as $item) {
 
-            $temp_pass = Str::random(10);
+            // $temp_pass = Str::random(10);
+            $temp_pass = 'Smct123456';
 
             $position_id = Position::firstOrCreate(
                 [
@@ -115,7 +116,8 @@ class UserController extends Controller
             if(!$isUserExist){
                 $user = User::create($user);
                 $user->branches()->sync([$branch_id]);
-                Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $username, $item['email'], $temp_pass));
+                $user->assignRole('employee');
+                // Mail::to($item['email'])->queue(new BulkRegister($item['fname'], $item['lname'], $username, $item['email'], $temp_pass));
             }
         }
         return response()->json(
@@ -238,7 +240,7 @@ class UserController extends Controller
     public function userLogin(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'string', 'lowercase'],
+            'email' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
@@ -495,7 +497,7 @@ class UserController extends Controller
             'branch_id' => ['required', Rule::exists('branches', 'id')],
             'department_id' => ['nullable', Rule::exists('departments', 'id')],
             'employeeId' => ['required'],
-            'username' => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
+            'username' => ['required', 'string', Rule::unique('users', 'username')->ignore($user->id)],
             'contact' => ['required', 'string'],
             'roles' => ['required', Rule::exists('roles', 'name')],
             'password' => ['nullable', 'string', 'min: 8', 'max:20'],
