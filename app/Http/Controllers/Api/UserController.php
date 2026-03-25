@@ -457,8 +457,8 @@ class UserController extends Controller
         $userQuery = User::query()
             ->with('departments', 'branch', 'branches', 'positions', 'roles')
             ->where('is_active', 'active')
-            ->whereHas('branches', fn($query) => $query->whereIn('branch_id', array_merge([$manager->branch_id],[$branches])))
-            ->orWhereHas('branch', fn($query) => $query->whereIn('id', array_merge([$manager->branch_id],[$branches])))
+            ->whereHas('branches', fn($query) => $query->whereIn('branch_id',$branches))
+            ->orWhereHas('branch', fn($query) => $query->where('id',$manager->branch_id))
             ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
             ->where('id', '!=', $manager->id)
             ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {

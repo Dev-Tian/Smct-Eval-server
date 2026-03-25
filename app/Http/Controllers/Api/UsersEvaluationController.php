@@ -50,11 +50,9 @@ class UsersEvaluationController extends Controller
             ->when($branch, function ($q) use ($branch) {
                 $q->whereRelation('employee', function ($sub) use ($branch) {
                     $sub->whereHas('branches', function ($fin) use ($branch) {
-                        $fin->where('id', $branch);
-                    });
-                    $sub->whereHas('branch', function ($fin) use ($branch) {
-                        $fin->where('id', $branch);
-                    });
+                        $fin->where('branches.id', $branch);
+                    })
+                    ->orWhereRelation('branch', fn($q) => $q->where('branches.id', $branch));
                 });
 
             })
