@@ -460,7 +460,10 @@ class UserController extends Controller
         $userQuery = User::query()
             ->with('departments', 'branch', 'branches', 'positions', 'roles')
             ->where('is_active', 'active')
-            ->whereRelation('branch', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
+            ->where( fn ($q) =>
+                $q->whereRelation('branch', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
+                ->orWhereRelation('branches', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
+            )
             ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
             ->where('id', '!=', $manager->id)
             ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {
