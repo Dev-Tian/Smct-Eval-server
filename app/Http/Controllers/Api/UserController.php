@@ -13,6 +13,7 @@ use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -452,16 +453,14 @@ class UserController extends Controller
         $isAVP = $manager->position_id === 31;
 
         //array collections
-        $branches = $manager->branches->pluck('id');
+        $branches = $manager->branches->pluck('id')->toArray();
+        Log::info('branches', $branches);
         $areaManagerPositionId = [16];
         $branchManagerPositionsId = [35, 36, 37, 38];
         $userQuery = User::query()
             ->with('departments', 'branch', 'branches', 'positions', 'roles')
             ->where('is_active', 'active')
-            ->where( fn($query) =>
-                $query->whereHas('branches', fn($query) => $query->whereIn('branch_id',$branches))
-                    ->orWhereHas('branch', fn($query) => $query->where('id',$manager->branch_id))
-            )
+            ->whereRelation('branch', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
             ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
             ->where('id', '!=', $manager->id)
             ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {
