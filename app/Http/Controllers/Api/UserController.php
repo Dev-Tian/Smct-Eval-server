@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-// use App\Mail\BulkRegister;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Position;
@@ -14,12 +13,13 @@ use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
+// use App\Mail\BulkRegister;
+// use Illuminate\Support\Facades\Mail;
 
 use function Symfony\Component\Clock\now;
 
@@ -36,7 +36,7 @@ class UserController extends Controller
         foreach ($data as $item) {
             // $temp_pass = Str::random(10);
 
-            $position_id = Position::firstOrCreate(
+            $position = Position::firstOrCreate(
                 [
                     'label' => $item['position_id'],
                 ],
@@ -63,11 +63,11 @@ class UserController extends Controller
                 $department_id = $department->id;
             }
 
-            $username = $item['username'] ?: Str::lower($item['fname']) . '_' . Str::substr($item['employee_id'], 0, 4);
+            $username = $item['username'] ?: str_replace(' ', '_', Str::lower($item['fname'])) . '_' . Str::substr($item['employee_id'], 0, 4);
 
             $clean_contact = '0' . Str::substr($item['contact'], -10);
 
-            $branch_id = Branch::firstOrCreate(
+            $branch = Branch::firstOrCreate(
                 [
                     'branch_code' => $item['branch_id'],
                 ],
@@ -84,21 +84,22 @@ class UserController extends Controller
             $isUserExist = User::where('fname', $item['fname'])->where('lname', $item['lname'])->where('email', $item['email'])->exists();
 
             if (!$isUserExist) {
-                $user[] = [
-                    'position_id' => $position_id->id,
+                $user[] =
+                [
+                    'position_id' => $position->id,
+                    'branch_id' => $branch?->id,
                     'department_id' => $department_id ?: null,
-                    'date_hired' => Carbon::parse($item['date_hired'])->toDateString() ?: null,
+                    'date_hired' => Carbon::parse($item['date_hired'])->toDateString() ?: now(),
                     'username' => $username,
-                    'fname' => $item['fname'],
-                    'lname' => $item['lname'],
-                    'email' => Str::lower($item['email']) ?: Str::lower($item['fname']).'tepm_email@temp.test',
+                    'fname' => $item['fname'] ?: 'temp_first|_name',
+                    'lname' => $item['lname'] ?: 'temp_last_name',
+                    'email' => Str::lower($item['email']) ?: Str::lower($item['fname']).'temp_email@temp.test',
                     'password' => $temp_pass,
-                    'contact' => $clean_contact ?: null,
+                    'contact' => $clean_contact ?: '09123456789',
                     'emp_id' => preg_replace('/[^0-9]/', '', $item['employee_id']) ?: '0000000000',
                     'is_active' => 'active',
                     'signature' => null,
                     'avatar' => null,
-                    'branch_id' => $branch_id?->id,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -457,8 +458,10 @@ class UserController extends Controller
         $userQuery = User::query()
             ->with('departments', 'branch', 'branches', 'positions', 'roles')
             ->where('is_active', 'active')
-            ->whereHas('branches', fn($query) => $query->whereIn('branch_id',$branches))
-            ->orWhereHas('branch', fn($query) => $query->where('id',$manager->branch_id))
+            ->where( fn($query) =>
+                $query->whereHas('branches', fn($query) => $query->whereIn('branch_id',$branches))
+                    ->orWhereHas('branch', fn($query) => $query->where('id',$manager->branch_id))
+            )
             ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
             ->where('id', '!=', $manager->id)
             ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {
