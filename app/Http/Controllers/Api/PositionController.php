@@ -93,11 +93,11 @@ class PositionController extends Controller
      */
     public function destroy( Position $position, string $id)
     {
-        $positionIndicator = $position->label;
+        // $positionIndicator = $position->label;
         $position->delete();
 
         return response()->json([
-            'message'       =>      ucfirst($positionIndicator) . " position has been succesfully deleted"
+            'message'       =>    " position has been succesfully deleted"
         ]);
     }
 }
