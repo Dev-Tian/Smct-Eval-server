@@ -73,15 +73,6 @@ Route::middleware('auth:sanctum')->group(
             }
         );
 
-        Route::controller(BranchController::class)->group(
-            function () {
-                Route::get('getTotalEmployeesBranch', 'getTotalEmployeesBranch');
-                Route::get('branch/{branch}', 'show');
-                Route::post('addBranch', 'store');
-                Route::post('deleteBranch/{branch}', 'destroy');
-            }
-        );
-
         Route::controller(UsersEvaluationController::class)->group(
             function () {
                 Route::get('allEvaluations', 'index');
@@ -105,6 +96,25 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('BranchBasicAreaManager/{user}', 'BranchBasicAreaManager');
             }
         );
+
+        Route::controller(BranchController::class)->group(
+            function () {
+                Route::get('getTotalEmployeesBranch', 'getTotalEmployeesBranch');
+                Route::get('branch/{branch}', 'show');
+                Route::post('addBranch', 'store');
+                Route::post('deleteBranch/{branch}', 'destroy');
+            }
+        );
+
+        Route::controller(PositionController::class)->group(
+            function () {
+                Route::get('position/{position}', 'show');
+                Route::post('addPosition', 'store');
+                Route::post('updatePosition', 'update');
+                Route::post('deletePosition/{position}', 'destroy');
+            }
+        );
+
 
         Route::controller(DepartmentController::class)->group(
             function () {
