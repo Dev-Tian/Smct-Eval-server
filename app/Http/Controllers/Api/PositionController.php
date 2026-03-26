@@ -16,7 +16,7 @@ class PositionController extends Controller
      */
     public function index()
     {
-        $positions = Position::select('id','label')->get();
+        $positions = Position::all();
 
         return response()->json([
             'positions' => $positions
