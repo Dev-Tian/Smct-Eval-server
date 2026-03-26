@@ -70,10 +70,9 @@ class PositionController extends Controller
 
     /**
      * Update the specified resource in storage.
-    */
+     */
     public function update(Request $request, Position $position, string $id)
     {
-
         $validate = $request->validate([
            'label'     =>      ['required', 'string', Rule::unique('positions', 'label')]
         ]);
@@ -93,11 +92,11 @@ class PositionController extends Controller
      */
     public function destroy( Position $position)
     {
-        // $positionIndicator = $position->label;
+        $positionIndicator = $position->label;
         $position->delete();
 
         return response()->json([
-            'message'       =>    " position has been succesfully deleted"
+            'message'       =>    ucfirst($positionIndicator) . " position has been succesfully deleted"
         ]);
     }
 }
