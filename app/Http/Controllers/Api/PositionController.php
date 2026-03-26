@@ -53,7 +53,7 @@ class PositionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Position $position, string $id)
+    public function show(Position $position)
     {
         return response()->json([
             'position'  =>  $position
@@ -71,7 +71,7 @@ class PositionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Position $position, string $id)
+    public function update(Request $request, Position $position)
     {
         $validate = $request->validate([
            'label'     =>      ['required', 'string', Rule::unique('positions', 'label')]

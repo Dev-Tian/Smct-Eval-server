@@ -110,7 +110,7 @@ Route::middleware('auth:sanctum')->group(
             function () {
                 Route::get('position/{position}', 'show');
                 Route::post('addPosition', 'store');
-                Route::post('updatePosition', 'update');
+                Route::post('updatePosition/{position}', 'update');
                 Route::post('deletePosition/{position}', 'destroy');
             }
         );
