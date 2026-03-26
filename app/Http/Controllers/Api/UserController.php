@@ -299,12 +299,8 @@ class UserController extends Controller
             ->search($search_filter)
             ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
             ->when($branch_filter, function ($q) use ($branch_filter) {
-                $q->whereHas('branches', function ($subq) use ($branch_filter) {
-                    $subq->where('branch_id', $branch_filter);
-                })
-                ->orWhereHas('branch', function ($subq) use ($branch_filter) {
-                    $subq->where('id', $branch_filter);
-                });
+                $q->whereRelation('branches', 'branches.id', $branch_filter)
+                ->orWhereRelation('branch', 'branches.id', $branch_filter);
             })
             ->whereRelation('roles', 'name', '!=', 'admin')
             ->whereNot('id', Auth::id())
@@ -351,7 +347,7 @@ class UserController extends Controller
             ->where('is_active', 'active')
             ->whereNot('id', Auth::id())
             ->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))
-            ->when($branch_filter, fn($q) => $q->whereRelation('branch', 'id', $branch_filter))
+            ->when($branch_filter, fn($q) => $q->where( fn($query) => $query->whereRelation('branches', 'branches.id', $branch_filter)->orWhereRelation('branch', 'branches.id', $branch_filter)))
             ->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)->latest('updated_at')->paginate($perPage);
