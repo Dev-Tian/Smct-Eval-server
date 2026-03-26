@@ -91,7 +91,7 @@ class PositionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy( Position $position, string $id)
+    public function destroy( Position $position)
     {
         // $positionIndicator = $position->label;
         $position->delete();
