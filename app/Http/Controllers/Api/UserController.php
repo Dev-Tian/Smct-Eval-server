@@ -401,6 +401,8 @@ class UserController extends Controller
     public function getAllBranchHeads(Request $request)
     {
         $search = $request->input('search');
+        // $per_page = $request->input('per_page', 10);
+
         $users = User::query()
             ->with(
                 [
@@ -415,6 +417,7 @@ class UserController extends Controller
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
             ->latest('updated_at')
             ->get();
+            // ->paginate($per_page);
 
         return response()->json(
             [
@@ -427,6 +430,8 @@ class UserController extends Controller
     public function getAllAreaManager(Request $request)
     {
         $search = $request->input('search');
+        // $per_page = $request->input('per_page', 10);
+
         $users = User::query()
             ->with(
                 [
@@ -441,6 +446,7 @@ class UserController extends Controller
             ->where('position_id', 16)
             ->latest('updated_at')
             ->get();
+            // ->paginate($per_page);
 
         return response()->json(
             [
@@ -453,6 +459,8 @@ class UserController extends Controller
     public function getAllSignatureRequest(Request $request)
     {
         $search = $request->input('search');
+        // $per_page = $request->input('per_page', 10);
+
         $users = User::query()->with(
             [
                 'branch',
@@ -462,7 +470,10 @@ class UserController extends Controller
             ])
             ->where('requestSignatureReset', true)
             ->whereNot('approvedSignatureReset', true)
-            ->search($search)->latest('updated_at')->get();
+            ->search($search)
+            ->latest('updated_at')
+            ->get();
+            // ->paginate($per_page);
 
         return response()->json(
             [
@@ -734,9 +745,11 @@ class UserController extends Controller
 
     public function rejectSignatureReset(User $user)
     {
-        $user->update([
-            'requestSignatureReset' => false,
-        ]);
+        $user->update(
+            [
+                'requestSignatureReset' => false,
+            ]
+        );
 
         $user->notify(new EvalNotifications('Unfortunately, your signature reset request has been declined.'));
 

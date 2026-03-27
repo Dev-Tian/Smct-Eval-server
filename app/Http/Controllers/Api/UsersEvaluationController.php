@@ -772,7 +772,7 @@ class UsersEvaluationController extends Controller
                         'Others'    => $subq->whereNot('reviewTypeOthersImprovement', 0)->orWhereNotNull('reviewTypeOthersCustom'),
                         default     => $subq->where('reviewTypeProbationary', $quarter)->orWhere('reviewTypeRegular', $quarter),
                     };
-                }),
+                })
             )
             ->when($year, fn($q) => $q->whereYear('created_at', $year))
             ->latest('created_at')
