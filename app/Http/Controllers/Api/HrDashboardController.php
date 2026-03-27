@@ -35,12 +35,15 @@ class HrDashboardController extends Controller
                         )
                         ->count();
 
-        return response()->json([
-            'new_eval'            => $new_eval,
-            'pending_eval'        => $pending_eval,
-            'completed_eval'      => $completed_eval,
-            'total_users'         => $employees
-        ], 200);
+        return response()->json(
+            [
+                'new_eval'            => $new_eval,
+                'pending_eval'        => $pending_eval,
+                'completed_eval'      => $completed_eval,
+                'total_users'         => $employees
+            ],
+            200
+        );
     }
 
     /**

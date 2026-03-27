@@ -7,8 +7,6 @@ use App\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-use function Pest\Laravel\json;
-
 class PositionController extends Controller
 {
     /**
@@ -18,9 +16,11 @@ class PositionController extends Controller
     {
         $positions = Position::all();
 
-        return response()->json([
-            'positions' => $positions
-        ]);
+        return response()->json(
+            [
+                'positions' => $positions
+            ]
+        );
     }
 
     /**
@@ -36,18 +36,25 @@ class PositionController extends Controller
      */
     public function store(Request $request)
     {
-        $validate = $request->validate([
-            'label'     =>      ['required', 'string', Rule::unique('positions', 'label')]
-        ]);
+        $validate = $request->validate(
+            [
+                'label'     => ['required', 'string', Rule::unique('positions', 'label')]
+            ]
+        );
 
-        Position::create([
-            'label'     =>  $validate['label'],
-            'value'     =>  $validate['label']
-        ]);
+        Position::create(
+            [
+                'label'     => $validate['label'],
+                'value'     => $validate['label']
+            ]
+        );
 
-        return response()->json([
-            'message'       =>  'Position Successfully created'
-        ], 201);
+        return response()->json(
+            [
+                'message'       => 'Position Successfully created'
+            ],
+            201
+        );
     }
 
     /**
@@ -55,9 +62,11 @@ class PositionController extends Controller
      */
     public function show(Position $position)
     {
-        return response()->json([
-            'position'  =>  $position
-        ]);
+        return response()->json(
+            [
+                'position'  =>  $position
+            ]
+        );
     }
 
     /**
@@ -73,18 +82,24 @@ class PositionController extends Controller
      */
     public function update(Request $request, Position $position)
     {
-        $validate = $request->validate([
-           'label'     =>      ['required', 'string', Rule::unique('positions', 'label')]
-        ]);
+        $validate = $request->validate(
+            [
+               'label'     => ['required', 'string', Rule::unique('positions', 'label')]
+            ]
+        );
 
-        $position->update([
-            'label'     =>  $validate['label'],
-            'value'     =>  $validate['label']
-        ]);
+        $position->update(
+            [
+                'label'     =>  $validate['label'],
+                'value'     =>  $validate['label']
+            ]
+        );
 
-        return response()->json([
-            'message'       =>  ucfirst($validate['label']) . ' position has successfully updated'
-        ]);
+        return response()->json(
+            [
+                'message'       => ucfirst($validate['label']) . ' position has successfully updated'
+            ]
+        );
     }
 
     /**
@@ -95,8 +110,10 @@ class PositionController extends Controller
         $positionIndicator = $position->label;
         $position->delete();
 
-        return response()->json([
-            'message'       =>    ucfirst($positionIndicator) . " position has been succesfully deleted"
-        ]);
+        return response()->json(
+            [
+                'message'    => ucfirst($positionIndicator) . " position has been succesfully deleted"
+            ]
+        );
     }
 }

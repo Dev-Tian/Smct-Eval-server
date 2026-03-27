@@ -30,17 +30,18 @@ class EvaluatorDashboardController extends Controller
         $quarter = $request->input('quarter');
         $year = $request->input('year');
 
-        $user_eval = UsersEvaluation::with([
-            'employee',
-            'evaluator',
-            'jobKnowledge',
-            'adaptability',
-            'qualityOfWorks',
-            'teamworks',
-            'reliabilities',
-            'ethicals',
-            'customerServices'
-        ])
+        $user_eval = UsersEvaluation::with(
+            [
+                'employee',
+                'evaluator',
+                'jobKnowledge',
+                'adaptability',
+                'qualityOfWorks',
+                'teamworks',
+                'reliabilities',
+                'ethicals',
+                'customerServices'
+            ])
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status,  fn($q)  =>  $q->where('status', $status))
@@ -49,13 +50,15 @@ class EvaluatorDashboardController extends Controller
             ->latest('updated_at')
             ->paginate($page);
 
-        return response()->json([
-            'total_evaluations'           => $total_evaluations,
-            'team_average'                => $team_average,
-            'total_pending'               => $total_pending,
-            'total_approved'              => $total_approved,
-            'myEval_as_Evaluator'         => $user_eval
-        ]);
+        return response()->json(
+            [
+                'total_evaluations'           => $total_evaluations,
+                'team_average'                => $team_average,
+                'total_pending'               => $total_pending,
+                'total_approved'              => $total_approved,
+                'myEval_as_Evaluator'         => $user_eval
+            ]
+        );
     }
 
     /**

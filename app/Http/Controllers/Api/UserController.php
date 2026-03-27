@@ -27,7 +27,6 @@ use function Symfony\Component\Clock\now;
 class UserController extends Controller
 {
     //Create
-
     public function bulkRegisterUser(Request $request)
     {
         $data = $request->users;
@@ -42,10 +41,10 @@ class UserController extends Controller
                     'label' => $item['position_id'],
                 ],
                 [
-                    'label' => $item['position_id'],
-                    'value' => $item['position_id'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'label'         => $item['position_id'],
+                    'value'         => $item['position_id'],
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
                 ],
             );
 
@@ -53,12 +52,12 @@ class UserController extends Controller
             if (!empty($item['department_id'])) {
                 $department = Department::firstOrCreate(
                     [
-                        'department_name' => $item['department_id'],
+                        'department_name'   => $item['department_id'],
                     ],
                     [
-                        'department_name' => $item['department_id'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
+                        'department_name'   => $item['department_id'],
+                        'created_at'        => now(),
+                        'updated_at'        => now(),
                     ],
                 );
                 $department_id = $department->id;
@@ -70,15 +69,15 @@ class UserController extends Controller
 
             $branch = Branch::firstOrCreate(
                 [
-                    'branch_code' => $item['branch_id'],
+                    'branch_code'   => $item['branch_id'],
                 ],
                 [
-                    'branch_code' => $item['branch_id'],
-                    'branch_name' => $item['branch_id'] . '_SMCT',
-                    'branch' => 'Strong Moto Centrum, Inc.',
-                    'acronym' => 'SMCT',
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'branch_code'   => $item['branch_id'],
+                    'branch_name'   => $item['branch_id'] . '_SMCT',
+                    'branch'        => 'Strong Moto Centrum, Inc.',
+                    'acronym'       => 'SMCT',
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
                 ],
             );
 
@@ -87,22 +86,22 @@ class UserController extends Controller
             if (!$isUserExist) {
                 $user[] =
                 [
-                    'position_id' => $position->id,
-                    'branch_id' => $branch?->id,
-                    'department_id' => $department_id ?: null,
-                    'date_hired' => Carbon::parse($item['date_hired'])->toDateString() ?: now(),
-                    'username' => $username,
-                    'fname' => $item['fname'] ?: 'temp_first|_name',
-                    'lname' => $item['lname'] ?: 'temp_last_name',
-                    'email' => Str::lower($item['email']) ?: Str::lower($item['fname']).'temp_email@temp.test',
-                    'password' => $temp_pass,
-                    'contact' => $clean_contact ?: '09123456789',
-                    'emp_id' => preg_replace('/[^0-9]/', '', $item['employee_id']) ?: '0000000000',
-                    'is_active' => 'active',
-                    'signature' => null,
-                    'avatar' => null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
+                    'position_id'    => $position->id,
+                    'branch_id'      => $branch?->id,
+                    'department_id'  => $department_id ?: null,
+                    'date_hired'     => Carbon::parse($item['date_hired'])->toDateString() ?: now(),
+                    'username'       => $username,
+                    'fname'          => $item['fname'] ?: 'temp_first_name',
+                    'lname'          => $item['lname'] ?: 'temp_last_name',
+                    'email'          => Str::lower($item['email']) ?: Str::lower($item['fname']).'temp_email@temp.test',
+                    'password'       => $temp_pass,
+                    'contact'        => $clean_contact ?: 'temp_contact',
+                    'emp_id'         => preg_replace('/[^0-9]/', '', $item['employee_id']) ?: 'tempId',
+                    'is_active'      => 'active',
+                    'signature'      => null,
+                    'avatar'         => null,
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
                 ];
             }
         }
@@ -127,18 +126,18 @@ class UserController extends Controller
     public function registerUser(Request $request)
     {
         $validate = $request->validate([
-            'fname' => ['required', 'string'],
-            'lname' => ['required', 'string'],
-            'date_hired' => ['required', 'date'],
-            'email' => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
-            'position_id' => ['required', Rule::exists('positions', 'id')],
-            'branch_id' => ['required', Rule::exists('branches', 'id')],
-            'department_id' => ['nullable', Rule::exists('departments', 'id')],
-            'signature' => ['required'],
-            'employee_id' => ['required', Rule::unique('users', 'emp_id')],
-            'username' => ['required', 'string', Rule::unique('users', 'username')],
-            'contact' => ['required', 'string'],
-            'password' => ['required', 'string', 'min: 8', 'max:20'],
+            'fname'           => ['required', 'string'],
+            'lname'           => ['required', 'string'],
+            'date_hired'      => ['required', 'date'],
+            'email'           => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+            'position_id'     => ['required', Rule::exists('positions', 'id')],
+            'branch_id'       => ['required', Rule::exists('branches', 'id')],
+            'department_id'   => ['nullable', Rule::exists('departments', 'id')],
+            'signature'       => ['required'],
+            'employee_id'     => ['required', Rule::unique('users', 'emp_id')],
+            'username'        => ['required', 'string', Rule::unique('users', 'username')],
+            'contact'         => ['required', 'string'],
+            'password'        => ['required', 'string', 'min: 8', 'max:20'],
         ]);
 
         //file handling | storing
@@ -156,18 +155,18 @@ class UserController extends Controller
         }
 
         $user = User::create([
-            'fname' => $validate['fname'],
-            'lname' => $validate['lname'],
-            'date_hired' => $validate['date_hired'],
-            'email' => $validate['email'],
-            'position_id' => $validate['position_id'],
+            'fname'         => $validate['fname'],
+            'lname'         => $validate['lname'],
+            'date_hired'    => $validate['date_hired'],
+            'email'         => $validate['email'],
+            'position_id'   => $validate['position_id'],
             'department_id' => $validate['department_id'],
-            'signature' => $path ?? null,
-            'emp_id' => $validate['employee_id'],
-            'username' => $validate['username'],
-            'contact' => $validate['contact'],
-            'password' => $validate['password'],
-            'branch_id' => $validate['branch_id'],
+            'signature'     => $path ?? null,
+            'emp_id'        => $validate['employee_id'],
+            'username'      => $validate['username'],
+            'contact'       => $validate['contact'],
+            'password'      => $validate['password'],
+            'branch_id'     => $validate['branch_id'],
         ]);
 
         $user->assignRole('employee');
@@ -192,33 +191,33 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'fname' => ['required', 'string'],
-            'lname' => ['required', 'string'],
-            'date_hired' => ['required', 'date'],
-            'email' => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
-            'position_id' => ['required', Rule::exists('positions', 'id')],
-            'branch_id' => ['required', Rule::exists('branches', 'id')],
-            'department_id' => ['nullable', Rule::exists('departments', 'id')],
-            'employee_id' => ['required', Rule::unique('users', 'emp_id')],
-            'username' => ['required', 'string', Rule::unique('users', 'username')],
-            'contact' => ['required', 'string'],
-            'password' => ['required', 'string', 'min: 8', 'max:20'],
-            'role_id' => ['required', Rule::exists('roles', 'id')],
+            'fname'             => ['required', 'string'],
+            'lname'             => ['required', 'string'],
+            'date_hired'        => ['required', 'date'],
+            'email'             => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+            'position_id'       => ['required', Rule::exists('positions', 'id')],
+            'branch_id'         => ['required', Rule::exists('branches', 'id')],
+            'department_id'     => ['nullable', Rule::exists('departments', 'id')],
+            'employee_id'       => ['required', Rule::unique('users', 'emp_id')],
+            'username'          => ['required', 'string', Rule::unique('users', 'username')],
+            'contact'           => ['required', 'string'],
+            'password'          => ['required', 'string', 'min: 8', 'max:20'],
+            'role_id'           => ['required', Rule::exists('roles', 'id')],
         ]);
 
         $user = User::create([
-            'fname' => $validate['fname'],
-            'lname' => $validate['lname'],
-            'date_hired' => $validate['date_hired'],
-            'email' => $validate['email'],
-            'position_id' => $validate['position_id'],
+            'fname'         => $validate['fname'],
+            'lname'         => $validate['lname'],
+            'date_hired'    => $validate['date_hired'],
+            'email'         => $validate['email'],
+            'position_id'   => $validate['position_id'],
             'department_id' => $validate['department_id'] ?? null,
-            'emp_id' => $validate['employee_id'],
-            'username' => $validate['username'],
-            'contact' => $validate['contact'],
-            'password' => $validate['password'],
-            'is_active' => 'active',
-            'branch_id' => $validate['branch_id'],
+            'emp_id'        => $validate['employee_id'],
+            'username'      => $validate['username'],
+            'contact'       => $validate['contact'],
+            'password'      => $validate['password'],
+            'is_active'     => 'active',
+            'branch_id'     => $validate['branch_id'],
         ]);
 
         $role = Role::findOrFail($validate['role_id']);
@@ -236,8 +235,8 @@ class UserController extends Controller
     public function userLogin(Request $request)
     {
         $request->validate([
-            'email' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'email'     => ['required', 'string'],
+            'password'  => ['required', 'string'],
         ]);
 
         $user = User::whereAny(['username', 'email'], $request->email)->first();
@@ -279,9 +278,9 @@ class UserController extends Controller
 
         return response()->json(
             [
-                'role' => $role,
-                'status' => true,
-                'message' => 'Login successful. Redirecting you to Dashboard',
+                'role'      => $role,
+                'status'    => true,
+                'message'   => 'Login successful. Redirecting you to Dashboard',
             ],
             200,
         );
@@ -295,12 +294,21 @@ class UserController extends Controller
         $branch_filter = $request->input('branch');
 
         $users = User::query()
-            ->with(['branch', 'branches', 'departments', 'positions', 'evaluations', 'doesEvaluated', 'roles'])
+            ->with([
+                'branch',
+                'branches',
+                'departments',
+                'positions',
+                'evaluations',
+                'doesEvaluated',
+                'roles'
+                ])
             ->search($search_filter)
             ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
-            ->when($branch_filter, function ($q) use ($branch_filter) {
-                $q->whereRelation('branches', 'branches.id', $branch_filter)
-                ->orWhereRelation('branch', 'branches.id', $branch_filter);
+            ->when($branch_filter,
+                function ($q) use ($branch_filter) {
+                    $q->whereRelation('branches', 'branches.id', $branch_filter)
+                    ->orWhereRelation('branch', 'branches.id', $branch_filter);
             })
             ->whereRelation('roles', 'name', '!=', 'admin')
             ->whereNot('id', Auth::id())
@@ -309,8 +317,8 @@ class UserController extends Controller
 
         return response()->json(
             [
-                'message' => 'Users fetched successfully',
-                'users' => $users,
+                'message'   => 'Users fetched successfully',
+                'users'     => $users,
             ],
             200,
         );
@@ -321,10 +329,17 @@ class UserController extends Controller
         $perPage = $request->input('per_page', 10);
         $search_filter = $request->input('search');
 
-        $pending_users = User::query()->with('positions', 'branch', 'branches', 'departments', 'roles')
-                            ->whereNot('is_active', 'active')->whereNot('id', Auth::id())
-                            ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
-                            ->search($search_filter)->latest('updated_at')->paginate($perPage);
+        $pending_users = User::query()->with(
+            [
+                'positions',
+                'branch',
+                'branches',
+                'departments',
+                'roles'
+            ])
+            ->whereNot('is_active', 'active')->whereNot('id', Auth::id())
+            ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
+            ->search($search_filter)->latest('updated_at')->paginate($perPage);
 
         return response()->json(
             [
@@ -343,19 +358,30 @@ class UserController extends Controller
         $branch_filter = $request->input('branch');
         $department_filter = $request->input('department');
 
-        $users = User::query()->with('branch', 'branches', 'departments', 'positions', 'roles')
+        $users = User::query()->with(
+            [
+                'branch',
+                'branches',
+                'departments',
+                'positions',
+                'roles'
+            ])
             ->where('is_active', 'active')
             ->whereNot('id', Auth::id())
             ->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))
-            ->when($branch_filter, fn($q) => $q->where( fn($query) => $query->whereRelation('branches', 'branches.id', $branch_filter)->orWhereRelation('branch', 'branches.id', $branch_filter)))
+            ->when($branch_filter,
+                fn($q) =>
+                    $q->where( fn($query) => $query->whereRelation('branches', 'branches.id', $branch_filter)
+                    ->orWhereRelation('branch', 'branches.id', $branch_filter)
+            ))
             ->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)->latest('updated_at')->paginate($perPage);
 
         return response()->json(
             [
-                'message' => 'ok',
-                'users' => $users,
+                'message'   => 'ok',
+                'users'     => $users,
             ],
             200,
         );
@@ -376,7 +402,14 @@ class UserController extends Controller
     {
         $search = $request->input('search');
         $users = User::query()
-            ->with(['branch', 'branches', 'departments', 'positions', 'roles'])
+            ->with(
+                [
+                    'branch',
+                    'branches',
+                    'departments',
+                    'positions',
+                    'roles'
+                ])
             ->where('is_active', 'active')
             ->search($search)
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
@@ -395,7 +428,14 @@ class UserController extends Controller
     {
         $search = $request->input('search');
         $users = User::query()
-            ->with(['branch', 'branches', 'departments', 'positions', 'roles'])
+            ->with(
+                [
+                    'branch',
+                    'branches',
+                    'departments',
+                    'positions',
+                    'roles'
+                ])
             ->where('is_active', 'active')
             ->search($search)
             ->where('position_id', 16)
@@ -413,7 +453,16 @@ class UserController extends Controller
     public function getAllSignatureRequest(Request $request)
     {
         $search = $request->input('search');
-        $users = User::query()->with('branch', 'branches', 'departments', 'positions')->where('requestSignatureReset', true)->whereNot('approvedSignatureReset', true)->search($search)->latest('updated_at')->get();
+        $users = User::query()->with(
+            [
+                'branch',
+                'branches',
+                'departments',
+                'positions'
+            ])
+            ->where('requestSignatureReset', true)
+            ->whereNot('approvedSignatureReset', true)
+            ->search($search)->latest('updated_at')->get();
 
         return response()->json(
             [
@@ -454,7 +503,14 @@ class UserController extends Controller
         $areaManagerPositionId = [16];
         $branchManagerPositionsId = [35, 36, 37, 38];
         $userQuery = User::query()
-            ->with('departments', 'branch', 'branches', 'positions', 'roles')
+            ->with(
+                [
+                    'departments',
+                    'branch',
+                    'branches',
+                    'positions',
+                    'roles'
+                ])
             ->where('is_active', 'active')
             ->where( fn ($q) =>
                 $q->whereRelation('branch', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
@@ -498,34 +554,34 @@ class UserController extends Controller
     public function updateUser(Request $request, User $user)
     {
         $validate = $request->validate([
-            'fname' => ['required', 'string'],
-            'lname' => ['required', 'string'],
-            'date_hired' => ['required', 'date'],
-            'email' => ['required', 'string', 'email', 'lowercase', Rule::unique('users', 'email')->ignore($user->id)],
-            'position_id' => ['required', Rule::exists('positions', 'id')],
-            'branch_id' => ['required', Rule::exists('branches', 'id')],
+            'fname'         => ['required', 'string'],
+            'lname'         => ['required', 'string'],
+            'date_hired'    => ['required', 'date'],
+            'email'         => ['required', 'string', 'email', 'lowercase', Rule::unique('users', 'email')->ignore($user->id)],
+            'position_id'   => ['required', Rule::exists('positions', 'id')],
+            'branch_id'     => ['required', Rule::exists('branches', 'id')],
             'department_id' => ['nullable', Rule::exists('departments', 'id')],
-            'employeeId' => ['required'],
-            'username' => ['required', 'string', Rule::unique('users', 'username')->ignore($user->id)],
-            'contact' => ['required', 'string'],
-            'roles' => ['required', Rule::exists('roles', 'name')],
-            'password' => ['nullable', 'string', 'min: 8', 'max:20'],
+            'employeeId'    => ['required'],
+            'username'      => ['required', 'string', Rule::unique('users', 'username')->ignore($user->id)],
+            'contact'       => ['required', 'string'],
+            'roles'         => ['required', Rule::exists('roles', 'name')],
+            'password'      => ['nullable', 'string', 'min: 8', 'max:20'],
         ]);
 
         $user->syncRoles([$validate['roles']]);
 
         $updateData = [
-            'fname' => $validate['fname'],
-            'lname' => $validate['lname'],
-            'date_hired' => $validate['date_hired'],
-            'email' => $validate['email'],
-            'position_id' => $validate['position_id'],
+            'fname'         => $validate['fname'],
+            'lname'         => $validate['lname'],
+            'date_hired'    => $validate['date_hired'],
+            'email'         => $validate['email'],
+            'position_id'   => $validate['position_id'],
             'department_id' => $validate['department_id'] ?? null,
-            'username' => $validate['username'],
-            'contact' => $validate['contact'],
-            'contact' => $validate['contact'],
-            'emp_id' => $validate['employeeId'],
-            'branch_id' => $validate['branch_id'],
+            'username'      => $validate['username'],
+            'contact'       => $validate['contact'],
+            'contact'       => $validate['contact'],
+            'emp_id'        => $validate['employeeId'],
+            'branch_id'     => $validate['branch_id']
         ];
 
         if ($request->filled('password')) {
@@ -564,16 +620,16 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'username' => ['nullable', 'string'],
-            'email' => ['nullable', 'email'],
-            'current_password' => ['required', 'current_password:sanctum'],
-            'new_password' => ['nullable', 'required_with:confirm_password'],
-            'confirm_password' => ['nullable', 'required_with:new_password', 'same:new_password'],
+            'username'          => ['nullable', 'string'],
+            'email'             => ['nullable', 'email'],
+            'current_password'  => ['required', 'current_password:sanctum'],
+            'new_password'      => ['nullable', 'required_with:confirm_password'],
+            'confirm_password'  => ['nullable', 'required_with:new_password', 'same:new_password'],
         ]);
 
         $items = [
-            'username' => $validated['username'] ?? $user->username,
-            'email' => $validated['email'] ?? $user->email,
+            'username'  => $validated['username'] ?? $user->username,
+            'email'     => $validated['email'] ?? $user->email,
         ];
 
         if ($request->filled('new_password') && $request->filled('confirm_password')) {
@@ -607,8 +663,8 @@ class UserController extends Controller
 
         return response()->json(
             [
-                'status' => true,
-                'message' => 'Uploaded Successfully',
+                'status'    => true,
+                'message'   => 'Uploaded Successfully',
             ],
             200,
         );
@@ -618,9 +674,11 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        $user->update([
-            'requestSignatureReset' => true,
-        ]);
+        $user->update(
+            [
+                'requestSignatureReset' => true,
+            ]
+        );
 
         $notificationData = new EvalNotifications('Signature reset request from: ' . $user->fname . ' ' . $user->lname);
 
@@ -692,9 +750,11 @@ class UserController extends Controller
 
     public function approveRegistration(User $user)
     {
-        $user->update([
-            'is_active' => 'active',
-        ]);
+        $user->update(
+            [
+                'is_active' => 'active',
+            ]
+        );
 
         return response()->json(
             [

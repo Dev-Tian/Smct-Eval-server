@@ -27,12 +27,15 @@ class EmployeeDashboardController extends Controller
             ->select('id', 'rating')
             ->first();
 
-        return response()->json([
-            'total_evaluations'     =>  $total_evaluations,
-            'average'               =>  $average,
-            'recent_evaluation'     =>  $recent_evaluation,
-            'user_eval'             =>  $user_eval,
-        ], 200);
+        return response()->json(
+            [
+                'total_evaluations'     =>  $total_evaluations,
+                'average'               =>  $average,
+                'recent_evaluation'     =>  $recent_evaluation,
+                'user_eval'             =>  $user_eval,
+            ],
+            200
+        );
     }
 
     public function index2(User $user)
@@ -48,13 +51,16 @@ class EmployeeDashboardController extends Controller
         $highest_rating = UsersEvaluation::where('employee_id', $user->id)
             ->max('rating');
 
-        return response()->json([
-            'highest_rating'        =>  $highest_rating,
-            'total_evaluations'     =>  $total_evaluations,
-            'average'               =>  $average,
-            'recent_evaluation'     =>  $recent_evaluation,
-            'user_eval'             =>  $user_eval,
-        ], 200);
+        return response()->json(
+            [
+                'highest_rating'        =>  $highest_rating,
+                'total_evaluations'     =>  $total_evaluations,
+                'average'               =>  $average,
+                'recent_evaluation'     =>  $recent_evaluation,
+                'user_eval'             =>  $user_eval,
+            ],
+            200
+        );
     }
 
     /**
