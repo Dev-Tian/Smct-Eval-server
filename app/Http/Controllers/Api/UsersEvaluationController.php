@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class UsersEvaluationController extends Controller
@@ -30,11 +31,12 @@ class UsersEvaluationController extends Controller
         $quarter = $request->input('quarter');
         $year = $request->input('year');
         $rating = $request->input('rating');
-        $branches = '';
+        $branches = [];
         if(!empty($request->input('branch'))) {
-            $branches = array($request->input('branch')) ;
+            $branches = array_merge(explode(',',$request->input('branch'))) ;
         }
 
+        Log::info('messgae', $branches);
         $all_evaluations = UsersEvaluation::query()
             ->with(
                 [
@@ -61,12 +63,17 @@ class UsersEvaluationController extends Controller
                     default     => $q->where('rating', 5),
                 };
             })
-            ->when($branches, function ($q) use ($branches) {
-                $q->whereRelation('employee', function ($sub) use ($branches) {
-                    $sub->whereRelation('branches', fn ($q) => $q->whereIn('branches.id', $branches))
-                        ->orWhereRelation('branch', fn($q) => $q->whereIn('branches.id', $branches));
+          ->when(!empty($branches), function ($q) use ($branches) {
+                $q->whereHas('employee', function ($sub) use ($branches) {
+                    $sub->where(function ($query) use ($branches) {
+                        $query->whereHas('branches', function ($q) use ($branches) {
+                            $q->whereIn('branches.id', $branches);
+                        })
+                        ->orWhereHas('branch', function ($q) use ($branches) {
+                            $q->whereIn('branches.id', $branches);
+                        });
+                    });
                 });
-
             })
             ->latest('created_at')
             ->paginate($perPage);
