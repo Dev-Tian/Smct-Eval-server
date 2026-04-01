@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Str;
 
 class PositionController extends Controller
 {
@@ -97,7 +98,7 @@ class PositionController extends Controller
 
         return response()->json(
             [
-                'message'       => ucfirst($validate['label']) . ' position has successfully updated'
+                'message'       => Str::ucfirst($validate['label']) . ' position has successfully updated'
             ]
         );
     }
@@ -112,7 +113,7 @@ class PositionController extends Controller
 
         return response()->json(
             [
-                'message'    => ucfirst($positionIndicator) . " position has been succesfully deleted"
+                'message'    => Str::ucfirst($positionIndicator) . " position has been succesfully deleted"
             ]
         );
     }

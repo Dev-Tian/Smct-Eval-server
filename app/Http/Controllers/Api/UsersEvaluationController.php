@@ -30,7 +30,10 @@ class UsersEvaluationController extends Controller
         $quarter = $request->input('quarter');
         $year = $request->input('year');
         $rating = $request->input('rating');
-        $branch = $request->input('branch');
+        $branches = '';
+        if(!empty($request->input('branch'))) {
+            $branches = array($request->input('branch')) ;
+        }
 
         $all_evaluations = UsersEvaluation::query()
             ->with(
@@ -58,12 +61,10 @@ class UsersEvaluationController extends Controller
                     default     => $q->where('rating', 5),
                 };
             })
-            ->when($branch, function ($q) use ($branch) {
-                $q->whereRelation('employee', function ($sub) use ($branch) {
-                    $sub->whereHas('branches', function ($fin) use ($branch) {
-                        $fin->where('branches.id', $branch);
-                    })
-                    ->orWhereRelation('branch', fn($q) => $q->where('branches.id', $branch));
+            ->when($branches, function ($q) use ($branches) {
+                $q->whereRelation('employee', function ($sub) use ($branches) {
+                    $sub->whereRelation('branches', fn ($q) => $q->whereIn('branches.id', $branches))
+                        ->orWhereRelation('branch', fn($q) => $q->whereIn('branches.id', $branches));
                 });
 
             })
@@ -124,14 +125,14 @@ class UsersEvaluationController extends Controller
                 'rating'                        => $validated['rating'],
                 'coverageFrom'                  => $validated['coverageFrom'],
                 'coverageTo'                    => $validated['coverageTo'],
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?? null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?? null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?? null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?? null,
-                'priorityArea1'                 => $validated['priorityArea1'] ?? null,
-                'priorityArea2'                 => $validated['priorityArea2'] ?? null,
-                'priorityArea3'                 => $validated['priorityArea3'] ?? null,
-                'remarks'                       => $validated['remarks'] ?? null,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priorityArea1'] ?: null,
+                'priorityArea2'                 => $validated['priorityArea2'] ?: null,
+                'priorityArea3'                 => $validated['priorityArea3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
             ]
         );
@@ -142,7 +143,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['jobKnowledgeScore' . $i],
-                    'comment'               => $validated['jobKnowledgeComments' . $i] ?? null,
+                    'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                 ]
             );
         }
@@ -153,7 +154,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['qualityOfWorkScore' . $i],
-                    'comment'               => $validated['qualityOfWorkComments' . $i] ?? null,
+                    'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                 ]
             );
         }
@@ -164,7 +165,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['adaptabilityScore' . $i],
-                    'comment'               => $validated['adaptabilityComments' . $i] ?? null,
+                    'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -175,7 +176,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['teamworkScore' . $i],
-                    'comment'               => $validated['teamworkComments' . $i] ?? null,
+                    'comment'               => $validated['teamworkComments' . $i] ?: null,
                 ]
             );
         }
@@ -186,7 +187,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['reliabilityScore' . $i],
-                    'comment'               => $validated['reliabilityComments' . $i] ?? null,
+                    'comment'               => $validated['reliabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -197,7 +198,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['ethicalScore' . $i],
-                    'explanation'           => $validated['ethicalExplanation' . $i] ?? null,
+                    'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                 ]
             );
         }
@@ -208,7 +209,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['customerServiceScore' . $i],
-                    'explanation'           => $validated['customerServiceExplanation' . $i] ?? null,
+                    'explanation'           => $validated['customerServiceExplanation' . $i] ?: null,
                 ]
             );
         }
@@ -246,14 +247,14 @@ class UsersEvaluationController extends Controller
                 'rating'                        => $validated['rating'],
                 'coverageFrom'                  => $validated['coverageFrom'],
                 'coverageTo'                    => $validated['coverageTo'],
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?? null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?? null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?? null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?? null,
-                'priorityArea1'                 => $validated['priorityArea1'] ?? null,
-                'priorityArea2'                 => $validated['priorityArea2'] ?? null,
-                'priorityArea3'                 => $validated['priorityArea3'] ?? null,
-                'remarks'                       => $validated['remarks'] ?? null,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priorityArea1'] ?: null,
+                'priorityArea2'                 => $validated['priorityArea2'] ?: null,
+                'priorityArea3'                 => $validated['priorityArea3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
             ]
         );
@@ -264,7 +265,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['jobKnowledgeScore' . $i],
-                    'comment'               => $validated['jobKnowledgeComments' . $i] ?? null,
+                    'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                 ]
             );
         }
@@ -275,7 +276,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['qualityOfWorkScore' . $i],
-                    'comment'               => $validated['qualityOfWorkComments' . $i] ?? null,
+                    'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                 ]
             );
         }
@@ -286,7 +287,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['adaptabilityScore' . $i],
-                    'comment'               => $validated['adaptabilityComments' . $i] ?? null,
+                    'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -297,7 +298,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['teamworkScore' . $i],
-                    'comment'               => $validated['teamworkComments' . $i] ?? null,
+                    'comment'               => $validated['teamworkComments' . $i] ?: null,
                 ]
             );
         }
@@ -308,7 +309,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['reliabilityScore' . $i],
-                    'comment'               => $validated['reliabilityComments' . $i] ?? null,
+                    'comment'               => $validated['reliabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -319,7 +320,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['ethicalScore' . $i],
-                    'explanation'           => $validated['ethicalExplanation' . $i] ?? null,
+                    'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                 ]
             );
         }
@@ -330,7 +331,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['managerialSkillsScore' . $i],
-                    'explanation'           => $validated['managerialSkillsExplanation' . $i] ?? null,
+                    'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
                 ]
             );
         }
@@ -366,14 +367,14 @@ class UsersEvaluationController extends Controller
                 'rating'                        => $validated['rating'],
                 'coverageFrom'                  => $validated['coverageFrom'],
                 'coverageTo'                    => $validated['coverageTo'],
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?? null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?? null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?? null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?? null,
-                'priorityArea1'                 => $validated['priorityArea1'] ?? null,
-                'priorityArea2'                 => $validated['priorityArea2'] ?? null,
-                'priorityArea3'                 => $validated['priorityArea3'] ?? null,
-                'remarks'                       => $validated['remarks'] ?? null,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priorityArea1'] ?: null,
+                'priorityArea2'                 => $validated['priorityArea2'] ?: null,
+                'priorityArea3'                 => $validated['priorityArea3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
             ]
         );
@@ -384,7 +385,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['jobKnowledgeScore' . $i],
-                    'comment'               => $validated['jobKnowledgeComments' . $i] ?? null,
+                    'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                 ]
             );
         }
@@ -395,7 +396,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['qualityOfWorkScore' . $i],
-                    'comment'               => $validated['qualityOfWorkComments' . $i] ?? null,
+                    'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                 ]
             );
         }
@@ -406,7 +407,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['adaptabilityScore' . $i],
-                    'comment'               => $validated['adaptabilityComments' . $i] ?? null,
+                    'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -417,7 +418,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['teamworkScore' . $i],
-                    'comment'               => $validated['teamworkComments' . $i] ?? null,
+                    'comment'               => $validated['teamworkComments' . $i] ?: null,
                 ]
             );
         }
@@ -428,7 +429,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['reliabilityScore' . $i],
-                    'comment'               => $validated['reliabilityComments' . $i] ?? null,
+                    'comment'               => $validated['reliabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -439,7 +440,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['ethicalScore' . $i],
-                    'explanation'           => $validated['ethicalExplanation' . $i] ?? null,
+                    'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                 ]
             );
         }
@@ -450,7 +451,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['customerServiceScore' . $i],
-                    'explanation'           => $validated['customerServiceExplanation' . $i] ?? null,
+                    'explanation'           => $validated['customerServiceExplanation' . $i] ?: null,
                 ]
             );
         }
@@ -461,7 +462,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['managerialSkillsScore' . $i],
-                    'explanation'           => $validated['managerialSkillsExplanation' . $i] ?? null,
+                    'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
                 ]
             );
         }
@@ -499,14 +500,14 @@ class UsersEvaluationController extends Controller
                 'rating'                        => $validated['rating'],
                 'coverageFrom'                  => $validated['coverageFrom'],
                 'coverageTo'                    => $validated['coverageTo'],
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?? null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?? null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?? null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?? null,
-                'priorityArea1'                 => $validated['priorityArea1'] ?? null,
-                'priorityArea2'                 => $validated['priorityArea2'] ?? null,
-                'priorityArea3'                 => $validated['priorityArea3'] ?? null,
-                'remarks'                       => $validated['remarks'] ?? null,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priorityArea1'] ?: null,
+                'priorityArea2'                 => $validated['priorityArea2'] ?: null,
+                'priorityArea3'                 => $validated['priorityArea3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
             ]
         );
@@ -517,7 +518,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['jobKnowledgeScore' . $i],
-                    'comment'               => $validated['jobKnowledgeComments' . $i] ?? null,
+                    'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                 ]
             );
         }
@@ -528,7 +529,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['qualityOfWorkScore' . $i],
-                    'comment'               => $validated['qualityOfWorkComments' . $i] ?? null,
+                    'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                 ]
             );
         }
@@ -539,7 +540,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['adaptabilityScore' . $i],
-                    'comment'               => $validated['adaptabilityComments' . $i] ?? null,
+                    'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -550,7 +551,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['teamworkScore' . $i],
-                    'comment'               => $validated['teamworkComments' . $i] ?? null,
+                    'comment'               => $validated['teamworkComments' . $i] ?: null,
                 ]
             );
         }
@@ -561,7 +562,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['reliabilityScore' . $i],
-                    'comment'               => $validated['reliabilityComments' . $i] ?? null,
+                    'comment'               => $validated['reliabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -572,7 +573,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['ethicalScore' . $i],
-                    'explanation'           => $validated['ethicalExplanation' . $i] ?? null,
+                    'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                 ]
             );
         }
@@ -611,14 +612,14 @@ class UsersEvaluationController extends Controller
                 'rating'                        => $validated['rating'],
                 'coverageFrom'                  => $validated['coverageFrom'],
                 'coverageTo'                    => $validated['coverageTo'],
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?? null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?? null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?? null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?? null,
-                'priorityArea1'                 => $validated['priorityArea1'] ?? null,
-                'priorityArea2'                 => $validated['priorityArea2'] ?? null,
-                'priorityArea3'                 => $validated['priorityArea3'] ?? null,
-                'remarks'                       => $validated['remarks'] ?? null,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priorityArea1'] ?: null,
+                'priorityArea2'                 => $validated['priorityArea2'] ?: null,
+                'priorityArea3'                 => $validated['priorityArea3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
             ]
         );
@@ -629,7 +630,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['jobKnowledgeScore' . $i],
-                    'comment'               => $validated['jobKnowledgeComments' . $i] ?? null,
+                    'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                 ]
             );
         }
@@ -640,7 +641,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['qualityOfWorkScore' . $i],
-                    'comment'               => $validated['qualityOfWorkComments' . $i] ?? null,
+                    'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                 ]
             );
         }
@@ -651,7 +652,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['adaptabilityScore' . $i],
-                    'comment'               => $validated['adaptabilityComments' . $i] ?? null,
+                    'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -662,7 +663,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['teamworkScore' . $i],
-                    'comment'               => $validated['teamworkComments' . $i] ?? null,
+                    'comment'               => $validated['teamworkComments' . $i] ?: null,
                 ]
             );
         }
@@ -673,7 +674,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['reliabilityScore' . $i],
-                    'comment'               => $validated['reliabilityComments' . $i] ?? null,
+                    'comment'               => $validated['reliabilityComments' . $i] ?: null,
                 ]
             );
         }
@@ -684,7 +685,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['ethicalScore' . $i],
-                    'explanation'           => $validated['ethicalExplanation' . $i] ?? null,
+                    'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                 ]
             );
         }
@@ -695,7 +696,7 @@ class UsersEvaluationController extends Controller
                     'users_evaluation_id'   => $submission->id,
                     'question_number'       => $i,
                     'score'                 => $validated['managerialSkillsScore' . $i],
-                    'explanation'           => $validated['managerialSkillsExplanation' . $i] ?? null,
+                    'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
                 ]
             );
         }

@@ -124,7 +124,7 @@ class DepartmentController extends Controller
 
         return response()->json(
             [
-                'message'       =>  'Department Deleted Successfully'
+                'message'       => 'Department Deleted Successfully'
             ],
             200
         );

@@ -19,8 +19,8 @@ class EmployeeDashboardController extends Controller
         $user = Auth::user();
 
         $user_eval = UsersEvaluation::where('employee_id', $user->id)->get();
-        $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->count() ?? 0;
-        $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->whereNotNull("rating")->sum('rating') ?? 0;
+        $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->count() ?: 0;
+        $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->whereNotNull("rating")->sum('rating') ?: 0;
         $average = empty(!$total_evaluations) ? round($sum_ratings / $total_evaluations, 2) : 0;
         $recent_evaluation = UsersEvaluation::where('employee_id', $user->id)
             ->latest('created_at')
@@ -41,8 +41,8 @@ class EmployeeDashboardController extends Controller
     public function index2(User $user)
     {
         $user_eval = UsersEvaluation::where('employee_id', $user->id)->get();
-        $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->count() ?? 0;
-        $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->whereNotNull("rating")->sum('rating') ?? 0;
+        $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->count() ?: 0;
+        $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->whereNotNull("rating")->sum('rating') ?: 0;
         $average = empty(!$total_evaluations) ? round($sum_ratings / $total_evaluations, 2) : 0;
         $recent_evaluation = UsersEvaluation::where('employee_id', $user->id)
             ->latest('created_at')

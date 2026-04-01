@@ -21,10 +21,10 @@ class HrDashboardController extends Controller
         $new_eval = UsersEvaluation::where('status', 'pending')
             ->where('evaluatorApprovedAt', '>=', Carbon::now()->subHours(24))
             ->whereNotNull('rating')
-            ->count() ?? 0;
+            ->count() ?: 0;
 
-        $pending_eval = UsersEvaluation::where('status', 'pending')->whereNotNull('rating')->count() ?? 0;
-        $completed_eval = UsersEvaluation::where('status', 'completed')->whereNotNull('rating')->count() ?? 0;
+        $pending_eval = UsersEvaluation::where('status', 'pending')->whereNotNull('rating')->count() ?: 0;
+        $completed_eval = UsersEvaluation::where('status', 'completed')->whereNotNull('rating')->count() ?: 0;
         $employees = User::where('is_active', 'active')
                         ->whereNot('id', $authUser)
                         ->whereRelation(

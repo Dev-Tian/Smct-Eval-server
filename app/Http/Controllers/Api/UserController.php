@@ -63,7 +63,7 @@ class UserController extends Controller
                 $department_id = $department->id;
             }
 
-            $username = $item['username'] ?: str_replace(' ', '_', Str::lower($item['fname'])) . '_' . Str::substr($item['employee_id'], 0, 4);
+            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower($item['fname'])) . '_' . Str::substr($item['employee_id'], 0, 4);
 
             $clean_contact = '0' . Str::substr($item['contact'], -10);
 
@@ -133,12 +133,13 @@ class UserController extends Controller
             'position_id'     => ['required', Rule::exists('positions', 'id')],
             'branch_id'       => ['required', Rule::exists('branches', 'id')],
             'department_id'   => ['nullable', Rule::exists('departments', 'id')],
-            'signature'       => ['required'],
+            'signature'       => ['required', 'file'],
             'employee_id'     => ['required', Rule::unique('users', 'emp_id')],
             'username'        => ['required', 'string', Rule::unique('users', 'username')],
             'contact'         => ['required', 'string'],
             'password'        => ['required', 'string', 'min: 8', 'max:20'],
         ]);
+
 
         //file handling | storing
         if ($request->hasFile('signature')) {
@@ -154,20 +155,22 @@ class UserController extends Controller
             );
         }
 
-        $user = User::create([
-            'fname'         => $validate['fname'],
-            'lname'         => $validate['lname'],
-            'date_hired'    => $validate['date_hired'],
-            'email'         => $validate['email'],
-            'position_id'   => $validate['position_id'],
-            'department_id' => $validate['department_id'],
-            'signature'     => $path ?? null,
-            'emp_id'        => $validate['employee_id'],
-            'username'      => $validate['username'],
-            'contact'       => $validate['contact'],
-            'password'      => $validate['password'],
-            'branch_id'     => $validate['branch_id'],
-        ]);
+        $user = User::create(
+            [
+                'fname'         => $validate['fname'],
+                'lname'         => $validate['lname'],
+                'date_hired'    => $validate['date_hired'],
+                'email'         => $validate['email'],
+                'position_id'   => $validate['position_id'],
+                'department_id' => $validate['department_id'],
+                'signature'     => $path ?: null,
+                'emp_id'        => $validate['employee_id'],
+                'username'      => $validate['username'],
+                'contact'       => $validate['contact'],
+                'password'      => $validate['password'],
+                'branch_id'     => $validate['branch_id'],
+            ]
+        );
 
         $user->assignRole('employee');
 
@@ -211,7 +214,7 @@ class UserController extends Controller
             'date_hired'    => $validate['date_hired'],
             'email'         => $validate['email'],
             'position_id'   => $validate['position_id'],
-            'department_id' => $validate['department_id'] ?? null,
+            'department_id' => $validate['department_id'] ?: null,
             'emp_id'        => $validate['employee_id'],
             'username'      => $validate['username'],
             'contact'       => $validate['contact'],
@@ -587,7 +590,7 @@ class UserController extends Controller
             'date_hired'    => $validate['date_hired'],
             'email'         => $validate['email'],
             'position_id'   => $validate['position_id'],
-            'department_id' => $validate['department_id'] ?? null,
+            'department_id' => $validate['department_id'] ?: null,
             'username'      => $validate['username'],
             'contact'       => $validate['contact'],
             'contact'       => $validate['contact'],
@@ -639,8 +642,8 @@ class UserController extends Controller
         ]);
 
         $items = [
-            'username'  => $validated['username'] ?? $user->username,
-            'email'     => $validated['email'] ?? $user->email,
+            'username'  => $validated['username'] ?: $user->username,
+            'email'     => $validated['email'] ?: $user->email,
         ];
 
         if ($request->filled('new_password') && $request->filled('confirm_password')) {
