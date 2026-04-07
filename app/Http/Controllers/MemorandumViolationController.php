@@ -26,10 +26,18 @@ class MemorandumViolationController extends Controller
     }
 
 
-    public function auth_index()
+    public function auth_index(Request $request)
     {
         $auth_user = Auth::user();
-        $memos = MemorandumViolation::where('user_id', $auth_user->id)->get();
+
+        $search = $request->input('search');
+        $month = $request->input('month');
+        $page = $request->input('per_page');
+
+        $memos = MemorandumViolation::where('user_id', $auth_user->id)
+                   ->when( $search, fn ($q) => $q->whereLike('violation_title', "%{$search}%"))
+                   ->when( $month, fn ($q) => $q->whereMonth('violation_date', $month))
+                   ->paginate($page);
 
         return response()->json(
                [

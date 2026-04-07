@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class, 'user_id')->nullable()->constrained()->nullOnDelete();
             $table->date('violation_date');
-            $table->string('violaion_title');
+            $table->string('violation_title');
             $table->string('support_document');
             $table->timestamps();
         });

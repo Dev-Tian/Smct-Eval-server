@@ -128,8 +128,8 @@ Route::middleware('auth:sanctum')->group(
         Route::controller(MemorandumViolationController::class)->group(
             function(){
                 Route::get('showUserMemorandumViolation/{id}', 'show_perUser');
-                Route::get('getMyMemorandumViolations', 'auth_index');
-                Route::post('addMemorandumViolation', 'store');
+                Route::get('myMemorandumViolations', 'auth_index');
+                Route::post('addMemorandumVolation', 'store');
             }
         );
 
