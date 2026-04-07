@@ -87,7 +87,7 @@ class MemorandumViolationController extends Controller
             [
                 'user_id'            =>  $validate['user_id'],
                 'violation_date'     =>  $validate['violation_date'],
-                'violaion_title'     =>  $validate['title'],
+                'violation_title'     =>  $validate['title'],
                 'support_document'   =>  $path ?: null
             ]
         );
