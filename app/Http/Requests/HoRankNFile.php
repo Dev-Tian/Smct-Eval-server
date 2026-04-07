@@ -37,6 +37,7 @@ class HoRankNFile extends FormRequest
     {
         return [
             'rating'                                => ['required', 'numeric'],
+            'performanceScore'                      => ['required', 'numeric'],
             'coverageFrom'                          => ['required', 'date'],
             'coverageTo'                            => ['required', 'date'],
             'reviewTypeProbationary'                => ['nullable', 'numeric'],
