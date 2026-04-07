@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\EvaluatorDashboardController;
 use App\Http\Controllers\Api\HrDashboardController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\UsersEvaluationController;
+use App\Http\Controllers\MemorandumViolationController;
 use Illuminate\Support\Facades\Auth;
 
 //public routes
@@ -121,6 +122,14 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('getTotalEmployeesDepartments', 'getTotalEmployeesDepartments');
                 Route::post('addDepartment', 'store');
                 Route::post('deleteDepartment/{department}', 'destroy');
+            }
+        );
+
+        Route::controller(MemorandumViolationController::class)->group(
+            function(){
+                Route::get('showUserMemorandumViolation/{id}', 'show_perUser');
+                Route::get('getMyMemorandumViolations', 'auth_index');
+                Route::post('addMemorandumViolation', 'store');
             }
         );
 

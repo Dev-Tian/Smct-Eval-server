@@ -78,6 +78,11 @@ class User extends Authenticatable
         return $this->hasMany(UsersEvaluation::class, 'evaluator_id');
     }
 
+    public function memos()
+    {
+        return $this->hasMany(MemorandumViolation::class, 'evaluator_id');
+    }
+
     public function getFullNameAttribute()
     {
         return $this->fname . " " . $this->lname;
