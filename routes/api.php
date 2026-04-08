@@ -155,9 +155,11 @@ Route::middleware('auth:sanctum')->group(
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return response()->json([
-                'message' => 'Logged out successfully'
-            ], 200);
+            return response()->json(
+                [
+                    'message' => 'Logged out successfully'
+                ]
+                , 200);
         });
     }
 );
