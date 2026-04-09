@@ -19,11 +19,11 @@ class MemorandumViolationController extends Controller
         $memos = MemorandumViolation::all();
 
         return response()->json(
-               [
-                 'memos'   => $memos
-               ],
-               200
-            );
+            [
+                'memos'   => $memos
+            ],
+            200
+        );
     }
 
     public function auth_index(Request $request)
@@ -40,11 +40,11 @@ class MemorandumViolationController extends Controller
                    ->paginate($page);
 
         return response()->json(
-               [
-                 'memos'   => $memos
-               ]
-               ,200
-            );
+            [
+                'memos'   => $memos
+            ],
+            200
+        );
     }
     /**
      * Show the form for creating a new resource.
@@ -78,8 +78,8 @@ class MemorandumViolationController extends Controller
             return response()->json(
                 [
                    'message'   => 'Invalid file or not found.'
-                ]
-                ,400
+                ],
+                400
             );
         }
 
@@ -95,8 +95,8 @@ class MemorandumViolationController extends Controller
         return response()->json(
             [
                'message'   => 'Memo stored successfully'
-            ]
-            ,201
+            ],
+            201
         );
     }
 
@@ -108,8 +108,8 @@ class MemorandumViolationController extends Controller
         return response()->json(
             [
                 'memos' => $MemorandumViolation
-            ]
-            ,200
+            ],
+            200
         );
 
     }
@@ -117,11 +117,12 @@ class MemorandumViolationController extends Controller
     public function show_perUser($id)
     {
         $memos = MemorandumViolation::where('user_id', $id )->get();
+
         return response()->json(
             [
                 'memos' => $memos
-            ]
-            ,200
+            ],
+            200
         );
 
     }
