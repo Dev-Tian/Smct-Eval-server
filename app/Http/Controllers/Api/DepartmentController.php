@@ -13,11 +13,14 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        $departments = Department::all();
+        $departments = Department::select('id','department_name')->get();
 
-        return response()->json([
-            'departments' => $departments
-        ]);
+        return response()->json(
+            [
+                'departments' => $departments
+            ],
+            200
+        );
     }
 
     public function getTotalEmployeesDepartments(Request $request)
@@ -25,35 +28,36 @@ class DepartmentController extends Controller
         $paginate = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $all = Department::withCount([
-            'users as managers_count'
-            =>
-            fn($user)
-            =>
-            $user->whereHas(
-                'positions',
-                fn($position)
-                =>
-                $position->where('label', 'LIKE', "%manager%")
-            ),
-            'users as employees_count'
-            =>
-            fn($user)
-            =>
-            $user->whereHas(
-                'positions',
-                fn($position)
-                =>
-                $position->whereNot('label', 'LIKE', "%manager%")
-            )
-        ])
-            ->when($search, fn($q) => $q->where('department_name', 'LIKE', "%{$search}%"))
+        $all = Department::query()->withCount(
+            [
+                'users as managers_count' =>
+                    fn($user)
+                    =>
+                    $user->whereHas(
+                        'positions',
+                        fn($position)
+                        =>
+                        $position->whereLike('label', "%manager%")
+                    ),
+                'users as employees_count' =>
+                    fn($user)
+                    =>
+                    $user->whereHas(
+                        'positions',
+                        fn($position)
+                        =>
+                        $position->whereNotLike('label', "%manager%")
+                    )
+            ])
+            ->when($search, fn($q) => $q->whereLike('department_name', "%{$search}%"))
             ->paginate($paginate);
 
-
-        return response()->json([
-            'departments'       => $all
-        ]);
+        return response()->json(
+            [
+                'departments'       => $all
+            ],
+            200
+        );
     }
 
     /**
@@ -69,17 +73,24 @@ class DepartmentController extends Controller
      */
     public function store(Request $request)
     {
-        $validate = $request->validate([
-            'department_name'     => ['required', 'string', 'alpha']
-        ]);
+        $validate = $request->validate(
+            [
+                'department_name'     => ['required', 'string', 'alpha']
+            ]
+        );
 
-        Department::create([
-            'department_name'     => $validate['department_name']
-        ]);
+        Department::create(
+            [
+                'department_name'     => $validate['department_name']
+            ]
+        );
 
-        return response()->json([
-            'message'       =>  'Added Successfully '
-        ], 201);
+        return response()->json(
+            [
+                'message'       =>  'Added Successfully'
+            ],
+            201
+        );
     }
 
     /**
@@ -113,8 +124,11 @@ class DepartmentController extends Controller
     {
         $department->delete();
 
-        return response()->json([
-            'message'       =>  'Department Deleted Successfully'
-        ], 200);
+        return response()->json(
+            [
+                'message'       => 'Department Deleted Successfully'
+            ],
+            200
+        );
     }
 }

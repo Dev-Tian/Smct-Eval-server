@@ -14,11 +14,14 @@ class BranchController extends Controller
      */
     public function index()
     {
-        $branches = Branch::all();
+        $branches = Branch::select('id','branch_code', 'branch_name')->get();
 
-        return response()->json([
-            'branches' => $branches
-        ], 200);
+        return response()->json(
+            [
+                'branches' => $branches
+            ],
+            200
+        );
     }
 
     public function getTotalEmployeesBranch(Request $request)
@@ -26,42 +29,43 @@ class BranchController extends Controller
         $paginate = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $all = Branch::withCount([
-            'users as managers_count'
-            =>
-            fn($user)
-            =>
-            $user->whereHas(
-                'positions',
-                fn($position)
-                =>
-                $position->where('label', 'LIKE', "%manager%")
-            ),
-            'users as employees_count'
-            =>
-            fn($user)
-            =>
-            $user->whereHas(
-                'positions',
-                fn($position)
-                =>
-                $position->whereNot('label', 'LIKE', "%manager%")
-            )
-        ])
+        $all = Branch::query()->withCount(
+            [
+                'users as managers_count' =>
+                    fn($user)
+                    =>
+                    $user->whereHas(
+                        'positions',
+                        fn($position)
+                        =>
+                        $position->whereLike('label', "%manager%")
+                    ),
+                'users as employees_count' =>
+                    fn($user)
+                    =>
+                    $user->whereHas(
+                        'positions',
+                        fn($position)
+                        =>
+                        $position->whereNotLike('label', "%manager%")
+                    )
+            ])
             ->when(
                 $search,
-                fn($q)
-                =>
-                $q->where('branch_code', 'LIKE', "%{$search}%")
-                    ->orWhere('branch_name', 'LIKE', "%{$search}%")
-                    ->orWhere('branch', 'LIKE', "%{$search}%")
-                    ->orWhere('acronym', 'LIKE', "%{$search}%")
+                fn($q) =>
+                    $q->whereLike('branch_code', "%{$search}%")
+                    ->orWhereLike('branch_name', "%{$search}%")
+                    ->orWhereLike('branch', "%{$search}%")
+                    ->orWhereLike('acronym', "%{$search}%")
             )
             ->paginate($paginate);
 
-        return response()->json([
-            'branches' => $all
-        ]);
+        return response()->json(
+            [
+                'branches' => $all
+            ],
+            200
+        );
     }
 
     /**
@@ -77,23 +81,30 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        $validate = $request->validate([
-            'branch_code'        =>  ['required', 'string', 'regex:/^[A-Z0-9\- ]+$/', Rule::unique('branches', 'branch_code')],
-            'branch_name'        =>  ['required', 'string'],
-            'branch'             =>  ['required', 'string'],
-            'acronym'            =>  ['required', 'string', 'regex:/^[A-Z]+$/']
-        ]);
+        $validate = $request->validate(
+            [
+                'branch_code'        =>  ['required', 'string', 'regex:/^[A-Z0-9\- ]+$/', Rule::unique('branches', 'branch_code')],
+                'branch_name'        =>  ['required', 'string'],
+                'branch'             =>  ['required', 'string'],
+                'acronym'            =>  ['required', 'string', 'regex:/^[A-Z]+$/']
+            ]
+        );
 
-        Branch::create([
-            'branch_code'        => $validate['branch_code'],
-            'branch_name'        => $validate['branch_name'],
-            'branch'             => $validate['branch'],
-            'acronym'            => $validate['acronym']
-        ]);
+        Branch::create(
+            [
+                'branch_code'        => $validate['branch_code'],
+                'branch_name'        => $validate['branch_name'],
+                'branch'             => $validate['branch'],
+                'acronym'            => $validate['acronym']
+            ]
+        );
 
-        return response()->json([
-            'message'       => 'Branch Successfully Created'
-        ], 201);
+        return response()->json(
+            [
+                'message'       => 'Branch Successfully Created'
+            ],
+            201
+        );
     }
 
     /**
@@ -101,9 +112,12 @@ class BranchController extends Controller
      */
     public function show(Branch $branch)
     {
-        return response()->json([
-            'branch'        =>  $branch
-        ]);
+        return response()->json(
+            [
+                'branch'        =>  $branch
+            ],
+            200
+        );
     }
 
     /**
@@ -129,8 +143,11 @@ class BranchController extends Controller
     {
         $branch->delete();
 
-        return response()->json([
-            'message'       =>  'Branch Deleted Successfully'
-        ], 200);
+        return response()->json(
+            [
+                'message'       =>  'Branch Deleted Successfully'
+            ],
+            200
+        );
     }
 }

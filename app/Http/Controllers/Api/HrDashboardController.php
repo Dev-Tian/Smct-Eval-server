@@ -7,8 +7,7 @@ use App\Models\User;
 use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-
-use function Symfony\Component\Clock\now;
+use Illuminate\Support\Facades\Auth;
 
 class HrDashboardController extends Controller
 {
@@ -17,22 +16,34 @@ class HrDashboardController extends Controller
      */
     public function index()
     {
+        $authUser = Auth::user()->id;
         // totals
         $new_eval = UsersEvaluation::where('status', 'pending')
             ->where('evaluatorApprovedAt', '>=', Carbon::now()->subHours(24))
             ->whereNotNull('rating')
-            ->count() ?? 0;
+            ->count() ?: 0;
 
-        $pending_eval = UsersEvaluation::where('status', 'pending')->whereNotNull('rating')->count() ?? 0;
-        $completed_eval = UsersEvaluation::where('status', 'completed')->whereNotNull('rating')->count() ?? 0;
-        $employees = User::where('is_active', 'active')->count();
+        $pending_eval = UsersEvaluation::where('status', 'pending')->whereNotNull('rating')->count() ?: 0;
+        $completed_eval = UsersEvaluation::where('status', 'completed')->whereNotNull('rating')->count() ?: 0;
+        $employees = User::where('is_active', 'active')
+                        ->whereNot('id', $authUser)
+                        ->whereRelation(
+                            'roles',
+                                fn($q)
+                                =>
+                                $q->whereNot('name', 'admin')->whereNot('name','hr')
+                        )
+                        ->count();
 
-        return response()->json([
-            'new_eval'            => $new_eval,
-            'pending_eval'        => $pending_eval,
-            'completed_eval'      => $completed_eval,
-            'total_users'         => $employees
-        ], 200);
+        return response()->json(
+            [
+                'new_eval'            => $new_eval,
+                'pending_eval'        => $pending_eval,
+                'completed_eval'      => $completed_eval,
+                'total_users'         => $employees
+            ],
+            200
+        );
     }
 
     /**

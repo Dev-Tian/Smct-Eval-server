@@ -18,8 +18,9 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'evaluator_id')->nullable()->constrained()->nullOnDelete();
 
             $table->decimal('rating', 3, 2);
+            $table->string('percentage');
             $table->enum('status', ['pending', 'completed'])->default('pending');
-            $table->enum('evaluationType', ['HoBasic', 'HoRankNFile', 'BranchBasic', 'BranchRankNFile']);
+            $table->enum('evaluationType', ['HoBasic', 'HoRankNFile', 'BranchBasic', 'BranchRankNFile','BranchBasicAreaManager']);
 
             $table->date('coverageFrom');
             $table->date('coverageTo');

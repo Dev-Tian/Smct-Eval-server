@@ -13,9 +13,12 @@ class NotificationsController extends Controller
 
         $notification->markAsRead();
 
-        return response()->json([
-            'message'         =>  'Mark as read notification',
-        ], 200);
+        return response()->json(
+            [
+                'message'         =>  'Mark as read notification',
+            ],
+            200
+        );
     }
 
     public function markAllAsRead()
@@ -24,17 +27,23 @@ class NotificationsController extends Controller
 
         $user->unreadNotifications->markAsRead();
 
-        return response()->json([
-            'message'       =>  "Successfully read all notifications"
-        ], 200);
+        return response()->json(
+            [
+                'message'       =>  "Successfully read all notifications"
+            ],
+            200
+        );
     }
 
     public function destroy(Notification $notification)
     {
         $notification->delete();
 
-        return response()->json([
-            'message'       =>  "Successfully deleted"
-        ]);
+        return response()->json(
+            [
+                'message'       =>  "Successfully deleted"
+            ],
+            200
+        );
     }
 }

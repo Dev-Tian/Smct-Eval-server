@@ -3,181 +3,297 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
+use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
+// use App\Mail\BulkRegister;
+// use Illuminate\Support\Facades\Mail;
+
+use function Symfony\Component\Clock\now;
 
 class UserController extends Controller
 {
     //Create
+    public function bulkRegisterUser(Request $request)
+    {
+        $data = $request->users;
+        $user = [];
+        $temp_pass = Hash::make('Smct123456');
+
+        foreach ($data as $item) {
+            // $temp_pass = Str::random(10);
+
+            $position = Position::firstOrCreate(
+                [
+                    'label' => $item['position_id'],
+                ],
+                [
+                    'label'         => $item['position_id'],
+                    'value'         => $item['position_id'],
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ],
+            );
+
+            $department_id = null;
+            if (!empty($item['department_id'])) {
+                $department = Department::firstOrCreate(
+                    [
+                        'department_name'   => $item['department_id'],
+                    ],
+                    [
+                        'department_name'   => $item['department_id'],
+                        'created_at'        => now(),
+                        'updated_at'        => now(),
+                    ],
+                );
+                $department_id = $department->id;
+            }
+
+            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower($item['fname'])) . '_' . Str::substr($item['employee_id'], 0, 4);
+
+            $clean_contact = '0' . Str::substr($item['contact'], -10);
+
+            $branch = Branch::firstOrCreate(
+                [
+                    'branch_code'   => $item['branch_id'],
+                ],
+                [
+                    'branch_code'   => $item['branch_id'],
+                    'branch_name'   => $item['branch_id'] . '_SMCT',
+                    'branch'        => 'Strong Moto Centrum, Inc.',
+                    'acronym'       => 'SMCT',
+                    'created_at'    => now(),
+                    'updated_at'    => now(),
+                ],
+            );
+
+            $isUserExist = User::where('fname', $item['fname'])->where('lname', $item['lname'])->where('email', $item['email'])->exists();
+
+            if (!$isUserExist) {
+                $user[] =
+                [
+                    'position_id'    => $position->id,
+                    'branch_id'      => $branch?->id,
+                    'department_id'  => $department_id ?: null,
+                    'date_hired'     => Carbon::parse($item['date_hired'])->toDateString() ?: now(),
+                    'username'       => $username,
+                    'fname'          => $item['fname'] ?: 'temp_first_name',
+                    'lname'          => $item['lname'] ?: 'temp_last_name',
+                    'email'          => Str::lower($item['email']) ?: Str::lower($item['fname']).'temp_email@temp.test',
+                    'password'       => $temp_pass,
+                    'contact'        => $clean_contact ?: 'temp_contact',
+                    'emp_id'         => preg_replace('/[^0-9]/', '', $item['employee_id']) ?: 'tempId',
+                    'is_active'      => 'active',
+                    'signature'      => null,
+                    'avatar'         => null,
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ];
+            }
+        }
+
+        User::insert($user);
+
+        $userItems = User::whereIn('username', collect($user)->pluck('username'))->get();
+
+        $userItems->each(function ($user) {
+            $user->assignRole('employee');
+            // Mail::to($user->email)->queue(new BulkRegister($user->fname, $user->lname, $user->username, $user->email, $user->password));
+        });
+
+        return response()->json(
+            [
+                'message' => 'users successfully created',
+            ],
+            201
+        );
+    }
 
     public function registerUser(Request $request)
     {
-        $validate = $request->validate([
-            'fname'                     => ['required', 'string'],
-            'lname'                     => ['required', 'string'],
-            'date_hired'                => ['required', 'date'],
-            'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
-            'position_id'               => ['required', Rule::exists('positions', 'id')],
-            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
-            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
-            'signature'                 => ['required'],
-            'employee_id'               => ['required', Rule::unique('users', 'emp_id')],
-            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
-            'contact'                   => ['required', 'string'],
-            'password'                  => ['required', 'string', 'min: 8', 'max:20']
-        ]);
+        $validate = $request->validate(
+            [
+                'fname'           => ['required', 'string'],
+                'lname'           => ['required', 'string'],
+                'date_hired'      => ['required', 'date'],
+                'email'           => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+                'position_id'     => ['required', Rule::exists('positions', 'id')],
+                'branch_id'       => ['required', Rule::exists('branches', 'id')],
+                'department_id'   => ['nullable', Rule::exists('departments', 'id')],
+                'signature'       => ['required', 'file'],
+                'employee_id'     => ['required', Rule::unique('users', 'emp_id')],
+                'username'        => ['required', 'string', Rule::unique('users', 'username')],
+                'contact'         => ['required', 'string'],
+                'password'        => ['required', 'string', 'min: 8', 'max:20'],
+            ]
+        );
 
         //file handling | storing
         if ($request->hasFile('signature')) {
             $signature = $request->file('signature');
-
             $name = time() . '-' . $validate['username'] . '.' . $signature->getClientOriginalExtension();
-
             $path = $signature->storeAs('user-signatures', $name, 'public');
         } else {
-            return response()->json([
-                'message'       => 'Signature not found or invalid file.'
-            ], 400);
+            return response()->json(
+                [
+                    'message' => 'Signature not found or invalid file.',
+                ],
+                400
+            );
         }
 
-        $user = User::create([
-            'fname'                     => $validate['fname'],
-            'lname'                     => $validate['lname'],
-            'date_hired'                => $validate['date_hired'],
-            'email'                     => $validate['email'],
-            'position_id'               => $validate['position_id'],
-            'department_id'             => $validate['department_id'],
-            'signature'                 => $path ?? null,
-            'emp_id'                    => $validate['employee_id'],
-            'username'                  => $validate['username'],
-            'contact'                   => $validate['contact'],
-            'password'                  => $validate['password']
-        ]);
-
-        $user->assignRole('employee');
-        $user->branches()->sync($validate['branch_id']);
-
-        //notification for admin and hr
-        $notificationData =  new EvalNotifications(
-            "New user registration: " . $user->fname . " " . $user->lname,
+        $user = User::create(
+            [
+                'fname'         => $validate['fname'],
+                'lname'         => $validate['lname'],
+                'date_hired'    => $validate['date_hired'],
+                'email'         => $validate['email'],
+                'position_id'   => $validate['position_id'],
+                'department_id' => $validate['department_id'],
+                'signature'     => $path ?: null,
+                'emp_id'        => $validate['employee_id'],
+                'username'      => $validate['username'],
+                'contact'       => $validate['contact'],
+                'password'      => $validate['password'],
+                'branch_id'     => $validate['branch_id'],
+            ]
         );
 
-        User::with('roles')
-            ->whereHas(
-                'roles',
-                fn($q)
-                =>
-                $q->where('name', 'hr')->orWhere('name', 'admin')
-            )
-            ->chunk(
-                100,
-                function ($hrs) use ($notificationData) {
-                    Notification::send($hrs, $notificationData);
-                }
-            );
+        $user->assignRole('employee');
 
-        return response()->json([
-            "message"       => "Registered Successfully",
-        ], 200);
+        //notification for admin and hr
+        $notificationData = new EvalNotifications('New user registration: ' . $user->fname . ' ' . $user->lname);
+
+        User::with('roles')
+            ->whereHas('roles', fn($q) => $q->where('name', 'hr')->orWhere('name', 'admin'))
+            ->chunk(100, function ($hrs) use ($notificationData) {
+                Notification::send($hrs, $notificationData);
+            });
+
+        return response()->json(
+            [
+                'message' => 'Registered Successfully',
+            ],
+            201
+        );
     }
 
     public function store(Request $request)
     {
-        $validate = $request->validate([
-            'fname'                     => ['required', 'string'],
-            'lname'                     => ['required', 'string'],
-            'date_hired'                => ['required', 'date'],
-            'email'                     => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
-            'position_id'               => ['required', Rule::exists('positions', 'id')],
-            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
-            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
-            'employee_id'               => ['required', Rule::unique('users', 'emp_id')],
-            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')],
-            'contact'                   => ['required', 'string'],
-            'password'                  => ['required', 'string', 'min: 8', 'max:20'],
-            'role_id'                   => ['required', Rule::exists('roles', 'id')]
-        ]);
+        $validate = $request->validate(
+            [
+                'fname'             => ['required', 'string'],
+                'lname'             => ['required', 'string'],
+                'date_hired'        => ['required', 'date'],
+                'email'             => ['required', Rule::unique('users', 'email'), 'email', 'string', 'lowercase'],
+                'position_id'       => ['required', Rule::exists('positions', 'id')],
+                'branch_id'         => ['required', Rule::exists('branches', 'id')],
+                'department_id'     => ['nullable', Rule::exists('departments', 'id')],
+                'employee_id'       => ['required', Rule::unique('users', 'emp_id')],
+                'username'          => ['required', 'string', Rule::unique('users', 'username')],
+                'contact'           => ['required', 'string'],
+                'password'          => ['required', 'string', 'min: 8', 'max:20'],
+                'role_id'           => ['required', Rule::exists('roles', 'id')],
+            ]
+        );
 
-        $user = User::create([
-            'fname'                     => $validate['fname'],
-            'lname'                     => $validate['lname'],
-            'date_hired'                => $validate['date_hired'],
-            'email'                     => $validate['email'],
-            'position_id'               => $validate['position_id'],
-            'department_id'             => $validate['department_id'] ?? null,
-            'emp_id'                    => $validate['employee_id'],
-            'username'                  => $validate['username'],
-            'contact'                   => $validate['contact'],
-            'password'                  => $validate['password'],
-            'is_active'                 => 'active'
-        ]);
+        $user = User::create(
+            [
+                'fname'         => $validate['fname'],
+                'lname'         => $validate['lname'],
+                'date_hired'    => $validate['date_hired'],
+                'email'         => $validate['email'],
+                'position_id'   => $validate['position_id'],
+                'department_id' => $validate['department_id'] ?: null,
+                'emp_id'        => $validate['employee_id'],
+                'username'      => $validate['username'],
+                'contact'       => $validate['contact'],
+                'password'      => $validate['password'],
+                'is_active'     => 'active',
+                'branch_id'     => $validate['branch_id'],
+            ]
+        );
 
-        $role  = Role::findOrFail($validate['role_id']);
+        $role = Role::findOrFail($validate['role_id']);
         $user->assignRole($role->name);
-        $user->branches()->sync($validate['branch_id']);
 
-        return response()->json([
-            "message"       => "Registered Successfully",
-        ], 200);
+        return response()->json(
+            [
+                'message' => 'Registered Successfully',
+            ],
+            201,
+        );
     }
-
 
     //Auth
     public function userLogin(Request $request)
     {
-
-        $request->validate([
-            'email' => ['required', 'string', 'lowercase'],
-            'password' => ['required', 'string'],
-        ]);
+        $request->validate(
+            [
+                'email'     => ['required', 'string'],
+                'password'  => ['required', 'string'],
+            ]
+        );
 
         $user = User::whereAny(['username', 'email'], $request->email)->first();
 
         if (!$user) {
-            return response()->json([
-                'message' => 'Username or email not found'
-            ], 404);
+            return response()->json(
+                [
+                    'message' => 'Username or email not found',
+                ],
+                404
+            );
         }
 
-        if ($user->is_active === "pending") {
-            return response()->json([
-                "message"   => "Your account is not activated yet. Please wait for admin to approve."
-            ], 401);
-        }
-
-        if ($user->is_active === "declined") {
-            return response()->json([
-                "message"   => "Your account has been rejected."
-            ], 401);
+        if ($user->is_active === 'pending') {
+            return response()->json(
+                [
+                    'message' => 'Your account is not activated yet. Please wait for admin to approve.',
+                ],
+                401
+            );
         }
 
         $credentials = [
             'username' => !filter_var($request->email, FILTER_VALIDATE_EMAIL) ? $request->email : $user->username,
-            'password' => $request->password
+            'password' => $request->password,
         ];
 
         if (!Auth::attempt($credentials)) {
-            return response()->json([
-                "status"    => false,
-                "message"   => "Email and password do not match our records"
-            ], 400);
+            return response()->json(
+                [
+                    'status' => false,
+                    'message' => 'Email and password do not match our records',
+                ],
+                400
+            );
         }
 
         $role = $user->getRoleNames();
 
-        return response()->json([
-            "role"    => $role,
-            "status"  => true,
-            "message" => "Login successful. Redirecting you to Dashboard"
-        ], 200);
+        return response()->json(
+            [
+                'role'      => $role,
+                'status'    => true,
+                'message'   => 'Login successful. Redirecting you to Dashboard',
+            ],
+            200
+        );
     }
 
     //Read
@@ -187,69 +303,63 @@ class UserController extends Controller
         $department_filter = $request->input('department');
         $branch_filter = $request->input('branch');
 
-        $users  = User::with([
-            'branches',
-            'departments',
-            'positions',
-            'evaluations',
-            'doesEvaluated',
-            'roles'
-        ])
+        $users = User::query()
+            ->with(
+                [
+                    'branch',
+                    'branches',
+                    'departments',
+                    'positions',
+                    'evaluations',
+                    'doesEvaluated',
+                    'roles'
+                ])
             ->search($search_filter)
-            ->when(
-                $department_filter,
-                fn($q)
-                =>
-                $q->where('department_id', $department_filter)
-            )
-            ->when(
-                $branch_filter,
+            ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
+            ->when($branch_filter,
                 function ($q) use ($branch_filter) {
-                    $q->whereHas(
-                        'branches',
-                        function ($subq) use ($branch_filter) {
-                            $subq->where('branch_id', $branch_filter);
-                        }
-                    );
-                }
-            )
+                    $q->whereRelation('branches', 'branches.id', $branch_filter)
+                    ->orWhereRelation('branch', 'branches.id', $branch_filter);
+            })
+            ->whereRelation('roles', 'name', '!=', 'admin')
             ->whereNot('id', Auth::id())
             ->latest('updated_at')
             ->get('positions');
 
-        return response()->json([
-            'message'       => 'Users fetched successfully',
-            'users'         => $users
-        ], 200);
+        return response()->json(
+            [
+                'message'   => 'Users fetched successfully',
+                'users'     => $users,
+            ],
+            200
+        );
     }
-
 
     public function getAllPendingUsers(Request $request)
     {
         $perPage = $request->input('per_page', 10);
         $search_filter = $request->input('search');
-        $status_filter = $request->input('status');
 
-        $pending_users  = User::with('positions', 'branches', 'departments', 'roles')
-            ->whereNot('is_active', "active")
-            ->whereNot('id', Auth::id())
-            ->when(
-                $status_filter,
-                fn($status)
-                =>
-                $status->where('is_active', $status_filter)
-            )
-            ->search($search_filter)
-            ->latest('updated_at')
-            ->paginate($perPage);
+        $pending_users = User::query()->with(
+            [
+                'positions',
+                'branch',
+                'branches',
+                'departments',
+                'roles'
+            ])
+            ->whereNot('is_active', 'active')->whereNot('id', Auth::id())
+            ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
+            ->search($search_filter)->latest('updated_at')->paginate($perPage);
 
-        return response()->json([
-            'user_status'       => $status_filter,
-            'message'      => 'ok',
-            'users'        => $pending_users
-        ], 200);
+        return response()->json(
+            [
+                'message' => 'ok',
+                'users' => $pending_users,
+            ],
+            200
+        );
     }
-
 
     public function getAllActiveUsers(Request $request)
     {
@@ -259,550 +369,469 @@ class UserController extends Controller
         $branch_filter = $request->input('branch');
         $department_filter = $request->input('department');
 
-        $users  = User::with('branches', 'departments', 'positions', 'roles')
-            ->where('is_active', "active")
+        $users = User::query()->with(
+            [
+                'branch',
+                'branches',
+                'departments',
+                'positions',
+                'roles'
+            ])
+            ->where('is_active', 'active')
             ->whereNot('id', Auth::id())
-            ->when(
-                $role_filter,
-                fn($role)
-                =>
-                $role->whereRelation('roles', 'id', $role_filter)
-            )
-            ->when(
-                $branch_filter,
-                fn($q)
-                =>
-                $q->whereRelation('branches', 'branches.id', $branch_filter)
-            )
-            ->when(
-                $department_filter,
-                fn($q)
-                =>
-                $q->whereRelation('departments', 'departments.id', $department_filter)
-            )
+            ->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))
+            ->when($branch_filter,
+                fn($q) =>
+                    $q->where( fn($query) => $query->whereRelation('branches', 'branches.id', $branch_filter)
+                    ->orWhereRelation('branch', 'branches.id', $branch_filter)
+            ))
+            ->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))
+            ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)
             ->latest('updated_at')
             ->paginate($perPage);
 
-        return response()->json([
-            'message'   => 'ok',
-            'users'     => $users
-        ], 200);
+        return response()->json(
+            [
+                'message'   => 'ok',
+                'users'     => $users,
+            ],
+            200
+        );
     }
-
 
     public function showUser(User $user)
     {
-        $shownUser = $user->load(
-            'branches',
-            'departments',
-            'positions',
-            'evaluations',
-            'doesEvaluated',
-            'roles'
+        $shownUser = $user->load('branches', 'departments', 'positions', 'evaluations', 'doesEvaluated', 'roles');
+        return response()->json(
+            [
+                'data' => $shownUser,
+            ],
+            200
         );
-        return response()->json([
-            'data'  =>  $shownUser
-        ], 200);
     }
 
     public function getAllBranchHeads(Request $request)
     {
-        $search  = $request->input('search');
-        $users = User::with([
-            'branches',
-            'departments',
-            'positions',
-            'roles'
-        ])
-            ->where('is_active', "active")
+        $search = $request->input('search');
+        // $per_page = $request->input('per_page', 10);
+
+        $users = User::query()
+            ->with(
+                [
+                    'branch',
+                    'branches',
+                    'departments',
+                    'positions',
+                    'roles'
+                ])
+            ->where('is_active', 'active')
             ->search($search)
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
             ->latest('updated_at')
             ->get();
+            // ->paginate($per_page);
 
-        return response()->json([
-            'branch_heads'      =>  $users
-        ], 200);
+        return response()->json(
+            [
+                'branch_heads' => $users,
+            ],
+            200
+        );
     }
 
     public function getAllAreaManager(Request $request)
     {
-        $search  = $request->input('search');
-        $users = User::with([
-            'branches',
-            'departments',
-            'positions',
-            'roles'
-        ])
-            ->where('is_active', "active")
+        $search = $request->input('search');
+        // $per_page = $request->input('per_page', 10);
+
+        $users = User::query()
+            ->with(
+                [
+                    'branch',
+                    'branches',
+                    'departments',
+                    'positions',
+                    'roles'
+                ])
+            ->where('is_active', 'active')
             ->search($search)
             ->where('position_id', 16)
             ->latest('updated_at')
             ->get();
+            // ->paginate($per_page);
 
-        return response()->json([
-            'branch_heads'      =>  $users
-        ], 200);
+        return response()->json(
+            [
+                'branch_heads' => $users,
+            ],
+            200
+        );
     }
 
     public function getAllSignatureRequest(Request $request)
     {
-        $search = $request->input("search");
-        $users = User::with(
-            'branches',
-            'departments',
-            'positions',
-        )
+        $search = $request->input('search');
+        // $per_page = $request->input('per_page', 10);
+
+        $users = User::query()->with(
+            [
+                'branch',
+                'branches',
+                'departments',
+                'positions'
+            ])
             ->where('requestSignatureReset', true)
             ->whereNot('approvedSignatureReset', true)
             ->search($search)
             ->latest('updated_at')
             ->get();
+            // ->paginate($per_page);
 
-        return response()->json([
-            'users'      =>  $users
-        ], 200);
+        return response()->json(
+            [
+                'users' => $users,
+            ],
+            200
+        );
     }
 
-
-    //applicable for area manager / branch manager/supervisor /department manager
+    //applicable for area manager / branch manager/supervisor /department manager / avp manager
     public function getAllEmployeeByAuth(Request $request)
     {
         $manager = Auth::user();
 
-        $search  = $request->input('search');
+        $search = $request->input('search');
         $position_filter = $request->input('position_filter');
         $perPage = $request->input('per_page', 10);
 
-        //first test if it is manager
-        // $isManagerOrSupervisor =
-        //     $manager->positions()
-        //     ->where(function ($q) {
-        //         $q->where('label', 'LIKE', '%manager%')
-        //             ->orWhere('label', 'LIKE', '%supervisor%');
-        //     })
-        //     ->exists();
-
-        if ($manager->roles()->where('name', 'evaluator')->exists()) {
-
-            $isHO = $manager->branches()->where('branch_id', 126)->exists();
-
-            //area manager
-            if ($manager->position_id === 16) {
-                $branches = $manager->branches()->pluck('branches.id');
-
-                $branchHeads = User::with('departments', 'branches', 'positions', 'roles')
-                    ->where('is_active', "active")
-                    ->whereHas(
-                        'branches',
-                        fn($query)
-                        =>
-                        $query->whereIn('branch_id', $branches)
-                    )
-                    ->when(
-                        $position_filter,
-                        fn($q)
-                        =>
-                        $q->where('position_id', $position_filter)
-                    )
-                    ->where('id', "!=", $manager->id)
-                    ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
-                    ->search($search)
-                    ->latest('updated_at')
-                    ->paginate($perPage);
-
-                $positions = Position::whereRelation(
-                    'users',
-                    fn($q)
-                    =>
-                    $q->where('is_active', "active")
-                        ->whereHas(
-                            'branches',
-                            fn($query)
-                            =>
-                            $query->whereIn('branch_id', $branches)
-                        )
-                        ->where('id', "!=", $manager->id)
-                        ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
-                )
-                    ->get();
-
-                return response()->json([
-                    'employees' => $branchHeads,
-                    'positions' => $positions
-                ], 200);
-            }
-
-            //branch manager/supervisor
-            if (
-                !$isHO
-                &&
-                (
-                    $manager->position_id === 35 ||
-                    $manager->position_id === 36 ||
-                    $manager->position_id === 37 ||
-                    $manager->position_id === 38
-                )
-                &&
-                empty($manager->department_id)
-                &&
-                $manager->position_id !== 16
-            ) {
-                $branches = $manager->branches()->pluck('branches.id');
-
-                $employees = User::with('departments', 'branches', 'positions', 'roles')
-                    ->where('is_active', "active")
-                    ->whereHas(
-                        'branches',
-                        fn($query)
-                        =>
-                        $query->whereIn('branch_id', $branches)
-                    )
-                    ->when(
-                        $position_filter,
-                        fn($q)
-                        =>
-                        $q->where('position_id', $position_filter)
-                    )
-                    ->where('id', "!=", $manager->id)
-                    ->whereNotIn('position_id', [16, 35, 36, 37, 38])
-                    ->search($search)
-                    ->latest('updated_at')
-                    ->paginate($perPage);
-
-                $positions = Position::whereRelation(
-                    'users',
-                    fn($q)
-                    =>
-                    $q->where('is_active', "active")
-                        ->whereHas(
-                            'branches',
-                            fn($query)
-                            =>
-                            $query->whereIn('branch_id', $branches)
-                        )
-                        ->where('id', "!=", $manager->id)
-                        ->whereNotIn('position_id', [16, 35, 36, 37, 38])
-                )
-                    ->get();
-
-                return response()->json([
-                    'employees' => $employees,
-                    'positions' => $positions
-                ], 200);
-            }
-
-            //Department manager
-            if ($isHO  && !empty($manager->department_id)) {
-                $employees = User::with('departments', 'branches', 'positions', "roles")
-                    ->where('is_active', "active")
-                    ->whereRelation('branches', 'branch_id', 126) //<--- must branch HO
-                    ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%')
-                    ->when(
-                        $position_filter,
-                        fn($q)
-                        =>
-                        $q->where('position_id', $position_filter)
-                    )
-                    ->whereNot('id', $manager->id)
-                    ->where('department_id', $manager->department_id) // <--- must the same department
-                    ->search($search)
-                    ->latest('updated_at')
-                    ->paginate($perPage);
-
-                $positions = Position::whereRelation(
-                    'users',
-                    fn($q)
-                    =>
-                    $q->where('is_active', 'active')
-                        ->whereRelation('branches', 'branch_id', 126)
-                        ->whereRelation('positions', 'positions.label', 'NOT LIKE', '%manager%')
-                        ->whereNot('id', $manager->id)
-                        ->where('department_id', $manager->department_id)
-                )
-                    ->get();
-
-                return response()->json([
-                    'employees' => $employees,
-                    'positions' => $positions
-                ], 200);
-            }
-
-            // for employees act like branch manager
-            if (
-                !$isHO &&
-                empty($manager->department_id) &&
-                $manager->position_id !== 16 &&
-                ($manager->position_id !== 35 ||
-                    $manager->position_id !== 36 ||
-                    $manager->position_id !== 37 ||
-                    $manager->position_id !== 38)
-            ) {
-                $branches = $manager->branches()->pluck('branches.id');
-
-                $employees = User::with('departments', 'branches', 'positions', 'roles')
-                    ->where('is_active', "active")
-                    ->whereHas(
-                        'branches',
-                        fn($query)
-                        =>
-                        $query->whereIn('branch_id', $branches)
-                    )
-                    ->when(
-                        $position_filter,
-                        fn($q)
-                        =>
-                        $q->where('position_id', $position_filter)
-                    )
-                    ->where('id', "!=", $manager->id)
-                    ->whereNotIn('position_id', [16, 35, 36, 37, 38])
-                    ->search($search)
-                    ->latest('updated_at')
-                    ->paginate($perPage);
-
-                $positions = Position::whereRelation(
-                    'users',
-                    fn($q)
-                    =>
-                    $q->where('is_active', "active")
-                        ->whereHas(
-                            'branches',
-                            fn($query)
-                            =>
-                            $query->whereIn('branch_id', $branches)
-                        )
-                        ->where('id', "!=", $manager->id)
-                        ->whereNotIn('position_id', [16, 35, 36, 37, 38])
-                )
-                    ->get();
-
-                return response()->json([
-                    'employees' => $employees,
-                    'positions' => $positions
-                ], 200);
-            }
-
-            return response()->json([
-                'message'   => "failed conditions"
-            ]);
+        if (!$manager->roles()->where('name', 'evaluator')->exists()) {
+            return response()->json(
+                [
+                    'error' => 'Auth user is not a evaluator.',
+                    $manager->roles()->pluck('name'),
+                ],
+                401
+            );
         }
-        return response()->json([
-            'error' => 'Auth user is not a evaluator.'
-        ], 401);
-    }
 
+        //boolean conditions
+        $isHO = ($manager->branches()->where('branch_id', 126)->exists() || $manager->branch_id === 126 );
+        $hasDepartment = !empty($manager->department_id);
+        $isAreaManager = $manager->position_id === 16;
+        $isAVP = $manager->position_id === 31;
+
+        //array collections
+        $branches = $manager->branches->pluck('id')->toArray();
+        Log::info('branches', $branches);
+        $areaManagerPositionId = [16];
+        $branchManagerPositionsId = [35, 36, 37, 38];
+        $userQuery = User::query()
+            ->with(
+                [
+                    'departments',
+                    'branch',
+                    'branches',
+                    'positions',
+                    'roles'
+                ])
+            ->where('is_active', 'active')
+            ->where( fn ($q) =>
+                $q->whereRelation('branch', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
+                ->orWhereRelation('branches', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
+            )
+            ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
+            ->where('id', '!=', $manager->id)
+            ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {
+                $q->whereIn('position_id', $branchManagerPositionsId);
+            })
+            ->when(!$isHO && in_array($manager->position_id, $branchManagerPositionsId) && !$hasDepartment, function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
+                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+            })
+            ->when($isHO && $hasDepartment && !$isAVP, function ($q) use ($manager) {
+                $q->where('department_id', $manager->department_id)->whereRelation('positions', fn($q) => $q->whereNotLike('positions.label', '%manager%'));
+            })
+            ->when(!$isHO && !$hasDepartment && !in_array($manager->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId)), function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
+                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+            })
+            ->when($isAVP && $isHO && $hasDepartment, function ($q) use ($manager, $position_filter) {
+                $q->where('department_id', $manager->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);
+            })
+            ->search($search)
+            ->latest('updated_at');
+
+        $new_hires = (clone $userQuery)->whereBetween('created_at', [Carbon::now()->subDays(7), now()])->count();
+
+        // final query
+        $employees = $userQuery->paginate($perPage);
+
+        return response()->json(
+            [
+                'employees' => $employees,
+                'new_count' => $new_hires,
+            ],
+            200
+        );
+    }
 
     //update
     public function updateUser(Request $request, User $user)
     {
-        $validate = $request->validate([
-            'fname'                     => ['required', 'string'],
-            'lname'                     => ['required', 'string'],
-            'date_hired'                => ['required', 'date'],
-            'email'                     => ['required', 'string', 'email', 'lowercase', Rule::unique('users', 'email')->ignore($user->id)],
-            'position_id'               => ['required', Rule::exists('positions', 'id')],
-            'branch_id'                 => ['required', Rule::exists('branches', 'id')],
-            'department_id'             => ['nullable', Rule::exists('departments', 'id')],
-            'employeeId'                => ['required'],
-            'username'                  => ['required', 'string', 'lowercase', Rule::unique('users', 'username')->ignore($user->id)],
-            'contact'                   => ['required', 'string'],
-            'roles'                     => ['required', Rule::exists('roles', 'name')],
-            'password'                  => ['nullable', 'string', 'min: 8', 'max:20']
-        ]);
+        $validate = $request->validate(
+            [
+                'fname'         => ['required', 'string'],
+                'lname'         => ['required', 'string'],
+                'date_hired'    => ['required', 'date'],
+                'email'         => ['required', 'string', 'email', 'lowercase', Rule::unique('users', 'email')->ignore($user->id)],
+                'position_id'   => ['required', Rule::exists('positions', 'id')],
+                'branch_id'     => ['required', Rule::exists('branches', 'id')],
+                'department_id' => ['nullable', Rule::exists('departments', 'id')],
+                'employeeId'    => ['required'],
+                'username'      => ['required', 'string', Rule::unique('users', 'username')->ignore($user->id)],
+                'contact'       => ['required', 'string'],
+                'roles'         => ['required', Rule::exists('roles', 'name')],
+                'password'      => ['nullable', 'string', 'min: 8', 'max:20'],
+            ]
+        );
 
         $user->syncRoles([$validate['roles']]);
-        $user->branches()->sync([$validate['branch_id']]);
 
         $updateData = [
-            'fname'                     => $validate['fname'],
-            'lname'                     => $validate['lname'],
-            'date_hired'                => $validate['date_hired'],
-            'email'                     => $validate['email'],
-            'position_id'               => $validate['position_id'],
-            'department_id'             => $validate['department_id'] ?? null,
-            'username'                  => $validate['username'],
-            'contact'                   => $validate['contact'],
-            'contact'                   => $validate['contact'],
-            'emp_id'                    => $validate['employeeId'],
+            'fname'         => $validate['fname'],
+            'lname'         => $validate['lname'],
+            'date_hired'    => $validate['date_hired'],
+            'email'         => $validate['email'],
+            'position_id'   => $validate['position_id'],
+            'department_id' => $validate['department_id'] ?: null,
+            'username'      => $validate['username'],
+            'contact'       => $validate['contact'],
+            'contact'       => $validate['contact'],
+            'emp_id'        => $validate['employeeId'],
+            'branch_id'     => $validate['branch_id']
         ];
 
-        if ($request->filled("password")) {
+        if ($request->filled('password')) {
             $updateData['password'] = $validate['password'];
         }
 
         $user->update($updateData);
 
-        return response()->json([
-            'message'   => 'Updated Successfully'
-        ], 200);
+        return response()->json(
+            [
+                'message' => 'Updated Successfully',
+            ],
+            200
+        );
     }
-
 
     public function updateProfileUserAuth(Request $request)
     {
         $user = Auth::user();
         if (!$user) {
-            return response()->json([
-                'message' => 'Unauthenticated.'
-            ], 401);
+            return response()->json(
+                [
+                    'message' => 'Unauthenticated.',
+                ],
+                401
+            );
         }
 
-        $validated = $request->validate([
-            'username'                 => ['nullable', 'string'],
-            'email'                    => ['nullable', 'email'],
-            'current_password'         => ['required', 'current_password:sanctum'],
-            'new_password'             => ['nullable', 'required_with:confirm_password'],
-            'confirm_password'         => ['nullable', 'required_with:new_password', 'same:new_password'],
-        ]);
+        if (empty($request->signature) && empty($user->signature)) {
+            return response()->json(
+                [
+                    'message' => 'Signature is required',
+                ],
+                422
+            );
+        }
+
+        $validated = $request->validate(
+            [
+                'username'          => ['nullable', 'string'],
+                'email'             => ['nullable', 'email'],
+                'current_password'  => ['required', 'current_password:sanctum'],
+                'new_password'      => ['nullable', 'required_with:confirm_password'],
+                'confirm_password'  => ['nullable', 'required_with:new_password', 'same:new_password'],
+            ]
+        );
 
         $items = [
-            'username'                  => $validated['username'] ?? $user->username,
-            'email'                     => $validated['email'] ?? $user->email,
+            'username'  => $validated['username'] ?: $user->username,
+            'email'     => $validated['email'] ?: $user->email,
         ];
 
-
         if ($request->filled('new_password') && $request->filled('confirm_password')) {
-            $items["password"] = $validated["confirm_password"];
+            $items['password'] = $validated['confirm_password'];
         }
 
         //file handling | storing
         if ($request->file('signature')) {
             $signature = $request->file('signature');
-            $name = time() . '-' .  $user->username . '.' . $signature->getClientOriginalExtension();
+            $name = time() . '-' . $user->username . '.' . $signature->getClientOriginalExtension();
             $path = $signature->storeAs('user-signatures', $name, 'public');
 
             if ($user->signature) {
                 if (Storage::disk('public')->exists($user->signature)) {
                     Storage::disk('public')->delete($user->signature);
+                } else {
+                    return response()->json(
+                        [
+                            'message' => 'signature not found',
+                        ],
+                        402
+                    );
                 }
             }
-
-            $items['signature'] = $path ?? null;
+            $items['signature'] = $path;
             $items['requestSignatureReset'] = false;
             $items['approvedSignatureReset'] = false;
         }
 
         $user->update($items);
 
-        return response()->json([
-            "status"        => true,
-            "message"       => "Uploaded Successfully",
-        ], 201);
+        return response()->json(
+            [
+                'status'    => true,
+                'message'   => 'Uploaded Successfully',
+            ],
+            200
+        );
     }
-
 
     public function requestSignatureReset()
     {
         $user = Auth::user();
 
-        $user->update([
-            'requestSignatureReset'     =>  true,
-        ]);
-
-        $notificationData =  new EvalNotifications(
-            "Signature reset request from: " . $user->fname . " " . $user->lname,
+        $user->update(
+            [
+                'requestSignatureReset' => true,
+            ]
         );
 
-        User::with('roles')
-            ->whereHas(
-                'roles',
-                fn($q)
-                =>
-                $q->where('name', 'hr')->orWhere('name', 'admin')
-            )
-            ->chunk(
-                100,
-                function ($hrs) use ($notificationData) {
-                    Notification::send($hrs, $notificationData);
-                }
-            );
+        $notificationData = new EvalNotifications('Signature reset request from: ' . $user->fname . ' ' . $user->lname);
 
-        return response()->json([
-            'message'       =>  'Approved'
-        ], 201);
+        User::with('roles')
+            ->whereHas('roles', fn($q) => $q->where('name', 'hr')->orWhere('name', 'admin'))
+            ->chunk(100, function ($hrs) use ($notificationData) {
+                Notification::send($hrs, $notificationData);
+            });
+
+        return response()->json(
+            [
+                'message' => 'Approved',
+            ],
+            200
+        );
     }
 
     public function approvedSignatureReset(User $user)
     {
-        $user->update([
-            'approvedSignatureReset'     =>  true,
-        ]);
-        $user->notify(new EvalNotifications("Your signature reset request has been approved."));
+        if ($user->signature) {
+            if (Storage::disk('public')->exists($user->signature))
+            {
+                Storage::disk('public')->delete($user->signature);
 
-        return response()->json([
-            'message'       =>  'Approved'
-        ], 201);
+                $user->update([
+                    'approvedSignatureReset' => true,
+                    'signature' => null,
+                ]);
+                $user->notify(new EvalNotifications('Your signature reset request has been approved.'));
+
+                return response()->json(
+                    [
+                        'message' => 'Approved',
+                    ],
+                    201
+                );
+            } else {
+                return response()->json(
+                    [
+                        'message' => 'User signature not found',
+                    ],
+                    402
+                );
+            }
+        }
+
+        return response()->json(
+            [
+                'message' => 'User doesnt have a signature',
+            ],
+            402
+        );
     }
 
     public function rejectSignatureReset(User $user)
     {
-        $user->update([
-            'requestSignatureReset'     =>  false,
-        ]);
-        $user->notify(new EvalNotifications("Unfortunately, your signature reset request has been declined."));
+        $user->update(
+            [
+                'requestSignatureReset' => false,
+            ]
+        );
 
+        $user->notify(new EvalNotifications('Unfortunately, your signature reset request has been declined.'));
 
-        return response()->json([
-            'message'       =>  'Rejected Successfully'
-        ], 201);
+        return response()->json(
+            [
+                'message' => 'Rejected Successfully',
+            ],
+            200
+        );
     }
 
     public function approveRegistration(User $user)
     {
-        $user->update([
-            'is_active'     =>  'active'
-        ]);
+        $user->update(
+            [
+                'is_active' => 'active',
+            ]
+        );
 
-        return response()->json([
-            'message'       =>  'Approved'
-        ], 201);
-    }
-
-
-    public function rejectRegistration(User $user)
-    {
-        $user->update([
-            'is_active'      =>  'declined'
-        ]);
-
-        return response()->json([
-            'message'       =>  'Declined successfully'
-        ], 201);
+        return response()->json(
+            [
+                'message' => 'Approved',
+            ],
+            200
+        );
     }
 
     public function updateUserBranch(User $user, Request $request)
     {
-
         $user->branches()->syncWithoutDetaching($request->branch_ids);
 
-        return response()->json([
-            'message'       =>  'User Branch Updated'
-        ], 201);
+        return response()->json(
+            [
+                'message' => 'User Branch Updated',
+            ],
+            200
+        );
     }
 
     public function removeUserBranches(User $user)
     {
         $user->branches()->detach();
 
-        return response()->json([
-            'message' => 'All user branches removed'
-        ], 200);
+        return response()->json(
+            [
+                'message' => 'All user branches removed',
+            ],
+            200
+        );
     }
-
 
     //destroy || delete
     public function deleteUser(User $user)
     {
-        UsersEvaluation::where('employee_id', $user->id)
-            ->orWhere('evaluator_id', $user->id)
-            ->delete();
+        UsersEvaluation::where('employee_id', $user->id)->orWhere('evaluator_id', $user->id)->delete();
 
         $user->delete();
 
-        return response()->json([
-            'message'       => 'Deleted Successfully'
-        ], 200);
+        return response()->json(
+            [
+                'message' => 'Deleted Successfully',
+            ],
+            204
+        );
     }
 
     // public function test()

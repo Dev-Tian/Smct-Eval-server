@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminDashboardController extends Controller
 {
@@ -14,26 +15,30 @@ class AdminDashboardController extends Controller
      */
     public function index()
     {
+        $authUserId = Auth::user()->id;
         //users
-        $total_users = User::count();
-        $total_pending_users = User::where('is_active', 'pending')->count();
-        $total_active_users = User::where('is_active', 'active')->count();
-        $total_declined_users = User::where('is_active', 'declined')->count();
+        $total_users = User::whereNot('id', $authUserId)->whereRelation('roles',fn($q) => $q->whereNot('name','admin'))->count();
+        $total_pending_users = User::whereNot('id', $authUserId)->where('is_active', 'pending')->whereRelation('roles', fn($q)      => $q->whereNot('name','admin'))->count();
+        $total_active_users = User::whereNot('id', $authUserId)->where('is_active', 'active')->whereRelation('roles', fn($q)        => $q->whereNot('name','admin'))->count();
+        $total_declined_users = User::whereNot('id', $authUserId)->where('is_active', 'declined')->whereRelation('roles', fn($q)    => $q->whereNot('name','admin'))->count();
 
         //evaluations
         $total_evaluations = UsersEvaluation::count();
         $total_pending_evaluations = UsersEvaluation::where('status', 'pending')->count();
         $total_completed_evaluations = UsersEvaluation::where('status', 'completed')->count();
 
-        return response()->json([
-            'total_users'                   => $total_users,
-            'total_pending_users'           => $total_pending_users,
-            'total_active_users'            => $total_active_users,
-            'total_evaluations'             => $total_evaluations,
-            'total_pending_evaluations'     => $total_pending_evaluations,
-            'total_completed_evaluations'   => $total_completed_evaluations,
-            'total_declined_users'          => $total_declined_users
-        ], 200);
+        return response()->json(
+            [
+                'total_users'                   => $total_users,
+                'total_pending_users'           => $total_pending_users,
+                'total_active_users'            => $total_active_users,
+                'total_evaluations'             => $total_evaluations,
+                'total_pending_evaluations'     => $total_pending_evaluations,
+                'total_completed_evaluations'   => $total_completed_evaluations,
+                'total_declined_users'          => $total_declined_users
+            ],
+            200
+        );
     }
 
     /**

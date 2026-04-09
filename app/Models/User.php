@@ -78,9 +78,14 @@ class User extends Authenticatable
         return $this->hasMany(UsersEvaluation::class, 'evaluator_id');
     }
 
+    public function memos()
+    {
+        return $this->hasMany(MemorandumViolation::class, 'evaluator_id');
+    }
+
     public function getFullNameAttribute()
     {
-        return $this->fname . $this->lname;
+        return $this->fname . " " . $this->lname;
     }
 
     #[Scope]
@@ -96,9 +101,14 @@ class User extends Authenticatable
                     =>
                     $user->whereRaw('CONCAT(fname, " ", lname) LIKE ?', ["%{$term}%"])
                         ->orWhereRaw('CONCAT(lname, " ", fname) LIKE ?', ["%{$term}%"])
-                        ->orWhere('email', 'like', "%{$term}%")
-                        ->orWhere('username', 'like', "%{$term}%")
+                        ->orWhereLike('email', "%{$term}%")
+                        ->orWhereLike('username', "%{$term}%")
                 )
             );
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

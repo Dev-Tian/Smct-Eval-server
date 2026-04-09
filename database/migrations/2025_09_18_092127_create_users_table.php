@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Position;
 use Illuminate\Database\Migrations\Migration;
@@ -17,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Position::class, 'position_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(Department::class, 'department_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignIdFor(Branch::class)->nullable()->constrained()->cascadeOnDelete();
             $table->date("date_hired");
             $table->string("username");
             $table->string("fname");
@@ -25,7 +27,7 @@ return new class extends Migration
             $table->string("password");
             $table->string("contact");
             $table->string("emp_id");
-            $table->enum('is_active', ["pending", "active", "declined"])->default('pending');
+            $table->enum('is_active', ["pending", "active"])->default('pending');
             $table->longText("signature")->nullable();
             $table->string("avatar")->nullable();
             $table->boolean('requestSignatureReset')->default(false);
