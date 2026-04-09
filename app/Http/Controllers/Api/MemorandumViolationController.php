@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\MemorandumViolation;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,11 +21,10 @@ class MemorandumViolationController extends Controller
         return response()->json(
                [
                  'memos'   => $memos
-               ]
-               ,200
+               ],
+               200
             );
     }
-
 
     public function auth_index(Request $request)
     {
