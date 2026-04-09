@@ -235,7 +235,7 @@ class UserController extends Controller
             [
                 'message' => 'Registered Successfully',
             ],
-            201,
+            201
         );
     }
 
@@ -323,7 +323,7 @@ class UserController extends Controller
             })
             ->whereRelation('roles', 'name', '!=', 'admin')
             ->whereNot('id', Auth::id())
-            ->latest('updated_at')
+            ->orderBy('created_at','desc')
             ->get('positions');
 
         return response()->json(
@@ -350,7 +350,7 @@ class UserController extends Controller
             ])
             ->whereNot('is_active', 'active')->whereNot('id', Auth::id())
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
-            ->search($search_filter)->latest('updated_at')->paginate($perPage);
+            ->search($search_filter)->orderBy('created_at','desc')->paginate($perPage);
 
         return response()->json(
             [
@@ -388,7 +388,7 @@ class UserController extends Controller
             ->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)
-            ->latest('updated_at')
+            ->orderBy('created_at','desc')
             ->paginate($perPage);
 
         return response()->json(
@@ -428,7 +428,7 @@ class UserController extends Controller
             ->where('is_active', 'active')
             ->search($search)
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
-            ->latest('updated_at')
+            ->orderBy('created_at','desc')
             ->get();
             // ->paginate($per_page);
 
@@ -457,7 +457,7 @@ class UserController extends Controller
             ->where('is_active', 'active')
             ->search($search)
             ->where('position_id', 16)
-            ->latest('updated_at')
+            ->orderBy('created_at','desc')
             ->get();
             // ->paginate($per_page);
 
@@ -484,7 +484,7 @@ class UserController extends Controller
             ->where('requestSignatureReset', true)
             ->whereNot('approvedSignatureReset', true)
             ->search($search)
-            ->latest('updated_at')
+            ->orderBy('created_at','desc')
             ->get();
             // ->paginate($per_page);
 
@@ -558,7 +558,7 @@ class UserController extends Controller
                 $q->where('department_id', $manager->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);
             })
             ->search($search)
-            ->latest('updated_at');
+            ->orderBy('created_at','desc');
 
         $new_hires = (clone $userQuery)->whereBetween('created_at', [Carbon::now()->subDays(7), now()])->count();
 
