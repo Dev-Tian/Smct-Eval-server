@@ -13,7 +13,7 @@ use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+// use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -521,9 +521,8 @@ class UserController extends Controller
         $isAreaManager = $manager->position_id === 16;
         $isAVP = $manager->position_id === 31;
 
-        //array collections
         $branches = $manager->branches->pluck('id')->toArray();
-        Log::info('branches', $branches);
+        // Log::info('branches', $branches);
         $areaManagerPositionId = [16];
         $branchManagerPositionsId = [35, 36, 37, 38];
         $userQuery = User::query()
