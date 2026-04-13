@@ -61,7 +61,7 @@ class UsersEvaluationController extends Controller
                     default     => $q->where('rating', 5),
                 };
             })
-          ->when(!empty($branches), function ($q) use ($branches) {
+            ->when(!empty($branches), function ($q) use ($branches) {
                 $q->whereHas('employee', function ($sub) use ($branches) {
                     $sub->where(function ($query) use ($branches) {
                         $query->whereHas('branches', function ($q) use ($branches) {

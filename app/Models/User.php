@@ -99,10 +99,11 @@ class User extends Authenticatable
                 $filter->where(
                     fn($user)
                     =>
-                    $user->whereRaw('CONCAT(fname, " ", lname) LIKE ?', ["%{$term}%"])
-                        ->orWhereRaw('CONCAT(lname, " ", fname) LIKE ?', ["%{$term}%"])
-                        ->orWhereLike('email', "%{$term}%")
-                        ->orWhereLike('username', "%{$term}%")
+                    $user->where( function ($q) use ($term){
+                            $q->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$term}%"])
+                            ->orWhereRaw("CONCAT(lname, ' ', fname) LIKE ?", ["%{$term}%"]);
+                        })
+                        ->orWhereAny( ['email', 'username'], 'LIKE', "%{$term}%")
                 )
             );
     }
