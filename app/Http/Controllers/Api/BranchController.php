@@ -83,10 +83,10 @@ class BranchController extends Controller
     {
         $validate = $request->validate(
             [
-                'branch_code'        =>  ['required', 'string', 'regex:/^[A-Z0-9\- ]+$/', Rule::unique('branches', 'branch_code')],
-                'branch_name'        =>  ['required', 'string'],
-                'branch'             =>  ['required', 'string'],
-                'acronym'            =>  ['required', 'string', 'regex:/^[A-Z]+$/']
+                'branch_code'        => ['required', 'string', 'regex:/^[A-Z0-9\- ]+$/', Rule::unique('branches', 'branch_code')],
+                'branch_name'        => ['required', 'string'],
+                'branch'             => ['required', 'string'],
+                'acronym'            => ['required', 'string', 'regex:/^[A-Z]+$/']
             ]
         );
 
