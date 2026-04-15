@@ -14,7 +14,7 @@ class BranchController extends Controller
      */
     public function index()
     {
-        $branches = Branch::select('id','branch_code', 'branch_name')->get();
+        $branches = Branch::get(['id','branch_code', 'branch_name']);
 
         return response()->json(
             [
@@ -53,10 +53,7 @@ class BranchController extends Controller
             ->when(
                 $search,
                 fn($q) =>
-                    $q->whereLike('branch_code', "%{$search}%")
-                    ->orWhereLike('branch_name', "%{$search}%")
-                    ->orWhereLike('branch', "%{$search}%")
-                    ->orWhereLike('acronym', "%{$search}%")
+                    $q->whereAny(['branch_code', 'branch_name', 'branch', 'acronym'], 'LIKE', "%{$search}%")
             )
             ->paginate($paginate);
 
