@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             BranchSeeder::class,
+            SectionSeeder::class,
             DepartmentSeeder::class,
             PositionSeeder::class,
             RolesAndPermissionsSeeder::class,

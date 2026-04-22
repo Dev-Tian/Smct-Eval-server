@@ -57,6 +57,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Branch::class, 'branch_user');
     }
+     public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
+    }
 
     public function departments()
     {
@@ -66,6 +70,11 @@ class User extends Authenticatable
     public function positions()
     {
         return $this->belongsTo(Position::class, 'position_id');
+    }
+
+    public function sections()
+    {
+        return $this->belongsTo(SubSection::class, 'section_id');
     }
 
     public function evaluations()
@@ -108,8 +117,4 @@ class User extends Authenticatable
             );
     }
 
-    public function branch()
-    {
-        return $this->belongsTo(Branch::class);
-    }
 }

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Position;
 use App\Models\Department;
+use App\Models\SubSection;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -31,8 +32,9 @@ class UserFactory extends Factory
 
         return [
             'branch_id'     => $branch_id ,
-            'position_id'   => Position::all()->random()->id,  // fallback to 1 if none exists
+            'position_id'   => Position::all()->random()->id,
             'department_id' => $department_id,
+            'section_id'    => SubSection::all()->random()->id,
             'username'      => $this->faker->unique()->userName(),
             'date_hired'    => $this->faker->dateTime(),
             'fname'         => $this->faker->firstName(),

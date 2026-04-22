@@ -65,7 +65,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $admin = [
             'position_id'       => 11,
-            'department_id'     => 8,
+            'department_id'     => null,
+            'branch_id'         => 126,
+            'section_id'        => 1,
             'username'          => 'admin',
             'fname'             => 'System',
             'lname'             => 'Administrator',
@@ -79,7 +81,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $hr = [
             'position_id'       => 82,
-            'department_id'     => 8,
+            'department_id'     => null,
+            'branch_id'         => 126,
+            'section_id'        => 1,
             'username'          => 'hr',
             'fname'             => 'HR',
             'lname'             => 'Administrator',
@@ -92,8 +96,10 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         $evaluator = [
-            'position_id'       => 113,
+            'position_id'       => 95,
             'department_id'     => 8,
+            'branch_id'         => 126,
+            'section_id'        => 1,
             'username'          => 'evaluator',
             'fname'             => 'EVALUATOR',
             'lname'             => 'EVALUATOR',
@@ -108,6 +114,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $employee = [
             'position_id'       => 8,
             'department_id'     => 8,
+            'branch_id'         => 126,
+            'section_id'        => 1,
             'username'          => 'employee',
             'fname'             => 'EMPLOYEE',
             'lname'             => 'EMPLOYEE',

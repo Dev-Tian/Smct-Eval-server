@@ -371,6 +371,7 @@ class UserController extends Controller
 
         $users = User::query()->with(
             [
+                'sections',
                 'branch',
                 'branches',
                 'departments',
@@ -505,10 +506,10 @@ class UserController extends Controller
         $position_filter = $request->input('position_filter');
         $perPage = $request->input('per_page', 10);
 
-        if (!$manager->roles()->where('name', 'evaluator')->exists()) {
+        if (!$manager->roles()->where('name', 'evaluator')->orWhere('name', 'hr')->exists()) {
             return response()->json(
                 [
-                    'error' => 'Auth user is not a evaluator.',
+                    'error' => 'Auth user is not a evaluator or hr.',
                     $manager->roles()->pluck('name'),
                 ],
                 401
@@ -522,7 +523,6 @@ class UserController extends Controller
         $isAVP = $manager->position_id === 31;
 
         $branches = $manager->branches->pluck('id')->toArray();
-        // Log::info('branches', $branches);
         $areaManagerPositionId = [16];
         $branchManagerPositionsId = [35, 36, 37, 38];
         $userQuery = User::query()
@@ -539,8 +539,9 @@ class UserController extends Controller
                 $q->whereRelation('branch', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
                 ->orWhereRelation('branches', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
             )
-            ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
             ->where('id', '!=', $manager->id)
+            ->where('section_id', $manager->section_id)
+            ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
             ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {
                 $q->whereIn('position_id', $branchManagerPositionsId);
             })

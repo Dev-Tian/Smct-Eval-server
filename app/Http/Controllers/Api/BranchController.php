@@ -31,7 +31,7 @@ class BranchController extends Controller
 
         $all = Branch::query()->withCount(
             [
-                'users as managers_count' =>
+                'userBranch as managers_count' =>
                     fn($user)
                     =>
                     $user->whereHas(
@@ -40,7 +40,7 @@ class BranchController extends Controller
                         =>
                         $position->whereLike('label', "%manager%")
                     ),
-                'users as employees_count' =>
+                'userBranch as employees_count' =>
                     fn($user)
                     =>
                     $user->whereHas(
