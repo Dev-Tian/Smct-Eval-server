@@ -401,9 +401,25 @@ class UserController extends Controller
         );
     }
 
+    public function employeesByDepartment(Request $request)
+    {
+        $section_filter = $request->input('section');
+
+    }
+
     public function showUser(User $user)
     {
-        $shownUser = $user->load('branches', 'departments', 'positions', 'evaluations', 'doesEvaluated', 'roles');
+        $shownUser = $user->load(
+            [
+                'branches',
+                'departments',
+                'positions',
+                'evaluations',
+                'doesEvaluated',
+                'roles'
+            ]
+        );
+
         return response()->json(
             [
                 'data' => $shownUser,

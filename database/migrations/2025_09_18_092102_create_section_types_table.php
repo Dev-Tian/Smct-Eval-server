@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\SectionType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sub_sections', function (Blueprint $table) {
+        Schema::create('section_types', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(SectionType::class, 'type_id')->constrained()->cascadeOnDelete();
-            $table->string('section');
-            $table->timestamps();
+            $table->string('section_type');
+            // $table->timestamps();
         });
     }
 
@@ -25,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sub_sections');
+        Schema::dropIfExists('section_types');
     }
 };
