@@ -59,7 +59,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('getAllEmployeeByAuth', 'getAllEmployeeByAuth');
                 Route::get('showUser/{user}', 'showUser');
                 Route::get('getAllSignatureReset', 'getAllSignatureRequest');
-                Route::get('employeesByDepartment', 'employeesByDepartment');
+                Route::get('getSubordinate', 'getSubordinate');
                 Route::post('requestSignatureReset', 'requestSignatureReset');
                 Route::post('bulkRegisterUser', 'bulkRegisterUser');
                 Route::post('approvedSignatureReset/{user}', 'approvedSignatureReset');

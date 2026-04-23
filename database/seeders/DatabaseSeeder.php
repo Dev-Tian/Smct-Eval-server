@@ -22,8 +22,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             BranchSeeder::class,
-            SectionTypeSeeder::class,
-            SubSectionSeeder::class,
             DepartmentSeeder::class,
             PositionSeeder::class,
             RolesAndPermissionsSeeder::class,

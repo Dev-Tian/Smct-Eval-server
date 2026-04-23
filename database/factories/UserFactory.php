@@ -34,7 +34,6 @@ class UserFactory extends Factory
             'branch_id'     => $branch_id ,
             'position_id'   => Position::all()->random()->id,
             'department_id' => $department_id,
-            'section_id'    => SubSection::all()->random()->id,
             'username'      => $this->faker->unique()->userName(),
             'date_hired'    => $this->faker->dateTime(),
             'fname'         => $this->faker->firstName(),

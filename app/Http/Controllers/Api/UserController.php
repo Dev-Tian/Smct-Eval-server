@@ -22,6 +22,7 @@ use Spatie\Permission\Models\Role;
 // use App\Mail\BulkRegister;
 // use Illuminate\Support\Facades\Mail;
 
+use function Pest\Laravel\json;
 use function Symfony\Component\Clock\now;
 
 class UserController extends Controller
@@ -371,7 +372,6 @@ class UserController extends Controller
 
         $users = User::query()->with(
             [
-                'sections',
                 'branch',
                 'branches',
                 'departments',
@@ -401,10 +401,28 @@ class UserController extends Controller
         );
     }
 
-    public function employeesByDepartment(Request $request)
+    public function getSubordinate(Request $request)
     {
-        $section_filter = $request->input('section');
+        $branch = $request->input('branch_id') ?: 126;
+        $department = $request->input('department_id');
 
+        $evaluators = User::where('branch_id', $branch)
+                            ->when($department , fn($q) => $q->where('department_id', $department))
+                            ->whereRelation('roles', fn($q) =>  $q->where('name', 'evaluator'))
+                            ->get();
+
+        $employees = User::where('branch_id', $branch)
+                        ->when($department , fn($q) => $q->where('department_id', $department))
+                        ->whereRelation('roles', fn($q) =>  $q->where('name', 'employee'))
+                        ->get();
+
+        return response()->json(
+            [
+                'evaluators'        =>  $evaluators,
+                'employees'         =>  $employees
+            ]
+            ,200
+        );
     }
 
     public function showUser(User $user)
@@ -556,7 +574,6 @@ class UserController extends Controller
                 ->orWhereRelation('branches', fn($query) => $query->whereIn('branches.id',array_merge([$manager->branch_id], $branches)))
             )
             ->where('id', '!=', $manager->id)
-            ->where('section_id', $manager->section_id)
             ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
             ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {
                 $q->whereIn('position_id', $branchManagerPositionsId);
