@@ -408,6 +408,7 @@ class UserController extends Controller
 
         $evaluators = User::with(
                             [
+                                'branch',
                                 'branches',
                                 'departments',
                                 'positions',
@@ -420,6 +421,7 @@ class UserController extends Controller
 
         $employees = User::with(
                             [
+                                'branch',
                                 'branches',
                                 'departments',
                                 'positions',
@@ -443,6 +445,7 @@ class UserController extends Controller
     {
         $shownUser = $user->load(
             [
+                'branch',
                 'branches',
                 'departments',
                 'positions',
@@ -554,7 +557,8 @@ class UserController extends Controller
         $position_filter = $request->input('position_filter');
         $perPage = $request->input('per_page', 10);
 
-        if (!$manager->roles()->where('name', 'evaluator')->orWhere('name', 'hr')->exists()) {
+        if (!$manager->roles()->where('name', 'evaluator')->orWhere('name', 'hr')->exists())
+        {
             return response()->json(
                 [
                     'error' => 'Auth user is not a evaluator or hr.',
@@ -880,6 +884,20 @@ class UserController extends Controller
             204
         );
     }
+
+    // public function test()
+    // {
+    //     $evaluator = User::findOrFail(1);
+    //     $employees = [2];
+
+    //     $evaluator->assignedEmployees()->syncWithoutDetaching($employees);
+    //     return response()->json(
+    //         [
+    //             'message'   =>  "success"
+    //         ]
+    //         ,201
+    //     );
+    // }
 
     // public function test()
     // {
