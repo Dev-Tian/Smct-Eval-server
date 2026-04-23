@@ -406,12 +406,26 @@ class UserController extends Controller
         $branch = $request->input('branch_id') ?: 126;
         $department = $request->input('department_id');
 
-        $evaluators = User::where('branch_id', $branch)
+        $evaluators = User::with(
+                            [
+                                'branches',
+                                'departments',
+                                'positions',
+                            ]
+                        )
+                            ->where('branch_id', $branch)
                             ->when($department , fn($q) => $q->where('department_id', $department))
                             ->whereRelation('roles', fn($q) =>  $q->where('name', 'evaluator'))
                             ->get();
 
-        $employees = User::where('branch_id', $branch)
+        $employees = User::with(
+                            [
+                                'branches',
+                                'departments',
+                                'positions',
+                            ]
+                        )
+                        ->where('branch_id', $branch)
                         ->when($department , fn($q) => $q->where('department_id', $department))
                         ->whereRelation('roles', fn($q) =>  $q->where('name', 'employee'))
                         ->get();
