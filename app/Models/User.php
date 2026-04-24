@@ -68,7 +68,6 @@ class User extends Authenticatable
         return $this->belongsTo(Position::class, 'position_id');
     }
 
-
     public function evaluations()
     {
         return $this->hasMany(UsersEvaluation::class, 'employee_id');
@@ -119,11 +118,8 @@ class User extends Authenticatable
                             $q->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$term}%"])
                             ->orWhereRaw("CONCAT(lname, ' ', fname) LIKE ?", ["%{$term}%"]);
                         })
-                        ->orWhereAny( ['email', 'username'], 'LIKE', "%{$term}%")
+                        ->orWhereAny(['email', 'username'], 'LIKE', "%{$term}%")
                 )
             );
     }
-
-
-
 }
