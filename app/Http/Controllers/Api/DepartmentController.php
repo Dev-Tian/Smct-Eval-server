@@ -33,7 +33,8 @@ class DepartmentController extends Controller
                 'users as managers_count' =>
                     fn($user)
                     =>
-                    $user->whereHas(
+                    $user->where('is_active', 'active')
+                    ->whereHas(
                         'positions',
                         fn($position)
                         =>
@@ -43,7 +44,8 @@ class DepartmentController extends Controller
                 'users as employees_count' =>
                     fn($user)
                     =>
-                    $user->whereHas(
+                    $user->where('is_active', 'active')
+                    ->whereHas(
                         'positions',
                         fn($position)
                         =>
