@@ -412,12 +412,13 @@ class UserController extends Controller
                                 'branches',
                                 'departments',
                                 'positions',
+                                'roles',
                             ]
                         )
                             ->where('is_active','active')
                             ->where('branch_id', $branch)
                             ->when($department , fn($q) => $q->where('department_id', $department))
-                            ->whereRelation('roles', fn($q) =>  $q->where('name', 'evaluator'))
+                            ->whereRelation('roles', 'name', 'evaluator')
                             ->get();
 
         $employees = User::with(
@@ -426,18 +427,44 @@ class UserController extends Controller
                                 'branches',
                                 'departments',
                                 'positions',
+                                'roles',
                             ]
                         )
                         ->where('is_active','active')
                         ->where('branch_id', $branch)
                         ->when($department , fn($q) => $q->where('department_id', $department))
-                        ->whereRelation('roles', fn($q) =>  $q->where('name', 'employee'))
+                        ->whereRelation('roles', 'name', 'employee')
                         ->get();
 
         return response()->json(
             [
                 'evaluators'        =>  $evaluators,
                 'employees'         =>  $employees
+            ]
+            ,200
+        );
+    }
+
+    public function getAllEvaluators(Request $request)
+    {
+        $per_page = $request->input('per_page',10);
+        $evaluators = User::with(
+                    [
+                        'branch',
+                        'branches',
+                        'positions',
+                        'departments',
+                        'roles'
+                    ]
+                )
+                ->where('is_active', 'active')
+                ->whereRelation('roles', 'name', 'evaluator')
+                ->paginate($per_page);
+
+        return response()->json(
+            [
+                'message'       =>  'List of all evaluator',
+                'evaluators'    =>  $evaluators
             ]
             ,200
         );

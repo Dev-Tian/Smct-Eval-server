@@ -34,22 +34,22 @@ class DepartmentController extends Controller
                     fn($user)
                     =>
                     $user->where('is_active', 'active')
-                    ->whereHas(
-                        'positions',
-                        fn($position)
+                    ->whereRelation(
+                        'roles',
+                        fn($role)
                         =>
-                        $position->whereLike('label', "%manager%")
+                        $role->where('name', "evaluator")
                     ),
 
                 'users as employees_count' =>
                     fn($user)
                     =>
                     $user->where('is_active', 'active')
-                    ->whereHas(
-                        'positions',
-                        fn($position)
+                    ->whereRelation(
+                        'roles',
+                        fn($role)
                         =>
-                        $position->whereNotLike('label', "%manager%")
+                        $role->where('name', "employee")
                     )
             ])
             ->when($search, fn($q) => $q->whereLike('department_name', "%{$search}%"))
