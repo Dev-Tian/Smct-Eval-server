@@ -683,7 +683,7 @@ class UserController extends Controller
                     'roles'
                 ]
             )
-            // ->doesntHave('assignedEvaluators')
+            ->doesntHave('assignedEvaluators')
             ->where('is_active', 'active')
             ->where( fn ($q) =>
                 $q->whereRelation('branch', fn($query) => $query->whereIn('branches.id',array_merge([$user->branch_id], $branches)))
@@ -707,7 +707,8 @@ class UserController extends Controller
                 $q->where('department_id', $user->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);
             })
             ->search($search)
-            ->latest('id');
+            ->latest('id')
+            ->get();
 
             return response()->json(
                 [
