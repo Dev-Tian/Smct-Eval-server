@@ -13,6 +13,7 @@ use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 // use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
@@ -946,7 +947,7 @@ class UserController extends Controller
 
     public function updateUserBranch(User $user, Request $request)
     {
-        $user->branches()->sync($request->branch_ids);
+        $user->branches()->sync([$request->branch_ids]);
 
         return response()->json(
             [
@@ -959,7 +960,7 @@ class UserController extends Controller
     public function assignEmployees(User $user, Request $request)
     {
 
-        $user->assignedEmployees()->sync($request->employee_ids);
+        $user->assignedEmployees()->sync([$request->employee_id]);
 
         return response()->json(
             [
@@ -996,13 +997,4 @@ class UserController extends Controller
         );
     }
 
-    // public function test()
-    // {
-    //     $user  = User::findOrFail(1);
-    //     $user->notify(new EvalNotifications("This is a test notification for broadcasting."));
-
-    //     return response()->json([
-    //         'data'  =>  "success"
-    //     ], 200);
-    // }
 }
