@@ -956,6 +956,19 @@ class UserController extends Controller
         );
     }
 
+    public function assignEmployees(User $user, Request $request)
+    {
+
+        $user->assignedEmployees()->syncWithoutDetaching($request->employee_ids);
+
+        return response()->json(
+            [
+                'message'   =>  "success"
+            ]
+            ,201
+        );
+    }
+
     public function removeUserBranches(User $user)
     {
         $user->branches()->detach();
@@ -982,20 +995,6 @@ class UserController extends Controller
             ,204
         );
     }
-
-    // public function test()
-    // {
-    //     $evaluator = User::findOrFail(1);
-    //     $employees = [2];
-
-    //     $evaluator->assignedEmployees()->syncWithoutDetaching($employees);
-    //     return response()->json(
-    //         [
-    //             'message'   =>  "success"
-    //         ]
-    //         ,201
-    //     );
-    // }
 
     // public function test()
     // {
