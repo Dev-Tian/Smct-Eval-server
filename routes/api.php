@@ -72,7 +72,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('uploadAvatar', 'uploadAvatar');
                 Route::post('updateProfileUserAuth', 'updateProfileUserAuth');
                 Route::post('addUser', 'store');
-                Route::post('assignEmployees', 'assignEmployees');
+                Route::post('assignEmployees/{user}', 'assignEmployees');
                 Route::post('updateUserBranch/{user}', 'updateUserBranch');
                 Route::post('removeUserBranches/{user}', 'removeUserBranches');
                 Route::post('approveRegistration/{user}', 'approveRegistration');
