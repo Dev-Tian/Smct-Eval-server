@@ -947,7 +947,11 @@ class UserController extends Controller
 
     public function updateUserBranch(User $user, Request $request)
     {
-        $user->branches()->sync([$request->branch_ids]);
+        $branchIds = is_array($request->branch_ids)
+            ? $request->branch_ids
+            : explode(',', $request->branch_ids);
+
+        $user->branches()->sync($branchIds);
 
         return response()->json(
             [
@@ -959,8 +963,11 @@ class UserController extends Controller
 
     public function assignEmployees(User $user, Request $request)
     {
+        $employeeIds = is_array($request->employee_ids)
+            ? $request->employee_ids
+            : explode(',', $request->employee_ids);
 
-        $user->assignedEmployees()->sync([$request->employee_id]);
+        $user->assignedEmployees()->sync($employeeIds);
 
         return response()->json(
             [
