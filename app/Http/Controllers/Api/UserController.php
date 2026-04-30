@@ -963,10 +963,10 @@ class UserController extends Controller
 
     public function assignEmployees(User $user, Request $request)
     {
-        if($request->employee_ids){
-            $employeeIds = is_array($request->employee_ids)
-                ? $request->employee_ids
-                : explode(',', $request->employee_ids);
+        $payloadIds = $request->employee_ids ?: [];
+            $employeeIds = is_array($payloadIds)
+                ? $payloadIds
+                : explode(',', $payloadIds);
 
             $user->assignedEmployees()->sync($employeeIds);
 
@@ -975,13 +975,6 @@ class UserController extends Controller
                     'message'   =>  "success"
                 ]
                 ,201
-            );
-        }
-            return response()->json(
-                [
-                    'message'   =>  "employee_ids not found"
-                ]
-                ,401
             );
     }
 
