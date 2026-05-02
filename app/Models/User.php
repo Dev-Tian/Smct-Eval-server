@@ -105,7 +105,7 @@ class User extends Authenticatable
     }
 
     #[Scope]
-    public function search($query, $term)
+    public function search( $query, $term)
     {
         return $query
             ->when(

@@ -19,9 +19,8 @@ class EvalNotifications extends Notification implements ShouldBroadcastNow
 
 
     public function __construct(
-        public string $message = ""
+        public string $message
     ) {
-        $this->message = $message;
     }
 
     /**
@@ -40,9 +39,12 @@ class EvalNotifications extends Notification implements ShouldBroadcastNow
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+            ->view('email',[
+                'message'       =>  $this->message
+            ]);
+            // ->line('The introduction to the notification.')
+            // ->action('Notification Action', url('/'))
+            // ->line('Thank you for using our application!');
     }
 
     /**
