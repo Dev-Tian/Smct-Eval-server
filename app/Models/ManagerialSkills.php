@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ManagerialSkills extends Model
 {
     protected $guarded = [];
 
-    public function usersEvaluation()
+    public function usersEvaluation(): BelongsTo
     {
         return $this->belongsTo(UsersEvaluation::class, 'users_evaluation_id');
     }

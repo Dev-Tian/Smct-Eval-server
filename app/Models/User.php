@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -13,6 +14,9 @@ use Spatie\Permission\Traits\HasRoles;
  */
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -53,58 +57,58 @@ class User extends Authenticatable
         ];
     }
 
-     public function branch()
+     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function departments()
+    public function departments(): BelongsTo
     {
         return $this->belongsTo(Department::class, 'department_id');
     }
 
-    public function positions()
+    public function positions(): BelongsTo
     {
         return $this->belongsTo(Position::class, 'position_id');
     }
 
-    public function evaluations()
+    public function evaluations(): HasMany
     {
         return $this->hasMany(UsersEvaluation::class, 'employee_id');
     }
 
-    public function doesEvaluated()
+    public function doesEvaluated(): HasMany
     {
         return $this->hasMany(UsersEvaluation::class, 'evaluator_id');
     }
 
-    public function memos()
+    public function memos(): HasMany
     {
         return $this->hasMany(MemorandumViolation::class, 'evaluator_id');
     }
 
-    public function branches()
+    public function branches(): BelongsToMany
     {
         return $this->belongsToMany(Branch::class, 'branch_user');
     }
 
-    public function assignedEmployees()
+    public function assignedEmployees(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'assigned_user', 'evaluator_id', 'employee_id');
     }
 
-    public function assignedEvaluators()
+    public function assignedEvaluators(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'assigned_user',  'employee_id', 'evaluator_id');
     }
 
-    public function getFullNameAttribute()
+    public function getFullNameAttribute(): string
     {
         return $this->fname . " " . $this->lname;
     }
 
     #[Scope]
-    public function search($query, $term)
+    public function search(Builder $query, ?string $term):Builder
     {
         return $query
             ->when(

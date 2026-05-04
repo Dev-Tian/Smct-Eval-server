@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ethical extends Model
 {
     protected $guarded = [];
 
-     public function usersEvaluation(){
-            return $this->belongsTo(UsersEvaluation::class, 'users_evaluation_id');
-        }
+    public function usersEvaluation(): BelongsTo
+    {
+        return $this->belongsTo(UsersEvaluation::class, 'users_evaluation_id');
+    }
 }
