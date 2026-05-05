@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\EmployeeDashboardController;
 use App\Http\Controllers\Api\EvaluatorDashboardController;
 use App\Http\Controllers\Api\HrDashboardController;
-use App\Http\Controllers\Api\MemorandumViolationController as ApiMemorandumViolationController;
+use App\Http\Controllers\Api\MemorandumViolationController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\UsersEvaluationController;
 use Illuminate\Support\Facades\Auth;
@@ -131,11 +131,12 @@ Route::middleware('auth:sanctum')->group(
             }
         );
 
-        Route::controller(ApiMemorandumViolationController::class)->group(
+        Route::controller(MemorandumViolationController::class)->group(
             function(){
                 Route::get('showUserMemorandumViolation/{id}', 'show_perUser');
                 Route::get('myMemorandumViolations', 'auth_index');
                 Route::post('addMemorandumViolation', 'store');
+                Route::post('updateMemorandumViolation/{memorandumViolation}', 'update');
             }
         );
 
