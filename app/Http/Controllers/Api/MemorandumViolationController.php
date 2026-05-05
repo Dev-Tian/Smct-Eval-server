@@ -16,7 +16,15 @@ class MemorandumViolationController extends Controller
      */
     public function index()
     {
-        $memos = MemorandumViolation::all();
+        $memos = MemorandumViolation::get(
+                                            [
+                                                'id',
+                                                'user_id',
+                                                'violation_date',
+                                                'violation_title',
+                                                'summary'
+                                            ]
+                                        );
 
         return response()->json(
             [
@@ -61,19 +69,19 @@ class MemorandumViolationController extends Controller
     {
         $validate = $request->validate(
             [
-                'user_id'              => ['required', 'numeric', Rule::exists(User::class, 'id')],
+                'id'                   => ['required', 'numeric', Rule::exists(User::class, 'id')],
                 'violation_date'       => ['required', 'date'],
                 'title'                => ['required', 'string'],
-                'document'             => ['required', 'string']
+                'summary'              => ['required', 'string']
             ]
         );
 
         MemorandumViolation::create(
             [
-                'user_id'            =>  $validate['user_id'],
+                'user_id'            =>  $validate['id'],
                 'violation_date'     =>  $validate['violation_date'],
                 'violation_title'    =>  $validate['title'],
-                'summary'            =>  $validate['document']
+                'summary'            =>  $validate['summary']
             ]
         );
 
@@ -101,7 +109,16 @@ class MemorandumViolationController extends Controller
 
     public function show_perUser(?int $id)
     {
-        $memos = MemorandumViolation::where('user_id', $id )->get();
+        $memos = MemorandumViolation::where('user_id', $id )
+                    ->get(
+                        [
+                            'id',
+                            'user_id',
+                            'violation_date',
+                            'violation_title',
+                            'summary'
+                        ]
+                    );
 
         return response()->json(
             [
@@ -129,7 +146,7 @@ class MemorandumViolationController extends Controller
             [
                 'violation_date'       => ['required', 'date'],
                 'title'                => ['required', 'string'],
-                'document'             => ['required', 'string']
+                'summary'              => ['required', 'string']
             ]
         );
 
@@ -137,7 +154,7 @@ class MemorandumViolationController extends Controller
             [
                 'violation_date'     =>  $validate['violation_date'],
                 'violation_title'    =>  $validate['title'],
-                'summary'            =>  $validate['document']
+                'summary'            =>  $validate['summary' ]
             ]
         );
 

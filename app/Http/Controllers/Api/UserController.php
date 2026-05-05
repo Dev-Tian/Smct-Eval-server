@@ -342,11 +342,11 @@ class UserController extends Controller
 
         $pending_users = User::query()->with(
             [
-                'positions',
-                'branch',
-                'branches',
-                'departments',
-                'roles'
+                'branch:id,branch_code,branch_name',
+                'branches:id,branch_code,branch_name',
+                'departments:id,department_name',
+                'positions:id,label',
+                'roles:id,name',
             ])
             ->whereNot('is_active', 'active')->whereNot('id', Auth::id())
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
@@ -372,12 +372,12 @@ class UserController extends Controller
 
         $users = User::query()->with(
             [
-                'branch',
-                'branches',
-                'departments',
-                'positions',
-                'roles',
-                'assignedEvaluators'
+                'branch:id,branch_code,branch_name',
+                'branches:id,branch_code,branch_name',
+                'departments:id,department_name',
+                'positions:id,label',
+                'roles:id,name',
+                'assignedEvaluators:fname,lname,email'
             ])
             ->where('is_active', 'active')
             ->whereNot('id', Auth::id())
@@ -410,11 +410,11 @@ class UserController extends Controller
 
         $evaluators = User::with(
                             [
-                                'branch',
-                                'branches',
-                                'departments',
-                                'positions',
-                                'roles',
+                                'branch:id,branch_code,branch_name',
+                                'branches:id,branch_code,branch_name',
+                                'departments:id,department_name',
+                                'positions:id,label',
+                                'roles:id,name',
                             ]
                         )
                             ->where('is_active','active')
@@ -425,11 +425,11 @@ class UserController extends Controller
 
         $employees = User::with(
                             [
-                                'branch',
-                                'branches',
-                                'departments',
-                                'positions',
-                                'roles',
+                                'branch:id,branch_code,branch_name',
+                                'branches:id,branch_code,branch_name',
+                                'departments:id,department_name',
+                                'positions:id,label',
+                                'roles:id,name',
                             ]
                         )
                         ->where('is_active','active')
@@ -454,11 +454,11 @@ class UserController extends Controller
 
         $evaluators = User::with(
                     [
-                        'branch',
-                        'branches',
-                        'positions',
-                        'departments',
-                        'roles'
+                        'branch:id,branch_code,branch_name',
+                        'branches:id,branch_code,branch_name',
+                        'departments:id,department_name',
+                        'positions:id,label',
+                        'roles:id,name',
                     ]
                 )
                 ->where('is_active', 'active')
@@ -479,13 +479,13 @@ class UserController extends Controller
     {
         $shownUser = $user->load(
             [
-                'branch',
-                'branches',
-                'departments',
-                'positions',
+                'branch:id,branch_code,branch_name',
+                'branches:id,branch_code,branch_name',
+                'departments:id,department_name',
+                'positions:id,label',
+                'roles:id,name',
                 'evaluations',
                 'doesEvaluated',
-                'roles'
             ]
         );
 
@@ -505,11 +505,11 @@ class UserController extends Controller
         $users = User::query()
             ->with(
                 [
-                    'branch',
-                    'branches',
-                    'departments',
-                    'positions',
-                    'roles'
+                    'branch:id,branch_code,branch_name',
+                    'branches:id,branch_code,branch_name',
+                    'departments:id,department_name',
+                    'positions:id,label',
+                    'roles:id,name',
                 ]
             )
             ->where('is_active', 'active')
@@ -535,11 +535,11 @@ class UserController extends Controller
         $users = User::query()
             ->with(
                 [
-                    'branch',
-                    'branches',
-                    'departments',
-                    'positions',
-                    'roles'
+                    'branch:id,branch_code,branch_name',
+                    'branches:id,branch_code,branch_name',
+                    'departments:id,department_name',
+                    'positions:id,label',
+                    'roles:id,name',
                 ]
             )
             ->where('is_active', 'active')
@@ -564,10 +564,10 @@ class UserController extends Controller
 
         $users = User::query()->with(
                 [
-                    'branch',
-                    'branches',
-                    'departments',
-                    'positions'
+                    'branch:id,branch_code,branch_name',
+                    'branches:id,branch_code,branch_name',
+                    'departments:id,department_name',
+                    'positions:id,label'
                 ]
             )
             ->where('requestSignatureReset', true)
@@ -593,11 +593,11 @@ class UserController extends Controller
         $evaluatorId = $user->id;
         $employees = User::with(
                             [
-                                'branch',
-                                'branches',
-                                'departments',
-                                'positions',
-                                'roles'
+                                'branch:id,branch_code,branch_name',
+                                'branches:id,branch_code,branch_name',
+                                'departments:id,department_name',
+                                'positions:id,label',
+                                'roles:id,name',
                             ]
                         )
                         ->whereRelation('assignedEvaluators', 'evaluator_id', $evaluatorId)
@@ -610,6 +610,7 @@ class UserController extends Controller
                     'message'       =>  'List of assigned employees under specific evaluator',
                     'employees'     =>  $employees
                 ]
+                ,200
             );
     }
 
@@ -636,11 +637,11 @@ class UserController extends Controller
         $userQuery = User::query()
                     ->with(
                             [
-                                'branch',
-                                'branches',
-                                'departments',
-                                'positions',
-                                'roles'
+                                'branch:id,branch_code,branch_name',
+                                'branches:id,branch_code,branch_name',
+                                'departments:id,department_name',
+                                'positions:id,label',
+                                'roles:id,name',
                             ]
                         )
                     ->where('is_active', 'active')
@@ -682,11 +683,11 @@ class UserController extends Controller
         $employees = User::query()
             ->with(
                 [
-                    'departments',
-                    'branch',
-                    'branches',
-                    'positions',
-                    'roles'
+                    'branch:id,branch_code,branch_name',
+                    'branches:id,branch_code,branch_name',
+                    'departments:id,department_name',
+                    'positions:id,label',
+                    'roles:id,name',
                 ]
             )
             ->doesntHave('assignedEvaluators')
