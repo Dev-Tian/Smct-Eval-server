@@ -52,7 +52,7 @@ Route::middleware('auth:sanctum')->group(
     function () {
         Route::controller(UserController::class)->group(
             function () {
-                Route::get('getAllUsers', 'getAllUsers');
+                // Route::get('getAllUsers', 'getAllUsers');
                 Route::get('getAllActiveUsers', 'getAllActiveUsers');
                 Route::get('getPendingRegistrations', 'getAllPendingUsers');
                 Route::get('getAllBranchHeads', 'getAllBranchHeads');
