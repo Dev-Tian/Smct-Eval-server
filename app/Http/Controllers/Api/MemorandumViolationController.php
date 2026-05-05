@@ -99,7 +99,7 @@ class MemorandumViolationController extends Controller
 
     }
 
-    public function show_perUser($id)
+    public function show_perUser(?int $id)
     {
         $memos = MemorandumViolation::where('user_id', $id )->get();
 
@@ -123,9 +123,30 @@ class MemorandumViolationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, MemorandumViolation $MemorandumViolation)
+    public function update(Request $request, MemorandumViolation $memorandumViolation)
     {
-        //
+        $validate = $request->validate(
+            [
+                'violation_date'       => ['required', 'date'],
+                'title'                => ['required', 'string'],
+                'document'             => ['required', 'string']
+            ]
+        );
+
+        $memorandumViolation->update(
+            [
+                'violation_date'     =>  $validate['violation_date'],
+                'violation_title'    =>  $validate['title'],
+                'summary'            =>  $validate['document']
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'       =>  'Memo Update Successfully'
+            ]
+            ,201
+        );
     }
 
     /**
