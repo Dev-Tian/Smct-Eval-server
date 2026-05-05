@@ -376,7 +376,8 @@ class UserController extends Controller
                 'branches',
                 'departments',
                 'positions',
-                'roles'
+                'roles',
+                'assignedEvaluators'
             ])
             ->where('is_active', 'active')
             ->whereNot('id', Auth::id())
