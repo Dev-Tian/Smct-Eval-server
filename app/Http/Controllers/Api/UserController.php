@@ -698,13 +698,14 @@ class UserController extends Controller
                 $q->whereIn('position_id', $branchManagerPositionsId);
             })
             ->when(!$isHO && in_array($user->position_id, $branchManagerPositionsId) && !$hasDepartment, function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
-                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+                $q->whereNotIn('position_id', array_merge($areaManagerPositionId));
             })
             ->when($isHO && $hasDepartment && !$isAVP, function ($q) use ($user) {
-                $q->where('department_id', $user->department_id)->whereRelation('positions', fn($q) => $q->whereNotLike('positions.label', '%manager%'));
+                $q->where('department_id', $user->department_id);
+                // ->whereRelation('positions', fn($q) => $q->whereNotLike('positions.label', '%manager%'));
             })
             ->when(!$isHO && !$hasDepartment && !in_array($user->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId)), function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
-                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+                $q->whereNotIn('position_id', array_merge($areaManagerPositionId));
             })
             ->when($isAVP && $isHO && $hasDepartment, function ($q) use ($user, $position_filter) {
                 $q->where('department_id', $user->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);

@@ -24,7 +24,7 @@ Route::controller(UserController::class)->group(function () {
     Route::post('register', 'registerUser');
 });
 
-Route::get('getAllEvaluatorEmployees/{user}', [UserController::class, 'getAllEvaluatorEmployees']);
+// Route::get('getAllEvaluatorEmployees/{user}', [UserController::class, 'getAllEvaluatorEmployees']);
 
 Route::get('positions', [PositionController::class, 'index']);
 Route::get('branches', [BranchController::class, 'index']);
