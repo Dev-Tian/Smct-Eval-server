@@ -297,43 +297,43 @@ class UserController extends Controller
     }
 
     //Read
-    public function getAllUsers(Request $request)
-    {
-        $search_filter = $request->input('search');
-        $department_filter = $request->input('department');
-        $branch_filter = $request->input('branch');
+    // public function getAllUsers(Request $request)
+    // {
+    //     $search_filter = $request->input('search');
+    //     $department_filter = $request->input('department');
+    //     $branch_filter = $request->input('branch');
 
-        $users = User::query()
-            ->with(
-                [
-                    'branch',
-                    'branches',
-                    'departments',
-                    'positions',
-                    'evaluations',
-                    'doesEvaluated',
-                    'roles'
-                ])
-            ->search($search_filter)
-            ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
-            ->when($branch_filter,
-                function ($q) use ($branch_filter) {
-                    $q->whereRelation('branches', 'branches.id', $branch_filter)
-                    ->orWhereRelation('branch', 'branches.id', $branch_filter);
-            })
-            ->whereRelation('roles', 'name', '!=', 'admin')
-            ->whereNot('id', Auth::id())
-            ->latest('id')
-            ->get('positions');
+    //     $users = User::query()
+    //         ->with(
+    //             [
+    //                 'branch',
+    //                 'branches',
+    //                 'departments',
+    //                 'positions',
+    //                 'evaluations',
+    //                 'doesEvaluated',
+    //                 'roles'
+    //             ])
+    //         ->search($search_filter)
+    //         ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
+    //         ->when($branch_filter,
+    //             function ($q) use ($branch_filter) {
+    //                 $q->whereRelation('branches', 'branches.id', $branch_filter)
+    //                 ->orWhereRelation('branch', 'branches.id', $branch_filter);
+    //         })
+    //         ->whereRelation('roles', 'name', '!=', 'admin')
+    //         ->whereNot('id', Auth::id())
+    //         ->latest('id')
+    //         ->get('positions');
 
-        return response()->json(
-            [
-                'message'   => 'Users fetched successfully',
-                'users'     => $users,
-            ],
-            200
-        );
-    }
+    //     return response()->json(
+    //         [
+    //             'message'   => 'Users fetched successfully',
+    //             'users'     => $users,
+    //         ],
+    //         200
+    //     );
+    // }
 
     public function getAllPendingUsers(Request $request)
     {
@@ -350,7 +350,8 @@ class UserController extends Controller
             ])
             ->whereNot('is_active', 'active')->whereNot('id', Auth::id())
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
-            ->search($search_filter)->latest('id')->paginate($perPage);
+            ->search($search_filter)->latest('id')
+            ->paginate($perPage);
 
         return response()->json(
             [
@@ -403,6 +404,7 @@ class UserController extends Controller
     public function getSubordinate(Request $request)
     {
         $branch = $request->input('branch_id') ?: 126;
+        $perPage = $request->input('per_page',10);
         $department = $request->input('department_id');
 
         $evaluators = User::with(
@@ -433,7 +435,7 @@ class UserController extends Controller
                         ->where('branch_id', $branch)
                         ->when($department , fn($q) => $q->where('department_id', $department))
                         ->whereRelation('roles', 'name', 'employee')
-                        ->get();
+                        ->paginate($perPage);
 
         return response()->json(
             [
@@ -698,13 +700,14 @@ class UserController extends Controller
                 $q->whereIn('position_id', $branchManagerPositionsId);
             })
             ->when(!$isHO && in_array($user->position_id, $branchManagerPositionsId) && !$hasDepartment, function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
-                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+                $q->whereNotIn('position_id', array_merge($areaManagerPositionId));
             })
             ->when($isHO && $hasDepartment && !$isAVP, function ($q) use ($user) {
-                $q->where('department_id', $user->department_id)->whereRelation('positions', fn($q) => $q->whereNotLike('positions.label', '%manager%'));
+                $q->where('department_id', $user->department_id);
+                // ->whereRelation('positions', fn($q) => $q->whereNotLike('positions.label', '%manager%'));
             })
             ->when(!$isHO && !$hasDepartment && !in_array($user->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId)), function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
-                $q->whereNotIn('position_id', array_merge($areaManagerPositionId, $branchManagerPositionsId));
+                $q->whereNotIn('position_id', array_merge($areaManagerPositionId));
             })
             ->when($isAVP && $isHO && $hasDepartment, function ($q) use ($user, $position_filter) {
                 $q->where('department_id', $user->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);

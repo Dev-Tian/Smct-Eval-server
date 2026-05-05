@@ -32,7 +32,7 @@ class MemorandumViolationController extends Controller
 
         $search = $request->input('search');
         $month = $request->input('month');
-        $page = $request->input('per_page');
+        $page = $request->input('per_page',10);
 
         $memos = MemorandumViolation::where('user_id', $auth_user->id)
                    ->when( $search, fn ($q) => $q->whereLike('violation_title', "%{$search}%"))

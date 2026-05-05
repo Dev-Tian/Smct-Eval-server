@@ -24,7 +24,7 @@ Route::controller(UserController::class)->group(function () {
     Route::post('register', 'registerUser');
 });
 
-Route::get('getAllEvaluatorEmployees/{user}', [UserController::class, 'getAllEvaluatorEmployees']);
+// Route::get('getAllEvaluatorEmployees/{user}', [UserController::class, 'getAllEvaluatorEmployees']);
 
 Route::get('positions', [PositionController::class, 'index']);
 Route::get('branches', [BranchController::class, 'index']);
@@ -52,7 +52,7 @@ Route::middleware('auth:sanctum')->group(
     function () {
         Route::controller(UserController::class)->group(
             function () {
-                Route::get('getAllUsers', 'getAllUsers');
+                // Route::get('getAllUsers', 'getAllUsers');
                 Route::get('getAllActiveUsers', 'getAllActiveUsers');
                 Route::get('getPendingRegistrations', 'getAllPendingUsers');
                 Route::get('getAllBranchHeads', 'getAllBranchHeads');
