@@ -39,20 +39,21 @@ class UsersEvaluationController extends Controller
             ->with(
                 [
                     'employee',
-                    'employee.branches',
-                    'employee.branch' ,
-                    'employee.positions',
+                    'employee.branch:id,branch_code,branch_name',
+                    'employee.branches:id,branch_code,branch_name',
+                    'employee.positions:id,label',
+                    'employee.roles:id,name',
                     'evaluator',
-                    'evaluator.branches',
-                    'evaluator.branch',
-                    'evaluator.positions',
-                    'evaluator.roles'
+                    'evaluator.branch:id,branch_code,branch_name',
+                    'evaluator.branches:id,branch_code,branch_name',
+                    'evaluator.positions:id,label',
+                    'evaluator.roles:id,name',
                 ])
             ->search($search)
             ->when($status,  fn($q) => $q->where('status', $status))
             ->when($quarter, fn($q) => $q->where(fn($sub) => $sub->where('reviewTypeRegular', $quarter)->orWhere('reviewTypeProbationary', $quarter)))
             ->when($year,    fn($q) => $q->whereYear('created_at', $year))
-            ->when($rating, function ($q) use ($rating) {
+            ->when($rating,  function ($q) use ($rating) {
                 match ($rating) {
                     'poor'      => $q->where('rating', '<', 2.5),
                     'low'       => $q->where('rating', '<', 3),
