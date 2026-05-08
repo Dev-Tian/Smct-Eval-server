@@ -421,7 +421,7 @@ class UserController extends Controller
                             ->where('branch_id', $branch)
                             ->when($department , fn($q) => $q->where('department_id', $department))
                             ->whereRelation('roles', 'name', 'evaluator')
-                            ->get();
+                            ->paginate($perPage);
 
         $employees = User::with(
                             [
@@ -500,7 +500,7 @@ class UserController extends Controller
     public function getAllBranchHeads(Request $request)
     {
         $search = $request->input('search');
-        // $per_page = $request->input('per_page', 10);
+        $per_page = $request->input('per_page', 10);
 
         $users = User::query()
             ->with(
@@ -516,8 +516,7 @@ class UserController extends Controller
             ->search($search)
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
             ->latest('id')
-            ->get();
-            // ->paginate($per_page);
+            ->paginate($per_page);
 
         return response()->json(
             [
@@ -530,7 +529,7 @@ class UserController extends Controller
     public function getAllAreaManager(Request $request)
     {
         $search = $request->input('search');
-        // $per_page = $request->input('per_page', 10);
+        $per_page = $request->input('per_page', 10);
 
         $users = User::query()
             ->with(
@@ -546,8 +545,7 @@ class UserController extends Controller
             ->search($search)
             ->where('position_id', 16)
             ->latest('id')
-            ->get();
-            // ->paginate($per_page);
+            ->paginate($per_page);
 
         return response()->json(
             [
@@ -560,7 +558,7 @@ class UserController extends Controller
     public function getAllSignatureRequest(Request $request)
     {
         $search = $request->input('search');
-        // $per_page = $request->input('per_page', 10);
+        $per_page = $request->input('per_page', 10);
 
         $users = User::query()->with(
                 [
@@ -574,8 +572,7 @@ class UserController extends Controller
             ->whereNot('approvedSignatureReset', true)
             ->search($search)
             ->latest('id')
-            ->get();
-            // ->paginate($per_page);
+            ->paginate($per_page);
 
         return response()->json(
             [
