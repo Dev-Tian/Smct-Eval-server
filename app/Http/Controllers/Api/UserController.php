@@ -387,7 +387,7 @@ class UserController extends Controller
                     $q->where( fn($query) => $query->whereRelation('branches', 'branches.id', $branch_filter)
                     ->orWhereRelation('branch', 'branches.id', $branch_filter)
             ))
-            ->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))
+            ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)
             ->latest('id')
@@ -500,7 +500,7 @@ class UserController extends Controller
     public function getAllBranchHeads(Request $request)
     {
         $search = $request->input('search');
-        $per_page = $request->input('per_page', 10);
+        // $per_page = $request->input('per_page', 10);
 
         $users = User::query()
             ->with(
@@ -516,7 +516,8 @@ class UserController extends Controller
             ->search($search)
             ->whereIn('position_id', [35, 36, 37, 38]) // <--- all branch_manager/supervisor position id
             ->latest('id')
-            ->paginate($per_page);
+            ->get();
+            // ->paginate($per_page);
 
         return response()->json(
             [
@@ -529,7 +530,7 @@ class UserController extends Controller
     public function getAllAreaManager(Request $request)
     {
         $search = $request->input('search');
-        $per_page = $request->input('per_page', 10);
+        // $per_page = $request->input('per_page', 10);
 
         $users = User::query()
             ->with(
@@ -545,7 +546,8 @@ class UserController extends Controller
             ->search($search)
             ->where('position_id', 16)
             ->latest('id')
-            ->paginate($per_page);
+            ->get();
+            // ->paginate($per_page);
 
         return response()->json(
             [

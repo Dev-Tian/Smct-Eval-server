@@ -7,11 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class QualityOfWork extends Model
 {
-     protected $guarded=[];
+    protected $guarded=[];
 
     public function usersEvaluation(): BelongsTo
     {
         return $this->belongsTo(UsersEvaluation::class, 'users_evaluation_id');
     }
-
 }
