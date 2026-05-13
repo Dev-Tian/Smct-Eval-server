@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(Position::class, 'position_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Department::class, 'department_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(Branch::class, 'branch_id')->constrained()->cascadeOnDelete();
-            $table->date("date_hired");
+            $table->dateTime("date_hired");
             $table->string("username");
             $table->string("fname");
             $table->string("lname");
