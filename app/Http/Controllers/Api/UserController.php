@@ -886,10 +886,12 @@ class UserController extends Controller
             {
                 Storage::disk('public')->delete($user->signature);
 
-                $user->update([
-                    'approvedSignatureReset' => true,
-                    'signature' => null,
-                ]);
+                $user->update(
+                    [
+                        'approvedSignatureReset' => true,
+                        'signature' => null,
+                    ]
+                );
                 $user->notify(new EvalNotifications('Your signature reset request has been approved.'));
 
                 return response()->json(
@@ -1008,5 +1010,4 @@ class UserController extends Controller
             ,204
         );
     }
-
 }
