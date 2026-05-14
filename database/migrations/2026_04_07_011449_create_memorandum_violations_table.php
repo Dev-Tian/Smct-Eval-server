@@ -15,9 +15,10 @@ return new class extends Migration
         Schema::create('memorandum_violations', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class, 'user_id')->nullable()->constrained()->nullOnDelete();
-            $table->date('violation_date');
             $table->string('violation_title');
-            $table->string('summary');
+            $table->dateTime('violation_date');
+            $table->string('offense');
+            $table->string('sanction')->nullable();
             $table->timestamps();
         });
     }

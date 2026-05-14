@@ -9,7 +9,7 @@ class Teamwork extends Model
 {
     protected $guarded=[];
 
-   public function usersEvaluation(): BelongsTo
+    public function usersEvaluation(): BelongsTo
     {
         return $this->belongsTo(UsersEvaluation::class, 'users_evaluation_id');
     }

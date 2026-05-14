@@ -387,7 +387,7 @@ class UserController extends Controller
                     $q->where( fn($query) => $query->whereRelation('branches', 'branches.id', $branch_filter)
                     ->orWhereRelation('branch', 'branches.id', $branch_filter)
             ))
-            ->when($department_filter, fn($q) => $q->whereRelation('departments', 'departments.id', $department_filter))
+            ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)
             ->latest('id')
@@ -421,7 +421,7 @@ class UserController extends Controller
                             ->where('branch_id', $branch)
                             ->when($department , fn($q) => $q->where('department_id', $department))
                             ->whereRelation('roles', 'name', 'evaluator')
-                            ->get();
+                            ->paginate($perPage);
 
         $employees = User::with(
                             [
@@ -560,7 +560,7 @@ class UserController extends Controller
     public function getAllSignatureRequest(Request $request)
     {
         $search = $request->input('search');
-        // $per_page = $request->input('per_page', 10);
+        $per_page = $request->input('per_page', 10);
 
         $users = User::query()->with(
                 [
@@ -574,8 +574,7 @@ class UserController extends Controller
             ->whereNot('approvedSignatureReset', true)
             ->search($search)
             ->latest('id')
-            ->get();
-            // ->paginate($per_page);
+            ->paginate($per_page);
 
         return response()->json(
             [
@@ -887,10 +886,12 @@ class UserController extends Controller
             {
                 Storage::disk('public')->delete($user->signature);
 
-                $user->update([
-                    'approvedSignatureReset' => true,
-                    'signature' => null,
-                ]);
+                $user->update(
+                    [
+                        'approvedSignatureReset' => true,
+                        'signature' => null,
+                    ]
+                );
                 $user->notify(new EvalNotifications('Your signature reset request has been approved.'));
 
                 return response()->json(
@@ -1009,5 +1010,4 @@ class UserController extends Controller
             ,204
         );
     }
-
 }

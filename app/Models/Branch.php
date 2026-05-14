@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Branch extends Model
 {
-     protected $guarded=[];
+    protected $guarded=[];
 
     public function usersBranches(): BelongsToMany
     {

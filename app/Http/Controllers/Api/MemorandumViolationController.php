@@ -16,13 +16,15 @@ class MemorandumViolationController extends Controller
      */
     public function index()
     {
-        $memos = MemorandumViolation::get(
+        $memos = MemorandumViolation::with(['user'])
+                                        ->get(
                                             [
                                                 'id',
                                                 'user_id',
-                                                'violation_date',
                                                 'violation_title',
-                                                'summary'
+                                                'violation_date',
+                                                'offense',
+                                                'sanction'
                                             ]
                                         );
 
@@ -72,16 +74,18 @@ class MemorandumViolationController extends Controller
                 'id'                   => ['required', 'numeric', Rule::exists(User::class, 'id')],
                 'violation_date'       => ['required', 'date'],
                 'title'                => ['required', 'string'],
-                'summary'              => ['required', 'string']
+                'offense'              => ['required', 'string'],
+                'sanction'             => ['string']
             ]
         );
 
         MemorandumViolation::create(
             [
                 'user_id'            =>  $validate['id'],
-                'violation_date'     =>  $validate['violation_date'],
                 'violation_title'    =>  $validate['title'],
-                'summary'            =>  $validate['summary']
+                'violation_date'     =>  $validate['violation_date'],
+                'offense'            =>  $validate['offense'],
+                'sanction'           =>  $validate['sanction']
             ]
         );
 
@@ -110,15 +114,16 @@ class MemorandumViolationController extends Controller
     public function show_perUser(?int $id)
     {
         $memos = MemorandumViolation::where('user_id', $id )
-                    ->get(
-                        [
-                            'id',
-                            'user_id',
-                            'violation_date',
-                            'violation_title',
-                            'summary'
-                        ]
-                    );
+                                        ->get(
+                                            [
+                                                'id',
+                                                'user_id',
+                                                'violation_title',
+                                                'violation_date',
+                                                'offense',
+                                                'sanction'
+                                            ]
+                                        );
 
         return response()->json(
             [
@@ -142,19 +147,21 @@ class MemorandumViolationController extends Controller
      */
     public function update(Request $request, MemorandumViolation $memorandumViolation)
     {
-        $validate = $request->validate(
+         $validate = $request->validate(
             [
                 'violation_date'       => ['required', 'date'],
                 'title'                => ['required', 'string'],
-                'summary'              => ['required', 'string']
+                'offense'              => ['required', 'string'],
+                'sanction'             => ['string']
             ]
         );
 
-        $memorandumViolation->update(
+        MemorandumViolation::create(
             [
-                'violation_date'     =>  $validate['violation_date'],
                 'violation_title'    =>  $validate['title'],
-                'summary'            =>  $validate['summary' ]
+                'violation_date'     =>  $validate['violation_date'],
+                'offense'            =>  $validate['offense'],
+                'sanction'           =>  $validate['sanction']
             ]
         );
 

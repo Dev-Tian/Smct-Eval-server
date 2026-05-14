@@ -94,11 +94,11 @@ class UsersEvaluationController extends Controller
             })
             ->whereYear('created_at', Carbon::now()->year)
             ->get(
-                [
-                    'reviewTypeProbationary',
-                    'reviewTypeRegular'
-                ]
-            );
+                    [
+                        'reviewTypeProbationary',
+                        'reviewTypeRegular'
+                    ]
+                );
 
         return response()->json(
             [
