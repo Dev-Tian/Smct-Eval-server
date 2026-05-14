@@ -597,6 +597,7 @@ class UserController extends Controller
                                 'departments:id,department_name',
                                 'positions:id,label',
                                 'roles:id,name',
+                                'employeeLastEvaluation:id,users_evaluations.employee_id,reviewTypeProbationary,reviewTypeRegular,created_at'
                             ]
                         )
                         ->whereRelation('assignedEvaluators', 'evaluator_id', $evaluatorId)
