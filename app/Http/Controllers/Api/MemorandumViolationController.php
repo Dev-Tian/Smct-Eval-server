@@ -21,10 +21,10 @@ class MemorandumViolationController extends Controller
         $month = $request->input('month');
         $year = $request->input('year');
 
-        $memos = MemorandumViolation::with(['user'])
+        $memos = MemorandumViolation::with(['user:id,fname,lname'])
                                         ->when($month, fn($q) => $q->whereMonth('violation_date', $month))
                                         ->when($year, fn($q) => $q->whereYear('violation_date', $year))
-                                        ->when($search, fn($q) => $q->where( fn($m) => $m->whereLike('violation_title', $search)->orWhereLike('offense', $search)))
+                                        // ->when($search, fn($q) => $q->whereLike('violation_title', $search)->orWhereLike('offense', $search))
                                         ->search($search)
                                         ->paginate($page);
 
