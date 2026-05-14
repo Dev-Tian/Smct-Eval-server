@@ -14,19 +14,19 @@ class MemorandumViolationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $page = $request->input('per_page');
+        $month = $request->input('month');
+        $year = $request->input('year');
+
         $memos = MemorandumViolation::with(['user'])
-                                        ->get(
-                                            [
-                                                'id',
-                                                'user_id',
-                                                'violation_title',
-                                                'violation_date',
-                                                'offense',
-                                                'sanction'
-                                            ]
-                                        );
+                                        ->when($month, fn($q) => $q->whereMonth('violation_date', $month))
+                                        ->when($year, fn($q) => $q->whereYear('violation_date', $year))
+                                        ->when($search, fn($q) => $q->where( fn($m) => $m->whereLike('violation_title', $search)->orWhereLike('offense', $search)))
+                                        ->search($search)
+                                        ->paginate($page);
 
         return response()->json(
             [
@@ -72,8 +72,8 @@ class MemorandumViolationController extends Controller
         $validate = $request->validate(
             [
                 'id'                   => ['required', 'numeric', Rule::exists(User::class, 'id')],
-                'violation_date'       => ['required', 'date'],
                 'title'                => ['required', 'string'],
+                'violation_date'       => ['required', 'date'],
                 'offense'              => ['required', 'string'],
                 'sanction'             => ['string']
             ]
@@ -149,8 +149,8 @@ class MemorandumViolationController extends Controller
     {
          $validate = $request->validate(
             [
-                'violation_date'       => ['required', 'date'],
                 'title'                => ['required', 'string'],
+                'violation_date'       => ['required', 'date'],
                 'offense'              => ['required', 'string'],
                 'sanction'             => ['string']
             ]
