@@ -156,7 +156,7 @@ class MemorandumViolationController extends Controller
             ]
         );
 
-        MemorandumViolation::create(
+        $memorandumViolation->update(
             [
                 'violation_title'    =>  $validate['title'],
                 'violation_date'     =>  $validate['violation_date'],
