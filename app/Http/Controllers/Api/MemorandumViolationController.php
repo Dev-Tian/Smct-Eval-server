@@ -17,9 +17,9 @@ class MemorandumViolationController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $page = $request->input('per_page');
         $month = $request->input('month');
         $year = $request->input('year');
+        $page = $request->input('per_page',10);
 
         $memos = MemorandumViolation::with(['user:id,fname,lname'])
                                         ->when($month, fn($q) => $q->whereMonth('violation_date', $month))
@@ -149,7 +149,7 @@ class MemorandumViolationController extends Controller
      */
     public function update(Request $request, MemorandumViolation $memorandumViolation)
     {
-         $validate = $request->validate(
+        $validate = $request->validate(
             [
                 'title'                => ['required', 'string'],
                 'violation_date'       => ['required', 'date'],
