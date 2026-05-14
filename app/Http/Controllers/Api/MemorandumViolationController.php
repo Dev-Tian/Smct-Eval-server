@@ -24,13 +24,15 @@ class MemorandumViolationController extends Controller
         $memos = MemorandumViolation::with(['user:id,fname,lname'])
                                         ->when($month, fn($q) => $q->whereMonth('violation_date', $month))
                                         ->when($year, fn($q) => $q->whereYear('violation_date', $year))
-                                        // ->when($search, fn($q) => $q->whereLike('violation_title', $search)->orWhereLike('offense', $search))
                                         ->search($search)
                                         ->paginate($page);
 
+        $years = MemorandumViolation::selectRaw('YEAR(violation_date) as years')->groupByRaw('YEAR(violation_date)')->get();
+
         return response()->json(
             [
-                'memos'   => $memos
+                'memos'   => $memos,
+                'years'   => $years
             ],
             200
         );

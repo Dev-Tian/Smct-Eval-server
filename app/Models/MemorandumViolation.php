@@ -30,8 +30,12 @@ class MemorandumViolation extends Model
                 $term,
                 fn($filter)
                 =>
-                $filter->where(fn($q) => $q->whereLike('violation_title', $term)
-                                            ->orWhereLike('offense', $term))
+                $filter->where(
+                            fn($q)
+                            =>
+                            $q->whereLike('violation_title', $term)
+                              ->orWhereLike('offense', $term)
+                        )
                         ->orWhereHas( 'user',
                             fn($user)
                             =>
