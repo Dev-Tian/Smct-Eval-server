@@ -93,39 +93,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'emp_id'            => str_pad(rand(0,9999999999), 10, '0', STR_PAD_LEFT )
         ];
 
-        $evaluator = [
-            'position_id'       => 95,
-            'department_id'     => 8,
-            'branch_id'         => 126,
-            'username'          => 'evaluator',
-            'fname'             => 'EVALUATOR',
-            'lname'             => 'EVALUATOR',
-            'email'             => 'evaluator@smct.com',
-            'contact'           => '09'.str_pad(rand(0,999999999), 9, '0', STR_PAD_LEFT ),
-            'password'          => 'password',
-            'is_active'         => 'active',
-            'date_hired'        =>  now(),
-            'emp_id'            => str_pad(rand(0,9999999999), 10, '0', STR_PAD_LEFT )
-        ];
-
-        $employee = [
-            'position_id'       => 8,
-            'department_id'     => 8,
-            'branch_id'         => 126,
-            'username'          => 'employee',
-            'fname'             => 'EMPLOYEE',
-            'lname'             => 'EMPLOYEE',
-            'email'             => 'employee@smct.com',
-            'contact'           => '09'.str_pad(rand(0,999999999), 9, '0', STR_PAD_LEFT ),
-            'password'          => 'password',
-            'is_active'         => 'active',
-            'date_hired'        =>  now(),
-            'emp_id'            => str_pad(rand(0,9999999999), 10, '0', STR_PAD_LEFT )
-        ];
 
         $role_admin->users()->create($admin);
-        $role_employee->users()->create($employee);
         $role_hr_manager->users()->create($hr);
-        $role_evaluator->users()->create($evaluator);
     }
 }

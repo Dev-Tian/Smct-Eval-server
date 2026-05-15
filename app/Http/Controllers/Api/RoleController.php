@@ -13,7 +13,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::get(['id', 'name']);
+        $roles = Role::whereNot('name','admin')->get(['id', 'name']);
 
         return response()->json(
             [
