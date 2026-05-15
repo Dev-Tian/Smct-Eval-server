@@ -420,6 +420,7 @@ class UserController extends Controller
                         'roles:id,name',
                     ]
                 )
+                ->where( fn($q) => $q->whereNot('username' ,'hr')->orWhereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
                 ->where('is_active', 'active')
                 ->whereRelation('roles', fn($w) => $w->where(fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr')))
                 ->search($search)
@@ -626,6 +627,7 @@ class UserController extends Controller
 
     public function getAllEvaluatorEmployees(Request $request, User $user)
     {
+        //filtering
         $search = $request->input('search');
         $position_filter = $request->input('position_id');
 
@@ -635,6 +637,7 @@ class UserController extends Controller
         $isAreaManager = $user->position_id === 16;
         $isAVP = $user->position_id === 31;
 
+        //ids
         $branches = $user->branches->pluck('id')->toArray();
         $areaManagerPositionId = [16];
         $branchManagerPositionsId = [35, 36, 37, 38];
@@ -649,6 +652,7 @@ class UserController extends Controller
                     'roles:id,name',
                 ]
             )
+            ->where( fn($q) => $q->whereNot('username' ,'hr')->orWhereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
             ->doesntHave('assignedEvaluators')
             ->where('is_active', 'active')
             ->where( fn ($q) =>
