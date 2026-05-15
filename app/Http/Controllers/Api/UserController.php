@@ -277,7 +277,6 @@ class UserController extends Controller
         if (!Auth::attempt($credentials)) {
             return response()->json(
                 [
-                    'status' => false,
                     'message' => 'Email and password do not match our records',
                 ],
                 400
@@ -289,51 +288,11 @@ class UserController extends Controller
         return response()->json(
             [
                 'role'      => $role,
-                'status'    => true,
                 'message'   => 'Login successful. Redirecting you to Dashboard',
             ],
             200
         );
     }
-
-    //Read
-    // public function getAllUsers(Request $request)
-    // {
-    //     $search_filter = $request->input('search');
-    //     $department_filter = $request->input('department');
-    //     $branch_filter = $request->input('branch');
-
-    //     $users = User::query()
-    //         ->with(
-    //             [
-    //                 'branch',
-    //                 'branches',
-    //                 'departments',
-    //                 'positions',
-    //                 'evaluations',
-    //                 'doesEvaluated',
-    //                 'roles'
-    //             ])
-    //         ->search($search_filter)
-    //         ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
-    //         ->when($branch_filter,
-    //             function ($q) use ($branch_filter) {
-    //                 $q->whereRelation('branches', 'branches.id', $branch_filter)
-    //                 ->orWhereRelation('branch', 'branches.id', $branch_filter);
-    //         })
-    //         ->whereRelation('roles', 'name', '!=', 'admin')
-    //         ->whereNot('id', Auth::id())
-    //         ->latest('id')
-    //         ->get('positions');
-
-    //     return response()->json(
-    //         [
-    //             'message'   => 'Users fetched successfully',
-    //             'users'     => $users,
-    //         ],
-    //         200
-    //     );
-    // }
 
     public function getAllPendingUsers(Request $request)
     {
@@ -462,7 +421,7 @@ class UserController extends Controller
                     ]
                 )
                 ->where('is_active', 'active')
-                ->whereRelation('roles', 'name', 'evaluator')
+                ->whereRelation('roles', fn($w) => $w->where(fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr')))
                 ->search($search)
                 ->paginate($per_page);
 
@@ -847,7 +806,6 @@ class UserController extends Controller
 
         return response()->json(
             [
-                'status'    => true,
                 'message'   => 'Uploaded Successfully',
             ]
             ,200
