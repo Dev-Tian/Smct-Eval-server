@@ -420,7 +420,7 @@ class UserController extends Controller
                         'roles:id,name',
                     ]
                 )
-                ->where( fn($q) => $q->whereNot('username' ,'hr')->orWhereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
+                ->where( fn($q) => $q->whereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
                 ->where('is_active', 'active')
                 ->whereRelation('roles', fn($w) => $w->where(fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr')))
                 ->search($search)
@@ -652,7 +652,7 @@ class UserController extends Controller
                     'roles:id,name',
                 ]
             )
-            ->where( fn($q) => $q->whereNot('username' ,'hr')->orWhereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
+            ->where( fn($q) => $q->whereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
             ->doesntHave('assignedEvaluators')
             ->where('is_active', 'active')
             ->where( fn ($q) =>
@@ -725,7 +725,8 @@ class UserController extends Controller
             'branch_id'     => $validate['branch_id']
         ];
 
-        if ($request->filled('password')) {
+        if ($request->filled('password'))
+        {
             $updateData['password'] = $validate['password'];
         }
 
