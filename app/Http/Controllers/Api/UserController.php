@@ -934,10 +934,10 @@ class UserController extends Controller
 
     public function assignEmployees(User $user, Request $request)
     {
-        $payloadIds = $request->employee_ids ?: [];
-            $employeeIds = is_array($payloadIds)
-                ? $payloadIds
-                : explode(',', $payloadIds);
+        $Ids = $request->employee_ids ?: [];
+            $employeeIds = is_array($Ids)
+                ? $Ids
+                : explode(',', $Ids);
 
             $user->assignedEmployees()->sync($employeeIds);
 
