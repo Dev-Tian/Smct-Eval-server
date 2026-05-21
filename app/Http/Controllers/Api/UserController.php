@@ -63,7 +63,7 @@ class UserController extends Controller
                 $department_id = $department->id;
             }
 
-            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower($item['fname'])) . '_' . Str::substr($item['employee_id'], 0, 4);
+            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower($item['fname'])) . '_' . Str::substr((string) $item['employee_id'], 0, 4);
 
             $clean_contact = '0' . Str::substr($item['contact'], -10);
 
@@ -379,7 +379,7 @@ class UserController extends Controller
                             ->where('is_active','active')
                             ->where('branch_id', $branch)
                             ->when($department , fn($q) => $q->where('department_id', $department))
-                            ->whereRelation('roles', 'name', 'evaluator')
+                            ->whereRelation('roles', fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr'))
                             ->paginate($perPage);
 
         $employees = User::with(

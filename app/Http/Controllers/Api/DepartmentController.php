@@ -38,7 +38,7 @@ class DepartmentController extends Controller
                         'roles',
                         fn($role)
                         =>
-                        $role->where('name', "evaluator")
+                        $role->where('name', "evaluator")->orWhere('name','hr')
                     ),
 
                 'users as employees_count' =>
