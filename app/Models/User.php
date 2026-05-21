@@ -104,15 +104,16 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'assigned_user',  'employee_id', 'evaluator_id');
     }
 
+    public function employeeLastEvaluation(): HasOne
+    {
+        return $this->hasOne(UsersEvaluation::class, 'employee_id')->latestOfMany('created_at');
+    }
+
     public function getFullNameAttribute(): string
     {
         return $this->fname . " " . $this->lname;
     }
 
-    public function employeeLastEvaluation(): HasOne
-    {
-        return $this->hasOne(UsersEvaluation::class, 'employee_id')->latestOfMany('created_at');
-    }
 
     #[Scope]
     public function search(Builder $query, ?string $term):Builder
