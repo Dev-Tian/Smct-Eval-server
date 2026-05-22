@@ -29,29 +29,30 @@ class DepartmentController extends Controller
         $search = $request->input('search');
 
         $all = Department::query()->withCount(
-            [
-                'users as managers_count' =>
-                    fn($user)
-                    =>
-                    $user->where('is_active', 'active')
-                    ->whereRelation(
-                        'roles',
-                        fn($role)
+                [
+                    'users as managers_count' =>
+                        fn($user)
                         =>
-                        $role->where('name', "evaluator")->orWhere('name','hr')
-                    ),
+                        $user->where('is_active', 'active')
+                        ->whereRelation(
+                            'roles',
+                            fn($role)
+                            =>
+                            $role->where('name', "evaluator")->orWhere('name','hr')
+                        ),
 
-                'users as employees_count' =>
-                    fn($user)
-                    =>
-                    $user->where('is_active', 'active')
-                    ->whereRelation(
-                        'roles',
-                        fn($role)
+                    'users as employees_count' =>
+                        fn($user)
                         =>
-                        $role->where('name', "employee")
-                    )
-            ])
+                        $user->where('is_active', 'active')
+                        ->whereRelation(
+                            'roles',
+                            fn($role)
+                            =>
+                            $role->where('name', "employee")
+                        )
+                ]
+            )
             ->when($search, fn($q) => $q->whereLike('department_name', "%{$search}%"))
             ->paginate($paginate);
 

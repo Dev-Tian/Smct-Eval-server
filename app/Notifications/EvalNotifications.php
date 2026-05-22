@@ -39,9 +39,11 @@ class EvalNotifications extends Notification implements ShouldBroadcast
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->view('email',[
-                'message'       =>  $this->message
-            ]);
+            ->view('email',
+                [
+                    'message'       =>  $this->message
+                ]
+            );
             // ->line('The introduction to the notification.')
             // ->action('Notification Action', url('/'))
             // ->line('Thank you for using our application!');
@@ -58,11 +60,14 @@ class EvalNotifications extends Notification implements ShouldBroadcast
             //
         ];
     }
+
     public function toBroadcast($notifiable)
     {
-        return new BroadcastMessage([
-            'message' => $this->message
-        ]);
+        return new BroadcastMessage(
+            [
+                'message' => $this->message
+            ]
+        );
     }
 
     public function toDatabase(object $notifiable): array
