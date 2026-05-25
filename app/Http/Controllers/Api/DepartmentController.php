@@ -79,7 +79,7 @@ class DepartmentController extends Controller
     {
         $validate = $request->validate(
             [
-                'department_name'     => ['required', 'string', 'alpha']
+                'department_name'     => ['required', 'string']
             ]
         );
 

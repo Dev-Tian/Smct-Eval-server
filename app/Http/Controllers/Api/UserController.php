@@ -63,7 +63,7 @@ class UserController extends Controller
                 $department_id = $department->id;
             }
 
-            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower($item['fname'])) . '_' . Str::substr((string) $item['employee_id'], 0, 4);
+            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower((string) $item['fname'])) . '_' . Str::substr((string) $item['employee_id'], 0, 4);
 
             $clean_contact = '0' . Str::substr($item['contact'], -10);
 
@@ -96,7 +96,7 @@ class UserController extends Controller
                     'email'          => Str::lower($item['email']) ?: Str::lower($item['fname']).'temp_email@temp.test',
                     'password'       => $temp_pass,
                     'contact'        => $clean_contact ?: 'temp_contact',
-                    'emp_id'         => preg_replace('/[^0-9]/', '', $item['employee_id']) ?: 'tempId',
+                    'emp_id'         => $item['employee_id'] ?: 'tempId',
                     'is_active'      => 'active',
                     'signature'      => null,
                     'avatar'         => null,
