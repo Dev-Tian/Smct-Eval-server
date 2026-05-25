@@ -31,17 +31,18 @@ class EvaluatorDashboardController extends Controller
         $year = $request->input('year');
 
         $user_eval = UsersEvaluation::with(
-            [
-                'employee',
-                'evaluator',
-                'jobKnowledge',
-                'adaptability',
-                'qualityOfWorks',
-                'teamworks',
-                'reliabilities',
-                'ethicals',
-                'customerServices'
-            ])
+                [
+                    'employee',
+                    'evaluator',
+                    'jobKnowledge',
+                    'adaptability',
+                    'qualityOfWorks',
+                    'teamworks',
+                    'reliabilities',
+                    'ethicals',
+                    'customerServices'
+                ]
+            )
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status,  fn($q)  =>  $q->where('status', $status))

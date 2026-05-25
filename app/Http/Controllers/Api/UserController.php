@@ -63,7 +63,7 @@ class UserController extends Controller
                 $department_id = $department->id;
             }
 
-            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower($item['fname'])) . '_' . Str::substr($item['employee_id'], 0, 4);
+            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower((string) $item['fname'])) . '_' . Str::substr((string) $item['employee_id'], 0, 4);
 
             $clean_contact = '0' . Str::substr($item['contact'], -10);
 
@@ -96,7 +96,7 @@ class UserController extends Controller
                     'email'          => Str::lower($item['email']) ?: Str::lower($item['fname']).'temp_email@temp.test',
                     'password'       => $temp_pass,
                     'contact'        => $clean_contact ?: 'temp_contact',
-                    'emp_id'         => preg_replace('/[^0-9]/', '', $item['employee_id']) ?: 'tempId',
+                    'emp_id'         => $item['employee_id'] ?: 'tempId',
                     'is_active'      => 'active',
                     'signature'      => null,
                     'avatar'         => null,
@@ -379,7 +379,7 @@ class UserController extends Controller
                             ->where('is_active','active')
                             ->where('branch_id', $branch)
                             ->when($department , fn($q) => $q->where('department_id', $department))
-                            ->whereRelation('roles', 'name', 'evaluator')
+                            ->whereRelation('roles', fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr'))
                             ->paginate($perPage);
 
         $employees = User::with(
@@ -420,7 +420,7 @@ class UserController extends Controller
                         'roles:id,name',
                     ]
                 )
-                ->where( fn($q) => $q->whereNot('username' ,'hr')->orWhereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
+                ->where( fn($q) => $q->whereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
                 ->where('is_active', 'active')
                 ->whereRelation('roles', fn($w) => $w->where(fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr')))
                 ->search($search)
@@ -652,7 +652,7 @@ class UserController extends Controller
                     'roles:id,name',
                 ]
             )
-            ->where( fn($q) => $q->whereNot('username' ,'hr')->orWhereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
+            ->where( fn($q) => $q->whereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
             ->doesntHave('assignedEvaluators')
             ->where('is_active', 'active')
             ->where( fn ($q) =>
@@ -702,7 +702,7 @@ class UserController extends Controller
                 'position_id'   => ['required', Rule::exists('positions', 'id')],
                 'branch_id'     => ['required', Rule::exists('branches', 'id')],
                 'department_id' => ['nullable', Rule::exists('departments', 'id')],
-                'employeeId'    => ['required'],
+                'employeeId'    => ['required', Rule::unique('username', 'emp_id')],
                 'username'      => ['required', 'string', Rule::unique('users', 'username')->ignore($user->id)],
                 'contact'       => ['required', 'string'],
                 'roles'         => ['required', Rule::exists('roles', 'name')],
@@ -725,7 +725,8 @@ class UserController extends Controller
             'branch_id'     => $validate['branch_id']
         ];
 
-        if ($request->filled('password')) {
+        if ($request->filled('password'))
+        {
             $updateData['password'] = $validate['password'];
         }
 
@@ -933,10 +934,10 @@ class UserController extends Controller
 
     public function assignEmployees(User $user, Request $request)
     {
-        $payloadIds = $request->employee_ids ?: [];
-            $employeeIds = is_array($payloadIds)
-                ? $payloadIds
-                : explode(',', $payloadIds);
+        $Ids = $request->employee_ids ?: [];
+            $employeeIds = is_array($Ids)
+                ? $Ids
+                : explode(',', $Ids);
 
             $user->assignedEmployees()->sync($employeeIds);
 

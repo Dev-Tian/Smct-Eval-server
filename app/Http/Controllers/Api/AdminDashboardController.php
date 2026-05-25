@@ -18,9 +18,9 @@ class AdminDashboardController extends Controller
         $authUserId = Auth::user()->id;
         //users
         $total_users = User::whereNot('id', $authUserId)->whereRelation('roles',fn($q) => $q->whereNot('name','admin'))->count();
-        $total_pending_users = User::whereNot('id', $authUserId)->where('is_active', 'pending')->whereRelation('roles', fn($q)      => $q->whereNot('name','admin'))->count();
-        $total_active_users = User::whereNot('id', $authUserId)->where('is_active', 'active')->whereRelation('roles', fn($q)        => $q->whereNot('name','admin'))->count();
-        $total_declined_users = User::whereNot('id', $authUserId)->where('is_active', 'declined')->whereRelation('roles', fn($q)    => $q->whereNot('name','admin'))->count();
+        $total_pending_users = User::whereNot('id', $authUserId)->where('is_active', 'pending')->whereRelation('roles',     fn($q)    => $q->whereNot('name','admin'))->count();
+        $total_active_users = User::whereNot('id', $authUserId)->where('is_active', 'active')->whereRelation('roles',       fn($q)    => $q->whereNot('name','admin'))->count();
+        $total_declined_users = User::whereNot('id', $authUserId)->where('is_active', 'declined')->whereRelation('roles',   fn($q)    => $q->whereNot('name','admin'))->count();
 
         //evaluations
         $total_evaluations = UsersEvaluation::count();

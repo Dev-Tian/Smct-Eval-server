@@ -30,26 +30,28 @@ class BranchController extends Controller
         $search = $request->input('search');
 
         $all = Branch::query()->withCount(
-            [
-                'userBranch as managers_count' =>
-                    fn($user)
-                    =>
-                    $user->whereHas(
-                        'positions',
-                        fn($position)
+                [
+                    'userBranch as managers_count' =>
+                        fn($user)
                         =>
-                        $position->whereLike('label', "%manager%")
-                    ),
-                'userBranch as employees_count' =>
-                    fn($user)
-                    =>
-                    $user->whereHas(
-                        'positions',
-                        fn($position)
+                        $user->whereHas(
+                            'positions',
+                            fn($position)
+                            =>
+                            $position->whereLike('label', "%manager%")
+                        ),
+
+                    'userBranch as employees_count' =>
+                        fn($user)
                         =>
-                        $position->whereNotLike('label', "%manager%")
-                    )
-            ])
+                        $user->whereHas(
+                            'positions',
+                            fn($position)
+                            =>
+                            $position->whereNotLike('label', "%manager%")
+                        )
+                ]
+            )
             ->when(
                 $search,
                 fn($q) =>
