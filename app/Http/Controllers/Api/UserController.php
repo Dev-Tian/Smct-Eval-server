@@ -51,8 +51,8 @@ class UserController extends Controller
                 'users.*.lname.required'       => 'Last name is required for each user. Please check the uploaded file.',
                 'users.*.date_hired.required'  => 'Date hired is required for each user. Please check the uploaded file.',
                 'users.*.email.required'       => 'Email is required for each user. Please check the uploaded file.',
-                'users.*.position_id.required' => 'Position ID is required for each user. Please check the uploaded file.',
-                'users.*.branch_id.required'   => 'Branch ID is required for each user. Please check the uploaded file.',
+                'users.*.position_id.required' => 'Position is required for each user. Please check the uploaded file.',
+                'users.*.branch_id.required'   => 'Branch Code is required for each user. Please check the uploaded file.',
                 'users.*.employee_id.required' => 'Employee ID is required for each user. Please check the uploaded file.',
                 'users.*.contact.required'     => 'Contact number is required for each user. Please check the uploaded file.',
             ]
