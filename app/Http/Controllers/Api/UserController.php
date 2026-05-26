@@ -33,6 +33,31 @@ class UserController extends Controller
         $user = [];
         $temp_pass = Hash::make('Smct123456');
 
+        $request->validate(
+            [
+                'users'                 => ['required', 'array'],
+                'users.*.fname'         => ['required', 'string'],
+                'users.*.lname'         => ['required', 'string'],
+                'users.*.date_hired'    => ['required', 'date'],
+                'users.*.email'         => ['required', 'email', 'string'],
+                'users.*.position_id'   => ['required'],
+                'users.*.branch_id'     => ['required'],
+                'users.*.department_id' => ['nullable'],
+                'users.*.employee_id'   => ['required'],
+                'users.*.contact'       => ['required', 'string'],
+            ],
+            [
+                'users.*.fname.required'       => 'First name is required for each user. Please check the uploaded file.',
+                'users.*.lname.required'       => 'Last name is required for each user. Please check the uploaded file.',
+                'users.*.date_hired.required'  => 'Date hired is required for each user. Please check the uploaded file.',
+                'users.*.email.required'       => 'Email is required for each user. Please check the uploaded file.',
+                'users.*.position_id.required' => 'Position is required for each user. Please check the uploaded file.',
+                'users.*.branch_id.required'   => 'Branch Code is required for each user. Please check the uploaded file.',
+                'users.*.employee_id.required' => 'Employee ID is required for each user. Please check the uploaded file.',
+                'users.*.contact.required'     => 'Contact number is required for each user. Please check the uploaded file.',
+            ]
+        );
+
         foreach ($data as $item) {
             // $temp_pass = Str::random(10);
 
