@@ -702,7 +702,7 @@ class UserController extends Controller
                 'position_id'   => ['required', Rule::exists('positions', 'id')],
                 'branch_id'     => ['required', Rule::exists('branches', 'id')],
                 'department_id' => ['nullable', Rule::exists('departments', 'id')],
-                'employee_id'   => ['required', Rule::unique('users', 'emp_id')],
+                'employee_id'   => ['required', Rule::unique('users', 'emp_id')->ignore($user->id)],
                 'username'      => ['required', 'string', Rule::unique('users', 'username')->ignore($user->id)],
                 'contact'       => ['required', 'string'],
                 'roles'         => ['required', Rule::exists('roles', 'name')],
