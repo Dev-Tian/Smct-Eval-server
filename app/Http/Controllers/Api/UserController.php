@@ -63,7 +63,7 @@ class UserController extends Controller
                 $department_id = $department->id;
             }
 
-            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower((string) $item['fname'])) . '_' . Str::substr((string) $item['employee_id'], 0, 4);
+            $username = $item['username'] ?: Str::replace(' ', '_', Str::lower($item['fname'])) . '_' . Str::substr((string) $item['employee_id'], 0, 4);
 
             $clean_contact = '0' . Str::substr($item['contact'], -10);
 
@@ -702,7 +702,7 @@ class UserController extends Controller
                 'position_id'   => ['required', Rule::exists('positions', 'id')],
                 'branch_id'     => ['required', Rule::exists('branches', 'id')],
                 'department_id' => ['nullable', Rule::exists('departments', 'id')],
-                'employeeId'    => ['required', Rule::unique('username', 'emp_id')],
+                'employee_id'   => ['required', Rule::unique('users', 'emp_id')],
                 'username'      => ['required', 'string', Rule::unique('users', 'username')->ignore($user->id)],
                 'contact'       => ['required', 'string'],
                 'roles'         => ['required', Rule::exists('roles', 'name')],
@@ -721,7 +721,7 @@ class UserController extends Controller
             'department_id' => $validate['department_id'] ?: null,
             'username'      => $validate['username'],
             'contact'       => $validate['contact'],
-            'emp_id'        => $validate['employeeId'],
+            'emp_id'        => $validate['employee_id'],
             'branch_id'     => $validate['branch_id']
         ];
 
