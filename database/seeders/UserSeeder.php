@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User;
+// use App\Models\User;
 
 class UserSeeder extends Seeder
 {
@@ -12,6 +12,6 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->count(20)->create()->each(fn($user) => $user->assignRole('employee'));
+        // User::factory()->count(20)->create()->each(fn($user) => $user->assignRole('employee'));
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enum\QuarterDateRange;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BranchBasic;
 use App\Http\Requests\BranchBasicAreaManager;
@@ -52,7 +53,15 @@ class UsersEvaluationController extends Controller
             ->search($search)
             ->when($status,  fn($q) => $q->where('status', $status))
             ->when($quarter, fn($q) => $q->where(fn($sub) => $sub->where('reviewTypeRegular', $quarter)->orWhere('reviewTypeProbationary', $quarter)))
-            ->when($year,    fn($q) => $q->whereYear('created_at', $year))
+            ->when($year,
+                fn($q)
+                =>
+                $q->where(
+                    fn($r)
+                    =>
+                    $r->whereYear('coverageTo', $year)->orWhereYear('coverageFrom', $year)
+                )
+            )
             ->when($rating,  function ($q) use ($rating) {
                 match ($rating) {
                     'poor'      => $q->where('rating', '<', 2.5),
@@ -92,7 +101,10 @@ class UsersEvaluationController extends Controller
                 $q->whereNotNull('reviewTypeProbationary')
                 ->orWhereNotNull('reviewTypeRegular');
             })
-            ->whereYear('created_at', Carbon::now()->year)
+            ->where(function($q) {
+                $q->whereYear('coverageFrom', Carbon::now()->year)
+                ->orWhereYear('coverageTo', Carbon::now()->year);
+            })
             ->get(
                     [
                         'reviewTypeProbationary',
@@ -124,6 +136,21 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
+        $evalDateFrom = $validated['coverageFrom'];
+        $evalDateTo = $validated['coverageTo'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+
+        [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+           {
+                "Q1"    =>  QuarterDateRange::Q1->range(),
+                "Q2"    =>  QuarterDateRange::Q2->range(),
+                "Q3"    =>  QuarterDateRange::Q3->range(),
+                "Q4"    =>  QuarterDateRange::Q4->range(),
+           };
+        }
+
         $submission = UsersEvaluation::create(
             [
                 'employee_id'                   => $user->id,
@@ -131,8 +158,8 @@ class UsersEvaluationController extends Controller
                 'evaluationType'                => 'BranchRankNFile',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
-                'coverageFrom'                  => $validated['coverageFrom'],
-                'coverageTo'                    => $validated['coverageTo'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
                 'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                 'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                 'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
@@ -247,6 +274,21 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
+        $evalDateFrom = $validated['coverageFrom'];
+        $evalDateTo = $validated['coverageTo'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+
+            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+           {
+                "Q1"    =>  QuarterDateRange::Q1->range(),
+                "Q2"    =>  QuarterDateRange::Q2->range(),
+                "Q3"    =>  QuarterDateRange::Q3->range(),
+                "Q4"    =>  QuarterDateRange::Q4->range(),
+           };
+        }
+
         $submission = UsersEvaluation::create(
             [
                 'employee_id'                   => $user->id,
@@ -254,8 +296,8 @@ class UsersEvaluationController extends Controller
                 'evaluationType'                => 'BranchBasicAreaManager',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
-                'coverageFrom'                  => $validated['coverageFrom'],
-                'coverageTo'                    => $validated['coverageTo'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
                 'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                 'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                 'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
@@ -368,6 +410,21 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
+        $evalDateFrom = $validated['coverageFrom'];
+        $evalDateTo = $validated['coverageTo'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+
+        [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+           {
+                "Q1"    =>  QuarterDateRange::Q1->range(),
+                "Q2"    =>  QuarterDateRange::Q2->range(),
+                "Q3"    =>  QuarterDateRange::Q3->range(),
+                "Q4"    =>  QuarterDateRange::Q4->range(),
+           };
+        }
+
         $submission = UsersEvaluation::create(
             [
                 'employee_id'                   => $user->id,
@@ -375,8 +432,8 @@ class UsersEvaluationController extends Controller
                 'evaluationType'                => 'BranchBasic',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
-                'coverageFrom'                  => $validated['coverageFrom'],
-                'coverageTo'                    => $validated['coverageTo'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
                 'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                 'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                 'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
@@ -502,6 +559,21 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
+        $evalDateFrom = $validated['coverageFrom'];
+        $evalDateTo = $validated['coverageTo'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+
+        [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+           {
+                "Q1"    =>  QuarterDateRange::Q1->range(),
+                "Q2"    =>  QuarterDateRange::Q2->range(),
+                "Q3"    =>  QuarterDateRange::Q3->range(),
+                "Q4"    =>  QuarterDateRange::Q4->range(),
+           };
+        }
+
         $submission = UsersEvaluation::create(
             [
                 'employee_id'                   => $user->id,
@@ -509,8 +581,8 @@ class UsersEvaluationController extends Controller
                 'evaluationType'                => 'HoRankNFile',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
-                'coverageFrom'                  => $validated['coverageFrom'],
-                'coverageTo'                    => $validated['coverageTo'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
                 'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                 'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                 'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
@@ -615,6 +687,21 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
+        $evalDateFrom = $validated['coverageFrom'];
+        $evalDateTo = $validated['coverageTo'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+
+        [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+           {
+                "Q1"    =>  QuarterDateRange::Q1->range(),
+                "Q2"    =>  QuarterDateRange::Q2->range(),
+                "Q3"    =>  QuarterDateRange::Q3->range(),
+                "Q4"    =>  QuarterDateRange::Q4->range(),
+           };
+        }
+
         $submission = UsersEvaluation::create(
             [
                 'employee_id'                   => $user->id,
@@ -622,8 +709,8 @@ class UsersEvaluationController extends Controller
                 'evaluationType'                => 'HoBasic',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
-                'coverageFrom'                  => $validated['coverageFrom'],
-                'coverageTo'                    => $validated['coverageTo'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
                 'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                 'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                 'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
