@@ -34,7 +34,8 @@ class BranchController extends Controller
                     'userBranch as managers_count' =>
                         fn($user)
                         =>
-                        $user->whereHas(
+                        $user->where('is_active', 'active')
+                        ->whereHas(
                             'roles',
                             fn($r)
                             =>
@@ -44,7 +45,8 @@ class BranchController extends Controller
                     'userBranch as employees_count' =>
                         fn($user)
                         =>
-                        $user->whereHas(
+                        $user->where('is_active', 'active')
+                            ->whereHas(
                             'roles',
                             fn($r)
                             =>
