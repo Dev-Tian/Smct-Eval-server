@@ -35,20 +35,20 @@ class BranchController extends Controller
                         fn($user)
                         =>
                         $user->whereHas(
-                            'positions',
-                            fn($position)
+                            'roles',
+                            fn($r)
                             =>
-                            $position->whereLike('label', "%manager%")
+                            $r->where('name', "evaluator")
                         ),
 
                     'userBranch as employees_count' =>
                         fn($user)
                         =>
                         $user->whereHas(
-                            'positions',
-                            fn($position)
+                            'roles',
+                            fn($r)
                             =>
-                            $position->whereNotLike('label', "%manager%")
+                            $r->where('name', "employee")
                         )
                 ]
             )

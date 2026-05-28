@@ -279,7 +279,6 @@ class UsersEvaluationController extends Controller
 
         if(!empty($validated['reviewTypeRegular']))
         {
-
             [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
            {
                 "Q1"    =>  QuarterDateRange::Q1->range(),
@@ -540,7 +539,12 @@ class UsersEvaluationController extends Controller
         $notificationData = new EvalNotifications('A new evaluation submitted for ' . $user->fname . ' ' . $user->lname . ' was submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname);
 
         User::with('roles')
-            ->whereHas('roles', fn($q) => $q->where('name', 'hr')->orWhere('name', 'admin'))
+            ->whereHas('roles',
+                fn($q)
+                =>
+                $q->where('name', 'hr')
+                  ->orWhere('name', 'admin')
+            )
             ->chunk(100, function ($hrs) use ($notificationData)
                 {
                     Notification::send($hrs, $notificationData);
@@ -874,7 +878,7 @@ class UsersEvaluationController extends Controller
                     };
                 })
             )
-            ->when($year, fn($q) => $q->whereYear('created_at', $year))
+            ->when($year, fn($q) => $q->where( fn($r)=> $r->whereYear('coverageFrom', $year)->orWhereYear('coverageTo', $year)))
             ->latest('created_at')
             ->paginate($perPage);
 
@@ -916,7 +920,8 @@ class UsersEvaluationController extends Controller
                     'reliabilities',
                     'ethicals',
                     'customerServices'
-                ])
+                ]
+            )
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
@@ -929,7 +934,7 @@ class UsersEvaluationController extends Controller
                     };
                 }),
             )
-            ->when($year, fn($q) => $q->whereYear('created_at', $year))
+            ->when($year, fn($q) => $q->where( fn($r)=> $r->whereYear('coverageFrom', $year)->orWhereYear('coverageTo', $year)))
             ->latest('created_at')
             ->paginate($perPage);
 
