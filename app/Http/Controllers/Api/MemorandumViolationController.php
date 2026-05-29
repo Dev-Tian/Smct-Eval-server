@@ -133,7 +133,6 @@ class MemorandumViolationController extends Controller
             ],
             200
         );
-
     }
 
     /**

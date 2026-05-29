@@ -653,62 +653,73 @@ class UserController extends Controller
     {
         //filtering
         $search = $request->input('search');
-        $position_filter = $request->input('position_id');
+
+        $unassignedEmp = User::query()
+                            ->select(['id','fname','lname','position_id','branch_id', 'email'])
+                            ->with(
+                                [
+                                    'branch:id,branch_code,branch_name',
+                                    'positions:id,label',
+                                    'roles:id,name',
+                                ]
+                            )
+                            ->search($search)
+                            ->whereDoesntHave('assignedEvaluators')
+                            ->get();
 
         //boolean conditions
-        $isHO = ($user->branches()->where('branch_id', 126)->exists() || $user->branch_id === 126 );
-        $hasDepartment = !empty($user->department_id);
-        $isAreaManager = $user->position_id === 16;
-        $isAVP = $user->position_id === 31;
+        // $isHO = ($user->branches()->where('branch_id', 126)->exists() || $user->branch_id === 126 );
+        // $hasDepartment = !empty($user->department_id);
+        // $isAreaManager = $user->position_id === 16;
+        // $isAVP = $user->position_id === 31;
 
-        //ids
-        $branches = $user->branches->pluck('id')->toArray();
-        $areaManagerPositionId = [16];
-        $branchManagerPositionsId = [35, 36, 37, 38];
+        // //ids
+        // $branches = $user->branches->pluck('id')->toArray();
+        // $areaManagerPositionId = [16];
+        // $branchManagerPositionsId = [35, 36, 37, 38];
 
-        $employees = User::query()
-            ->with(
-                [
-                    'branch:id,branch_code,branch_name',
-                    'branches:id,branch_code,branch_name',
-                    'departments:id,department_name',
-                    'positions:id,label',
-                    'roles:id,name',
-                ]
-            )
-            ->where( fn($q) => $q->whereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
-            ->doesntHave('assignedEvaluators')
-            ->where('is_active', 'active')
-            ->where( fn ($q) =>
-                $q->whereRelation('branch', fn($query) => $query->whereIn('branches.id',array_merge([$user->branch_id], $branches)))
-                ->orWhereRelation('branches', fn($query) => $query->whereIn('branches.id',array_merge([$user->branch_id], $branches)))
-            )
-            ->where('id', '!=', $user->id)
-            ->when($position_filter, fn($q) => $q->where('position_id', $position_filter))
-            ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {
-                $q->whereIn('position_id', $branchManagerPositionsId);
-            })
-            ->when(!$isHO && in_array($user->position_id, $branchManagerPositionsId) && !$hasDepartment, function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
-                $q->whereNotIn('position_id', array_merge($areaManagerPositionId));
-            })
-            ->when($isHO && $hasDepartment && !$isAVP, function ($q) use ($user) {
-                $q->where('department_id', $user->department_id);
-                // ->whereRelation('positions', fn($q) => $q->whereNotLike('positions.label', '%manager%'));
-            })
-            ->when(!$isHO && !$hasDepartment && !in_array($user->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId)), function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
-                $q->whereNotIn('position_id', array_merge($areaManagerPositionId));
-            })
-            ->when($isAVP && $isHO && $hasDepartment, function ($q) use ($user, $position_filter) {
-                $q->where('department_id', $user->department_id)->orWhereRelation('positions', 'id', $position_filter ?: 16);
-            })
-            ->search($search)
-            ->latest('id')
-            ->get();
+        // $employees = User::query()
+        //     ->with(
+        //         [
+        //             'branch:id,branch_code,branch_name',
+        //             'branches:id,branch_code,branch_name',
+        //             'departments:id,department_name',
+        //             'positions:id,label',
+        //             'roles:id,name',
+        //         ]
+        //     )
+        //     ->where( fn($q) => $q->whereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
+        //     ->doesntHave('assignedEvaluators')
+        //     ->where('is_active', 'active')
+        //     ->where( fn ($q) =>
+        //         $q->whereRelation('branch', fn($query) => $query->whereIn('branches.id',array_merge([$user->branch_id], $branches)))
+        //         ->orWhereRelation('branches', fn($query) => $query->whereIn('branches.id',array_merge([$user->branch_id], $branches)))
+        //     )
+        //     ->where('id', '!=', $user->id)
+        //     ->when($isAreaManager, function ($q) use ($branchManagerPositionsId) {
+        //         $q->whereIn('position_id', $branchManagerPositionsId);
+        //     })
+        //     ->when(!$isHO && in_array($user->position_id, $branchManagerPositionsId) && !$hasDepartment, function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
+        //         $q->whereNotIn('position_id', array_merge($areaManagerPositionId));
+        //     })
+        //     ->when($isHO && $hasDepartment && !$isAVP, function ($q) use ($user) {
+        //         $q->where('department_id', $user->department_id);
+        //         // ->whereRelation('positions', fn($q) => $q->whereNotLike('positions.label', '%manager%'));
+        //     })
+        //     ->when(!$isHO && !$hasDepartment && !in_array($user->position_id, array_merge($areaManagerPositionId, $branchManagerPositionsId)), function ($q) use ($areaManagerPositionId, $branchManagerPositionsId) {
+        //         $q->whereNotIn('position_id', array_merge($areaManagerPositionId));
+        //     })
+        //     ->when($isAVP && $isHO && $hasDepartment, function ($q) use ($user) {
+        //         $q->where('department_id', $user->department_id)->orWhereRelation('positions', 'id',  16);
+        //     })
+        //     ->search($search)
+        //     ->latest('id')
+        //     ->get();
 
             return response()->json(
                 [
                     'message'       =>  'List of under employees unassigned yet.',
-                    'employees'     =>  $employees
+                    'employees'     =>  $unassignedEmp
                 ]
                 ,200
             );
