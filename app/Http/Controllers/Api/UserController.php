@@ -357,7 +357,6 @@ class UserController extends Controller
         $users = User::query()->with(
             [
                 'branch:id,branch_code,branch_name',
-                'branches:id,branch_code,branch_name',
                 'departments:id,department_name',
                 'positions:id,label',
                 'roles:id,name',
