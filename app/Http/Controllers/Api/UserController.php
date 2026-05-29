@@ -574,10 +574,12 @@ class UserController extends Controller
         $search = $request->input('search');
 
         $evaluatorId = $user->id;
-        $employees = User::with(
+
+        $employees = User::query()
+                        ->select(['id','fname','lname','position_id','branch_id', 'email'])
+                        ->with(
                             [
                                 'branch:id,branch_code,branch_name',
-                                'branches:id,branch_code,branch_name',
                                 'departments:id,department_name',
                                 'positions:id,label',
                                 'roles:id,name',
@@ -663,6 +665,7 @@ class UserController extends Controller
                                     'roles:id,name',
                                 ]
                             )
+                            ->where('is_active', 'active')
                             ->search($search)
                             ->whereDoesntHave('assignedEvaluators')
                             ->get();

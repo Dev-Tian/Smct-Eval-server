@@ -131,6 +131,11 @@ class User extends Authenticatable
                                 ->orWhereRaw("CONCAT(lname, ' ', fname) LIKE ?", ["%{$term}%"]);
                         })
                         ->orWhereAny(['email', 'username'], 'LIKE', "%{$term}%")
+                        ->orWhere(function($query) use ($term) {
+                            $query->whereHas('branch', fn($r) => $r->whereAny(['branch_code','branch_name', 'branch', 'acronym'], 'LIKE', "%{$term}%"))
+                            ->orWhereHas('positions', fn($r) => $r->whereLike('label', "%{$term}%"))
+                            ->orWhereHas('roles', fn($r) => $r->whereLike('name', "%{$term}%"));
+                        })
                 )
             );
     }
