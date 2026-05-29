@@ -15,7 +15,7 @@ class PositionController extends Controller
      */
     public function index()
     {
-        $positions = Position::get(['id','label','value']);
+        $positions = Position::get(['id','label','value','created_at']);
 
         return response()->json(
             [
