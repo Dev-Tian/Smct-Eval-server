@@ -28,33 +28,35 @@ class DepartmentController extends Controller
         $paginate = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $all = Department::query()->withCount(
-                [
-                    'users as managers_count' =>
-                        fn($user)
-                        =>
-                        $user->where('is_active', 'active')
-                            ->whereRelation(
-                                'roles',
-                                fn($role)
-                                =>
-                                $role->where('name', "evaluator")->orWhere('name','hr')
-                        ),
+        $all = Department::query()
+                ->select(['id', 'department_name'])
+                ->withCount(
+                    [
+                        'users as managers_count' =>
+                            fn($user)
+                            =>
+                            $user->where('is_active', 'active')
+                                ->whereRelation(
+                                    'roles',
+                                    fn($role)
+                                    =>
+                                    $role->where('name', "evaluator")->orWhere('name','hr')
+                            ),
 
-                    'users as employees_count' =>
-                        fn($user)
-                        =>
-                        $user->where('is_active', 'active')
-                            ->whereRelation(
-                                'roles',
-                                fn($role)
-                                =>
-                                $role->where('name', "employee")
-                        )
-                ]
-            )
-            ->when($search, fn($q) => $q->whereLike('department_name', "%{$search}%"))
-            ->paginate($paginate);
+                        'users as employees_count' =>
+                            fn($user)
+                            =>
+                            $user->where('is_active', 'active')
+                                ->whereRelation(
+                                    'roles',
+                                    fn($role)
+                                    =>
+                                    $role->where('name', "employee")
+                            )
+                    ]
+                )
+                ->when($search, fn($q) => $q->whereLike('department_name', "%{$search}%"))
+                ->paginate($paginate);
 
         return response()->json(
             [

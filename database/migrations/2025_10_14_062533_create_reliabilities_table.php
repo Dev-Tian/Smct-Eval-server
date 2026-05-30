@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('question_number');
             $table->integer('score');
             $table->string('comment')->nullable();
-            $table->timestamps();
+            // $table->timestamps();
         });
     }
 
