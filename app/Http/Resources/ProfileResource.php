@@ -40,13 +40,11 @@ class ProfileResource extends JsonResource
                                                     )
                                                 ),
                 'departments'                   => $this->whenLoaded('departments',
-                                                    fn() => $this->departments->map(
-                                                        fn($r) =>
-                                                            [
-                                                                'id'                =>  $r->id,
-                                                                'department_name'   =>  $r->department_name
-                                                            ]
-                                                    )
+                                                    fn() =>
+                                                        [
+                                                            'id'                =>  $this->departments->id,
+                                                            'department_name'   =>  $this->departments->department_name
+                                                        ]
                                                 ),
                 'branch'                        => $this->whenLoaded('branch',
                                                     fn() =>

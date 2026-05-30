@@ -33,8 +33,7 @@ class MemorandumViolation extends Model
                 $filter->where(
                             fn($q)
                             =>
-                            $q->whereLike('violation_title', $term)
-                              ->orWhereLike('offense', $term)
+                            $q->whereAny(['violation_title','offense'],'LIKE', "%{$term}%")
                         )
                         ->orWhereHas( 'user',
                             fn($user)
