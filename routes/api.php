@@ -14,7 +14,7 @@ use App\Http\Controllers\Api\HrDashboardController;
 use App\Http\Controllers\Api\MemorandumViolationController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\UsersEvaluationController;
-use App\Http\Resources\Resource\ProfileResource;
+use App\Http\Resources\ProfileResource;
 use Illuminate\Support\Facades\Auth;
 
 //public routes

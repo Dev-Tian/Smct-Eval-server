@@ -324,14 +324,30 @@ class UserController extends Controller
         $perPage = $request->input('per_page', 10);
         $search_filter = $request->input('search');
 
-        $pending_users = User::query()->with(
-            [
-                'branch:id,branch_code,branch_name',
-                'branches:id,branch_code,branch_name',
-                'departments:id,department_name',
-                'positions:id,label',
-                'roles:id,name',
-            ])
+        $pending_users = User::query()
+            ->select(
+                [
+                    'id',
+                    'position_id',
+                    'branch_id',
+                    'department_id',
+                    'date_hired',
+                    'username',
+                    'fname',
+                    'lname',
+                    'email',
+                    'contact',
+                    'emp_id'
+                ]
+            )
+            ->with(
+                [
+                    'branch:id,branch_code,branch_name',
+                    'branches:id,branch_code,branch_name',
+                    'departments:id,department_name',
+                    'positions:id,label',
+                    'roles:id,name',
+                ])
             ->whereNot('is_active', 'active')->whereNot('id', Auth::id())
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)->latest('id')
@@ -354,14 +370,30 @@ class UserController extends Controller
         $branch_filter = $request->input('branch');
         $department_filter = $request->input('department');
 
-        $users = User::query()->with(
-            [
-                'branch:id,branch_code,branch_name',
-                'departments:id,department_name',
-                'positions:id,label',
-                'roles:id,name',
-                'assignedEvaluators:fname,lname,email'
-            ])
+        $users = User::query()
+            ->select(
+                [
+                    'id',
+                    'position_id',
+                    'branch_id',
+                    'department_id',
+                    'date_hired',
+                    'username',
+                    'fname',
+                    'lname',
+                    'email',
+                    'contact',
+                    'emp_id'
+                ]
+            )
+            ->with(
+                [
+                    'branch:id,branch_code,branch_name',
+                    'departments:id,department_name',
+                    'positions:id,label',
+                    'roles:id,name',
+                    'assignedEvaluators:id,fname,lname,email'
+                ])
             ->where('is_active', 'active')
             ->whereNot('id', Auth::id())
             ->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))
@@ -391,13 +423,18 @@ class UserController extends Controller
         $perPage = $request->input('per_page',10);
         $department = $request->input('department_id');
 
-        $evaluators = User::with(
+        $evaluators = User::select(
                             [
-                                'branch:id,branch_code,branch_name',
-                                'branches:id,branch_code,branch_name',
-                                'departments:id,department_name',
+                                'id',
+                                'position_id',
+                                'fname',
+                                'lname',
+                                'email'
+                            ]
+                        )
+                        ->with(
+                            [
                                 'positions:id,label',
-                                'roles:id,name',
                             ]
                         )
                             ->where('is_active','active')
@@ -406,13 +443,18 @@ class UserController extends Controller
                             ->whereRelation('roles', fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr'))
                             ->paginate($perPage);
 
-        $employees = User::with(
+        $employees = User::select(
                             [
-                                'branch:id,branch_code,branch_name',
-                                'branches:id,branch_code,branch_name',
-                                'departments:id,department_name',
+                                'id',
+                                'position_id',
+                                'fname',
+                                'lname',
+                                'email'
+                            ]
+                        )
+                        ->with(
+                            [
                                 'positions:id,label',
-                                'roles:id,name',
                             ]
                         )
                         ->where('is_active','active')
@@ -435,11 +477,19 @@ class UserController extends Controller
         $per_page = $request->input('per_page',10);
         $search = $request->input('search');
 
-        $evaluators = User::with(
+        $evaluators = User::select(
+                [
+                    'id',
+                    'position_id',
+                    'branch_id',
+                    'fname',
+                    'lname',
+                    'email'
+                ]
+            )
+                ->with(
                     [
                         'branch:id,branch_code,branch_name',
-                        'branches:id,branch_code,branch_name',
-                        'departments:id,department_name',
                         'positions:id,label',
                         'roles:id,name',
                     ]
@@ -487,13 +537,11 @@ class UserController extends Controller
         // $per_page = $request->input('per_page', 10);
 
         $users = User::query()
+            ->select(['id','branch_id', 'fname', 'lname'])
             ->with(
                 [
                     'branch:id,branch_code,branch_name',
                     'branches:id,branch_code,branch_name',
-                    'departments:id,department_name',
-                    'positions:id,label',
-                    'roles:id,name',
                 ]
             )
             ->where('is_active', 'active')
@@ -517,13 +565,11 @@ class UserController extends Controller
         // $per_page = $request->input('per_page', 10);
 
         $users = User::query()
+            ->select(['id','branch_id','fname', 'lname'])
             ->with(
                 [
                     'branch:id,branch_code,branch_name',
-                    'branches:id,branch_code,branch_name',
-                    'departments:id,department_name',
-                    'positions:id,label',
-                    'roles:id,name',
+                    'branches:id,branch_code,branch_name'
                 ]
             )
             ->where('is_active', 'active')
@@ -580,7 +626,6 @@ class UserController extends Controller
                         ->with(
                             [
                                 'branch:id,branch_code,branch_name',
-                                'departments:id,department_name',
                                 'positions:id,label',
                                 'roles:id,name',
                                 'employeeLastEvaluation:id,users_evaluations.employee_id,reviewTypeProbationary,reviewTypeRegular,created_at'

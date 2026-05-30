@@ -29,37 +29,47 @@ class BranchController extends Controller
         $paginate = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $all = Branch::query()->withCount(
-                [
-                    'userBranch as managers_count' =>
-                        fn($user)
-                        =>
-                        $user->where('is_active', 'active')
-                        ->whereHas(
-                            'roles',
-                            fn($r)
+        $all = Branch::query()
+                ->select(
+                    [
+                        'id',
+                        'branch_code',
+                        'branch_name',
+                        'branch',
+                        'acronym'
+                    ]
+                )
+                ->withCount(
+                    [
+                        'userBranch as managers_count' =>
+                            fn($user)
                             =>
-                            $r->where('name', "evaluator")
-                        ),
-
-                    'userBranch as employees_count' =>
-                        fn($user)
-                        =>
-                        $user->where('is_active', 'active')
+                            $user->where('is_active', 'active')
                             ->whereHas(
-                            'roles',
-                            fn($r)
+                                'roles',
+                                fn($r)
+                                =>
+                                $r->where('name', "evaluator")
+                            ),
+
+                        'userBranch as employees_count' =>
+                            fn($user)
                             =>
-                            $r->where('name', "employee")
-                        )
-                ]
-            )
-            ->when(
-                $search,
-                fn($q) =>
-                    $q->whereAny(['branch_code', 'branch_name', 'branch', 'acronym'], 'LIKE', "%{$search}%")
-            )
-            ->paginate($paginate);
+                            $user->where('is_active', 'active')
+                                ->whereHas(
+                                'roles',
+                                fn($r)
+                                =>
+                                $r->where('name', "employee")
+                            )
+                    ]
+                )
+                ->when(
+                    $search,
+                    fn($q) =>
+                        $q->whereAny(['branch_code', 'branch_name', 'branch', 'acronym'], 'LIKE', "%{$search}%")
+                )
+                ->paginate($paginate);
 
         return response()->json(
             [
