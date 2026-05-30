@@ -165,7 +165,7 @@ class BranchBasic extends FormRequest
     {
         return [
             'managerialSkillsScore1'                 => ['required', 'numeric'],
-            'managerialSkillsScore2'                 => ['required', 'numeric'],
+            'managerialSkillsScore2'                 => ['required', 'numeric'],    
             'managerialSkillsScore3'                 => ['required', 'numeric'],
             'managerialSkillsScore4'                 => ['required', 'numeric'],
             'managerialSkillsScore5'                 => ['required', 'numeric'],

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class,'user_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Branch::class,'branch_id')->constrained()->cascadeOnDelete();
-            $table->timestamps();
+            // $table->timestamps();
         });
     }
 

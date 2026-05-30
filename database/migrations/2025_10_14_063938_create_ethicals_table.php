@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\UsersEvaluaion;
 use App\Models\UsersEvaluation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,7 +18,7 @@ return new class extends Migration
             $table->integer('question_number');
             $table->integer('score');
             $table->string('explanation')->nullable();
-            $table->timestamps();
+            // $table->timestamps();
         });
     }
 

@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\HrDashboardController;
 use App\Http\Controllers\Api\MemorandumViolationController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\UsersEvaluationController;
+use App\Http\Resources\Resource\ProfileResource;
 use Illuminate\Support\Facades\Auth;
 
 //public routes
@@ -32,18 +33,20 @@ Route::get('departments', [DepartmentController::class, 'index']);
 
 //sanctum routes
 Route::get('/profile', function (Request $request) {
-   $user = $request->user()->load(
-        [
-            'roles',
-            'departments',
-            'branch',
-            'positions',
-            'notifications' => function($q) { $q->latest()->limit(15); },
-        ]
-    );
+   $user = $request->user()
+        ->load(
+            [
+                'roles',
+                'departments',
+                'branch',
+                'branches',
+                'positions',
+                'notifications' => function($q) { $q->latest()->limit(15); },
+            ]
+        );
     $counts = $user->notifications()->latest()->limit(15)->get();
     $user->notification_counts = $counts->where("read_at", null)->count();
-    return $user;
+    return new  ProfileResource($user);
 })->middleware('auth:sanctum');
 
 
