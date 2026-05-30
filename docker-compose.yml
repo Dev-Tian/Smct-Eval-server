@@ -33,6 +33,7 @@ services:
     volumes:
       - ./docker-compose/nginx/default.conf:/etc/nginx/nginx.conf
       - ./:/var/www
+      - /mnt/nvme0n1/performance-evaluation-uploads:/var/www/storage/app/public
 
     networks:
       - performance
