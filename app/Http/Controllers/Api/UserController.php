@@ -666,7 +666,7 @@ class UserController extends Controller
         }
 
         $userQuery = User::query()
-                    ->with(
+                        ->with(
                             [
                                 'branch:id,branch_code,branch_name',
                                 'branches:id,branch_code,branch_name',
@@ -675,11 +675,11 @@ class UserController extends Controller
                                 'roles:id,name',
                             ]
                         )
-                    ->where('is_active', 'active')
-                    ->whereRelation('assignedEvaluators', 'evaluator_id', $manager->id)
-                    ->when($position_filter, fn($q) => $q->whereRelation('positions','id', $position_filter))
-                    ->search($search)
-                    ->latest('id');
+                        ->where('is_active', 'active')
+                        ->whereRelation('assignedEvaluators', 'evaluator_id', $manager->id)
+                        ->when($position_filter, fn($q) => $q->whereRelation('positions','id', $position_filter))
+                        ->search($search)
+                        ->latest('id');
 
 
         $new_hires = (clone $userQuery)->whereBetween('created_at', [Carbon::now()->subDays(7), now()])->count();
