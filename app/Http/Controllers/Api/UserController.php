@@ -918,6 +918,8 @@ class UserController extends Controller
                 Notification::send($hrs, $notificationData);
             });
 
+
+
         return response()->json(
             [
                 'message' => 'Approved',
