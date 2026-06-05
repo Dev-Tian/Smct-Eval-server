@@ -25,6 +25,8 @@ Route::controller(UserController::class)->group(function () {
     Route::post('register', 'registerUser');
 });
 
+Route::post('forgot-password', [UserController::class, 'forgotPassword'])->middleware('throttle:1,1');
+
 // Route::get('getAllEvaluatorEmployees/{user}', [UserController::class, 'getAllEvaluatorEmployees']);
 
 Route::get('positions', [PositionController::class, 'index']);

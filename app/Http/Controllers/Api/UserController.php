@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ForgotPassword;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Position;
@@ -19,7 +20,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 // use App\Mail\BulkRegister;
-// use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Mail;
 
 use function Pest\Laravel\json;
 use function Symfony\Component\Clock\now;
@@ -261,6 +262,36 @@ class UserController extends Controller
                 'message' => 'Registered Successfully',
             ],
             201
+        );
+    }
+
+    //forgot-password
+    public function forgotPassword(Request $request)
+    {
+        $validated = $request->validate(
+            [
+                'email'     =>  ['required', 'email', Rule::exists('users','email')]
+            ],
+            [
+                'email.exists'  =>  'This email address is not registered'
+            ]
+        );
+        $temp_pass = Str::random(10);
+
+        $user = User::where('email', $validated['email'])->first();
+        $user->update(
+            [
+                'password'  =>  $temp_pass
+            ]
+        );
+
+        Mail::to($validated['email'])->queue( new ForgotPassword($user->fname, $user->lname, $user->username, $user->email, $temp_pass));
+
+        return response()->json(
+            [
+                'message'       =>  "Email sent successfully"
+            ]
+            ,200
         );
     }
 
