@@ -53,40 +53,19 @@
 
                                                         Please find your account details below: <br>
 
-                                                        Name: {{ $fname." ".$lname }} <br>
-                                                        Username: {{ $username }} <br>
-                                                        Email Address: {{ $email }} <br>
-                                                        Temporary Password: {{ $temporaryPassword }} <br><br>
+                                                        <b> Name: </b>{{ $fname." ".$lname }} <br>
+                                                        <b> Username: </b>{{ $username }} <br>
+                                                        <b> Email Address: </b>{{ $email }} <br>
+                                                        <b> Temporary Password: {{ $temporaryPassword }}</b> <br><br>
 
                                                         For security reasons, we strongly recommend that you sign in and change your password immediately after logging in. <br>
 
                                                         If you did not request this password reset or believe this action was performed in error, please contact our support team as soon as possible. <br>
 
-                                                        Thank you, <br><br>
+                                                        Thank you, <br>
 
                                                         Support Team
                                                     </p>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td align="center" style="padding:5px 5px 5px 5px">
-                                                    <table border="0" cellspacing="0" cellpadding="0">
-                                                        <tbody>
-                                                            <tr>
-                                                                <p style="text-align:center;">You want to Login? Click the button below ⮟</p>
-                                                            </tr>
-                                                            <tr>
-                                                                <td align="center" style="border-radius:5px"
-                                                                    bgcolor="#054EBD">
-                                                                    <a href="{https://performance-evaluation.smctgroup.ph/}"
-                                                                        style="font-size:18px;font-family:Open Sans,Helvetica,Arial,sans-serif;color:#ffffff;text-decoration:none;border-radius:5px;background-color:#054ebd;padding:15px 30px;border:1px solid #054ebd;display:block"
-                                                                        target="_blank">
-                                                                        Login
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
                                                 </td>
                                             </tr>
                                         </tbody>
