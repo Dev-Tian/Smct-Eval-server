@@ -378,7 +378,8 @@ class UserController extends Controller
                     'departments:id,department_name',
                     'positions:id,label',
                     'roles:id,name',
-                ])
+                ]
+            )
             ->whereNot('is_active', 'active')->whereNot('id', Auth::id())
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)->latest('id')
@@ -424,7 +425,8 @@ class UserController extends Controller
                     'positions:id,label',
                     'roles:id,name',
                     'assignedEvaluators:id,fname,lname,email'
-                ])
+                ]
+            )
             ->where('is_active', 'active')
             ->whereNot('id', Auth::id())
             ->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))
@@ -509,15 +511,15 @@ class UserController extends Controller
         $search = $request->input('search');
 
         $evaluators = User::select(
-                [
-                    'id',
-                    'position_id',
-                    'branch_id',
-                    'fname',
-                    'lname',
-                    'email'
-                ]
-            )
+                    [
+                        'id',
+                        'position_id',
+                        'branch_id',
+                        'fname',
+                        'lname',
+                        'email'
+                    ]
+                )
                 ->with(
                     [
                         'branch:id,branch_code,branch_name',
