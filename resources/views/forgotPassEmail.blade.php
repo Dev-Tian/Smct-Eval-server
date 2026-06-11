@@ -34,7 +34,7 @@
                                                 <td class="header"
                                                     style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; padding: 25px 0; text-align: center;">
                                                     <img src="https://bajaj.com.ph/wp-content/uploads/2021/05/bajaj-re-smct.png"
-                                                        class="logo" alt="Laravel Logo"
+                                                        class="logo" alt="Company Logo"
                                                         style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; max-width: 100%; border: none; height: 75px; max-height: 75px; width: 130px;">
                                                 </td>
                                             </tr>
@@ -47,9 +47,9 @@
                                                     </h1>
                                                     <p
                                                         style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif">
-                                                        Dear {{ $fname." ".$lname }}, <br>
+                                                        Dear {{ $fname." ".$lname }}, <br><br>
 
-                                                        Your password has been successfully reset as requested. <br>
+                                                        Your password has been successfully reset as requested. <br><br>
 
                                                         Please find your account details below: <br>
 
@@ -58,9 +58,9 @@
                                                         <b> Email Address: </b>{{ $email }} <br>
                                                         <b> Temporary Password: {{ $temporaryPassword }}</b> <br><br>
 
-                                                        For security reasons, we strongly recommend that you sign in and change your password immediately after logging in. <br>
+                                                        For security reasons, we strongly recommend that you sign in and change your password immediately after logging in. <br><br>
 
-                                                        If you did not request this password reset or believe this action was performed in error, please contact our support team as soon as possible. <br>
+                                                        If you did not request this password reset or believe this action was performed in error, please contact our support team as soon as possible. <br><br>
 
                                                         Thank you, <br>
 

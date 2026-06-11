@@ -45,9 +45,9 @@ class EmployeeDashboardController extends Controller
         $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->whereNotNull("rating")->sum('rating') ?: 0;
         $average = empty(!$total_evaluations) ? round($sum_ratings / $total_evaluations, 2) : 0;
         $recent_evaluation = UsersEvaluation::where('employee_id', $user->id)
-            ->latest('created_at')
-            ->select('id', 'rating')
-            ->first();
+                            ->latest('created_at')
+                            ->select('id', 'rating')
+                            ->first();
         $highest_rating = UsersEvaluation::where('employee_id', $user->id)
             ->max('rating');
 
