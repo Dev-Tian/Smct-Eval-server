@@ -3,26 +3,29 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
+// use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class BulkRegister extends Mailable
+class ForgotPassword extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(
+    public function __construct
+    (
         public string $fname = "",
         public string $lname = "",
         public string $username = "",
         public string $email = "",
-        public string $password = "" )
+        public string $temporaryPassword = ""
+    )
     {
-
+        //
     }
 
     /**
@@ -31,7 +34,7 @@ class BulkRegister extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Performance Evaluation - Account Access',
+            subject: 'Reset Password Request',
         );
     }
 
@@ -41,13 +44,13 @@ class BulkRegister extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'bulkEmail',
+            view: 'forgotPassEmail',
             with: [
                 $this->fname,
                 $this->lname,
                 $this->username,
                 $this->email,
-                $this->password
+                $this->temporaryPassword
             ]
         );
     }

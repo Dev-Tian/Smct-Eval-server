@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ForgotPassword;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Position;
@@ -19,7 +20,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 // use App\Mail\BulkRegister;
-// use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Mail;
 
 use function Pest\Laravel\json;
 use function Symfony\Component\Clock\now;
@@ -264,6 +265,36 @@ class UserController extends Controller
         );
     }
 
+    //forgot-password
+    public function forgotPassword(Request $request)
+    {
+        $validated = $request->validate(
+            [
+                'email'     =>  ['required', 'email', Rule::exists('users','email')]
+            ],
+            [
+                'email.exists'  =>  'This email address is not registered'
+            ]
+        );
+        $temp_pass = Str::random(10);
+
+        $user = User::where('email', $validated['email'])->first();
+        $user->update(
+            [
+                'password'  =>  $temp_pass
+            ]
+        );
+
+        Mail::to($validated['email'])->queue( new ForgotPassword($user->fname, $user->lname, $user->username, $user->email, $temp_pass));
+
+        return response()->json(
+            [
+                'message'       =>  "Email sent successfully"
+            ]
+            ,200
+        );
+    }
+
     //Auth
     public function userLogin(Request $request)
     {
@@ -347,7 +378,8 @@ class UserController extends Controller
                     'departments:id,department_name',
                     'positions:id,label',
                     'roles:id,name',
-                ])
+                ]
+            )
             ->whereNot('is_active', 'active')->whereNot('id', Auth::id())
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)->latest('id')
@@ -393,7 +425,8 @@ class UserController extends Controller
                     'positions:id,label',
                     'roles:id,name',
                     'assignedEvaluators:id,fname,lname,email'
-                ])
+                ]
+            )
             ->where('is_active', 'active')
             ->whereNot('id', Auth::id())
             ->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))
@@ -478,15 +511,15 @@ class UserController extends Controller
         $search = $request->input('search');
 
         $evaluators = User::select(
-                [
-                    'id',
-                    'position_id',
-                    'branch_id',
-                    'fname',
-                    'lname',
-                    'email'
-                ]
-            )
+                    [
+                        'id',
+                        'position_id',
+                        'branch_id',
+                        'fname',
+                        'lname',
+                        'email'
+                    ]
+                )
                 ->with(
                     [
                         'branch:id,branch_code,branch_name',
@@ -666,7 +699,7 @@ class UserController extends Controller
         }
 
         $userQuery = User::query()
-                    ->with(
+                        ->with(
                             [
                                 'branch:id,branch_code,branch_name',
                                 'branches:id,branch_code,branch_name',
@@ -675,11 +708,11 @@ class UserController extends Controller
                                 'roles:id,name',
                             ]
                         )
-                    ->where('is_active', 'active')
-                    ->whereRelation('assignedEvaluators', 'evaluator_id', $manager->id)
-                    ->when($position_filter, fn($q) => $q->whereRelation('positions','id', $position_filter))
-                    ->search($search)
-                    ->latest('id');
+                        ->where('is_active', 'active')
+                        ->whereRelation('assignedEvaluators', 'evaluator_id', $manager->id)
+                        ->when($position_filter, fn($q) => $q->whereRelation('positions','id', $position_filter))
+                        ->search($search)
+                        ->latest('id');
 
 
         $new_hires = (clone $userQuery)->whereBetween('created_at', [Carbon::now()->subDays(7), now()])->count();
@@ -917,6 +950,8 @@ class UserController extends Controller
             ->chunk(100, function ($hrs) use ($notificationData) {
                 Notification::send($hrs, $notificationData);
             });
+
+
 
         return response()->json(
             [
