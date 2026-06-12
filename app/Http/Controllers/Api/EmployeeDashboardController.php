@@ -49,7 +49,7 @@ class EmployeeDashboardController extends Controller
                             ->select('id', 'rating')
                             ->first();
         $highest_rating = UsersEvaluation::where('employee_id', $user->id)
-            ->max('rating');
+                            ->max('rating');
 
         return response()->json(
             [

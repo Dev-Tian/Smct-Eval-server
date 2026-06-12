@@ -995,6 +995,14 @@ class UsersEvaluationController extends Controller
      */
     public function destroy(UsersEvaluation $usersEvaluation)
     {
+        if($usersEvaluation->status === "completed" || $usersEvaluation->employeeApprovedAt !== null){
+            return response()->json(
+                [
+                    'message'       =>  "This evaluation can’t be deleted because both parties have approved it. Please refresh to view the latest updates."
+                ]
+                ,400
+            );
+        }
         $usersEvaluation->delete();
 
         return response()->json(
