@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Mail\ForgotPassword;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Position;
@@ -21,7 +20,6 @@ use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 // use App\Mail\BulkRegister;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\RateLimiter;
 
 use function Pest\Laravel\json;
 use function Symfony\Component\Clock\now;
@@ -108,7 +106,14 @@ class UserController extends Controller
                 ],
             );
 
-            $isUserExist = User::where('fname', $item['fname'])->where('lname', $item['lname'])->where('email', $item['email'])->exists();
+            $isUserExist = User::where(
+            fn($q)
+            =>
+            $q->where('fname', $item['fname'])
+                ->where('lname', $item['lname'])
+                ->where('email', $item['email'])
+            )
+            ->exists();
 
             if (!$isUserExist) {
                 $user[] =
@@ -265,55 +270,6 @@ class UserController extends Controller
             201
         );
     }
-
-    //forgot-password
-    public function forgotPassword(Request $request)
-    {
-        $validated = $request->validate(
-            [
-                'email'     =>  ['required', 'email', Rule::exists('users','email')]
-            ],
-            [
-                'email.exists'  =>  'This email address is not registered'
-            ]
-        );
-
-        $key = 'action:' . $request->ip();
-
-        if (RateLimiter::tooManyAttempts($key, 1)) {
-            return response()->json([
-                'message' => 'Too many attempts.'
-            ], 429);
-        }
-
-        try {
-            $temp_pass = Str::random(10);
-
-            $user = User::where('email', $validated['email'])->first();
-            $result = $user->update(
-                [
-                    'password'  =>  $temp_pass
-                ]
-            );
-
-            Mail::to($validated['email'])->queue( new ForgotPassword($user->fname, $user->lname, $user->username, $user->email, $temp_pass));
-
-            if ($result) {
-                RateLimiter::hit($key, 60);
-            }
-
-            return response()->json(
-                [
-                    'message'       =>  "Email sent successfully"
-                ]
-                ,200
-            );
-        } catch (\Throwable $e) {
-            // don't hit throttle
-            return response()->json(['message' => 'Error'], 500);
-        }
-    }
-
 
     //Auth
     public function userLogin(Request $request)

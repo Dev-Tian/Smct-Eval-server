@@ -22,7 +22,7 @@ class ForgotPassword extends Mailable
         public string $lname = "",
         public string $username = "",
         public string $email = "",
-        public string $temporaryPassword = ""
+        public string $otp = ""
     )
     {
         //
@@ -50,7 +50,7 @@ class ForgotPassword extends Mailable
                 $this->lname,
                 $this->username,
                 $this->email,
-                $this->temporaryPassword
+                $this->otp
             ]
         );
     }

@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\EvaluatorDashboardController;
 use App\Http\Controllers\Api\HrDashboardController;
 use App\Http\Controllers\Api\MemorandumViolationController;
 use App\Http\Controllers\Api\NotificationsController;
+use App\Http\Controllers\Api\OtpController;
 use App\Http\Controllers\Api\UsersEvaluationController;
 use App\Http\Resources\ProfileResource;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +26,8 @@ Route::controller(UserController::class)->group(function () {
     Route::post('register', 'registerUser');
 });
 
-Route::post('forgot-password', [UserController::class, 'forgotPassword']);
+Route::post('forgot-password/send-otp', [OtpController::class, 'otpRequest']);
+Route::post('forgot-password/verify-otp', [OtpController::class, 'otpVerify']);
 
 // Route::get('getAllEvaluatorEmployees/{user}', [UserController::class, 'getAllEvaluatorEmployees']);
 
@@ -126,7 +128,6 @@ Route::middleware('auth:sanctum')->group(
             }
         );
 
-
         Route::controller(DepartmentController::class)->group(
             function () {
                 Route::get('getTotalEmployeesDepartments', 'getTotalEmployeesDepartments');
@@ -176,3 +177,4 @@ Route::middleware('auth:sanctum')->group(
         });
     }
 );
+

@@ -995,22 +995,25 @@ class UsersEvaluationController extends Controller
      */
     public function destroy(UsersEvaluation $usersEvaluation)
     {
-        if($usersEvaluation->status === "completed" || $usersEvaluation->employeeApprovedAt !== null){
+        $authUser = Auth::user();
+        if(($usersEvaluation->status !== "completed" && $usersEvaluation->employeeApprovedAt === null) || $authUser->roles->name === "admin"){
+             $usersEvaluation->delete();
+
             return response()->json(
                 [
-                    'message'       =>  "This evaluation can’t be deleted because both parties have approved it. Please refresh to view the latest updates."
-                ]
-                ,400
+                    'message' => 'Deleted Successfully',
+                ],
+                200
             );
         }
-        $usersEvaluation->delete();
 
         return response()->json(
             [
-                'message' => 'Deleted Successfully',
-            ],
-            200
+                'message'       =>  "This evaluation can’t be deleted because both parties have approved it. Please refresh to view the latest updates."
+            ]
+            ,400
         );
+
     }
 
     public function getAllYears()

@@ -43,24 +43,28 @@
                                                     style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; max-width: 100vw; padding: 32px;">
                                                     <h1
                                                         style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; color: #3d4852; font-size: 18px; font-weight: bold; margin-top: 0; text-align: left;">
-                                                        RESET PASSWORD REQUEST!
+                                                        OTP REQUEST!
                                                     </h1>
                                                     <p
                                                         style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif">
                                                         Dear {{ $fname." ".$lname }}, <br><br>
 
-                                                        Your password has been successfully reset as requested. <br><br>
+                                                        You recently requested a One-Time Password (OTP) for your account.
+
+
+                                                        <b> Your OTP is: {{ $otp }}</b> <br><br>
+
+                                                        This code will expire in 3 minutes. Please use it promptly to complete your verification or transaction. <br> <br>
 
                                                         Please find your account details below: <br>
 
                                                         <b> Name: </b>{{ $fname." ".$lname }} <br>
                                                         <b> Username: </b>{{ $username }} <br>
-                                                        <b> Email Address: </b>{{ $email }} <br>
-                                                        <b> Temporary Password: {{ $temporaryPassword }}</b> <br><br>
+                                                        <b> Email Address: </b>{{ $email }} <br><br>
 
                                                         For security reasons, we strongly recommend that you sign in and change your password immediately after logging in. <br><br>
 
-                                                        If you did not request this password reset or believe this action was performed in error, please contact our support team as soon as possible. <br><br>
+                                                        If you did not request this OTP, please ignore this email or contact our support team immediately. <br><br>
 
                                                         Thank you, <br>
 
