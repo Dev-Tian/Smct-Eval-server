@@ -29,8 +29,6 @@ Route::controller(UserController::class)->group(function () {
 Route::post('forgot-password/send-otp', [OtpController::class, 'otpRequest']);
 Route::post('forgot-password/verify-otp', [OtpController::class, 'otpVerify']);
 
-// Route::get('getAllEvaluatorEmployees/{user}', [UserController::class, 'getAllEvaluatorEmployees']);
-
 Route::get('positions', [PositionController::class, 'index']);
 Route::get('branches', [BranchController::class, 'index']);
 Route::get('departments', [DepartmentController::class, 'index']);
@@ -153,6 +151,11 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('markAllAsRead', 'markAllAsRead');
             }
         );
+
+        // assign direct/indirectEvaluation
+        Route::post('setAsInDirect/{user}', [UserController::class, 'setEvaluatorAsIndirect']);
+        Route::post('setAsDirect/{user}', [UserController::class, 'setEvaluatorAsDirect']);
+
 
         //Dashboards
         Route::get('adminDashboard', [AdminDashboardController::class, 'index']);
