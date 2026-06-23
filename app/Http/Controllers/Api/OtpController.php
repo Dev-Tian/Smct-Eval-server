@@ -113,11 +113,12 @@ class OtpController extends Controller
         $role = $userAuth->getRoleNames();
 
         return response()->json(
-                [
-                    'role'      => $role,
-                    'message'   => 'Login successful. Redirecting you to Dashboard',
-                ]
-                ,200
-            );
+            [
+                'role'      => $role,
+                'message'   => 'Login successful. Redirecting you to Dashboard',
+            ]
+            ,200
+        );
     }
+
 }

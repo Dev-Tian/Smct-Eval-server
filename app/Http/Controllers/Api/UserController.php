@@ -504,7 +504,12 @@ class UserController extends Controller
                     ]
                 )
                 ->where( fn($q) => $q->whereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
-                ->where('is_active', 'active')
+                ->where(
+                    fn($q)
+                    =>
+                    $q->where('is_active', 'active')
+                    ->whereNot('id',Auth::id())
+                )
                 ->whereRelation('roles', fn($w) => $w->where(fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr')))
                 ->search($search)
                 ->paginate($per_page);
