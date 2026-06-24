@@ -146,15 +146,13 @@ class UsersEvaluationController extends Controller
         $auth_user_evaluator = Auth::user();
 
         $status = '';
-        $head_eval = null;
 
         $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
 
         if(!empty($eval_head) || !$eval_head == null){
             $status = EvalStatus::draft;
-            $head_eval = $eval_head;
         }else{
-                $status = EvalStatus::pending;
+            $status = EvalStatus::pending;
 
         }
 
@@ -299,15 +297,13 @@ class UsersEvaluationController extends Controller
         $auth_user_evaluator = Auth::user();
 
         $status = '';
-        $head_eval = null;
 
         $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
 
         if(!empty($eval_head) || !$eval_head == null){
             $status = EvalStatus::draft;
-            $head_eval = $eval_head;
         }else{
-                $status = EvalStatus::pending;
+            $status = EvalStatus::pending;
 
         }
 
@@ -449,15 +445,13 @@ class UsersEvaluationController extends Controller
         $auth_user_evaluator = Auth::user();
 
         $status = '';
-        $head_eval = null;
 
         $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
 
         if(!empty($eval_head) || !$eval_head == null){
             $status = EvalStatus::draft;
-            $head_eval = $eval_head;
         }else{
-                $status = EvalStatus::pending;
+            $status = EvalStatus::pending;
 
         }
 
@@ -618,16 +612,13 @@ class UsersEvaluationController extends Controller
         $auth_user_evaluator = Auth::user();
 
         $status = '';
-        $head_eval = null;
 
         $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
 
         if(!empty($eval_head) || !$eval_head == null){
             $status = EvalStatus::draft;
-            $head_eval = $eval_head;
         }else{
-                $status = EvalStatus::pending;
-
+            $status = EvalStatus::pending;
         }
 
         $evalDateFrom = $validated['coverageFrom'];
@@ -761,16 +752,13 @@ class UsersEvaluationController extends Controller
         $auth_user_evaluator = Auth::user();
 
         $status = '';
-        $head_eval = null;
 
         $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
 
         if(!empty($eval_head) || !$eval_head == null){
             $status = EvalStatus::draft;
-            $head_eval = $eval_head;
         }else{
-                $status = EvalStatus::pending;
-
+            $status = EvalStatus::pending;
         }
 
         $evalDateFrom = $validated['coverageFrom'];
@@ -1009,7 +997,7 @@ class UsersEvaluationController extends Controller
                 ]
             )
             ->where('evaluator_id', $user->id)
-            ->where('evaluator_head_id', $user->id)
+            ->orWhere('evaluator_head_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
