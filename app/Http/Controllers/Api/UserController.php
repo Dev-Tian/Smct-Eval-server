@@ -634,38 +634,17 @@ class UserController extends Controller
         $perPage = $request->input('per_page', 10);
         $search = $request->input('search');
 
-        $evaluatorId = $user->id;
-
-        $employees =
-                     User::query()
-                        ->select(['id','fname','lname','position_id','branch_id', 'email'])
+        $employees = $user->assignedEmployees()
                         ->with(
                             [
                                 'branch:id,branch_code,branch_name',
                                 'positions:id,label',
                                 'roles:id,name',
                                 'employeeLastEvaluation:id,users_evaluations.employee_id,reviewTypeProbationary,reviewTypeRegular,created_at',
-                                'assignedEvaluators'
                             ]
                         )
-                        ->whereRelation('assignedEvaluators', 'evaluator_id', $evaluatorId)
                         ->search($search)
                         ->latest('id')
-                        ->paginate($perPage);
-
-        $employees1 = DB::table('assigned_user')
-                        ->join('users', 'users.id', '=', 'evaluator_id')
-                        // ->load(
-                        //     [
-                        //         'branch:id,branch_code,branch_name',
-                        //         'positions:id,label',
-                        //         'roles:id,name',
-                        //         'employeeLastEvaluation:id,users_evaluations.employee_id,reviewTypeProbationary,reviewTypeRegular,created_at',
-                        //         'assignedEvaluators'
-                        //     ]
-                        // )
-                        // ->select(['id','fname','lname','position_id','branch_id', 'email'])
-                        ->where('evaluator_id', $user->id)
                         ->paginate($perPage);
 
         return response()->json(
