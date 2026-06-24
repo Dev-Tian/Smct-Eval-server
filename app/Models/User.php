@@ -96,12 +96,14 @@ class User extends Authenticatable
 
     public function assignedEmployees(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'assigned_user', 'evaluator_id', 'employee_id');
+        return $this->belongsToMany(User::class, 'assigned_user', 'evaluator_id', 'employee_id')
+                    ->withPivot('isIndirectEvaluator');
     }
 
     public function assignedEvaluators(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'assigned_user',  'employee_id', 'evaluator_id');
+        return $this->belongsToMany(User::class, 'assigned_user',  'employee_id', 'evaluator_id')
+                    ->withPivot('isIndirectEvaluator');
     }
 
     public function employeeLastEvaluation(): HasOne

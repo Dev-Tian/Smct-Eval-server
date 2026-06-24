@@ -156,7 +156,6 @@ Route::middleware('auth:sanctum')->group(
         Route::post('setAsInDirect/{user}', [UserController::class, 'setEvaluatorAsIndirect']);
         Route::post('setAsDirect/{user}', [UserController::class, 'setEvaluatorAsDirect']);
 
-
         //Dashboards
         Route::get('adminDashboard', [AdminDashboardController::class, 'index']);
         Route::get('evaluatorDashboard', [EvaluatorDashboardController::class, 'index']);
