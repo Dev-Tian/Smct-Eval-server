@@ -142,7 +142,7 @@ class UsersEvaluationController extends Controller
         if(!empty($validated['reviewTypeRegular']))
         {
 
-        [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
            {
                 "Q1"    =>  QuarterDateRange::Q1->range(),
                 "Q2"    =>  QuarterDateRange::Q2->range(),

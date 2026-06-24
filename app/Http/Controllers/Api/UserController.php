@@ -1086,17 +1086,9 @@ class UserController extends Controller
 
             $user->assignedEmployees()->sync($employeeIds);
 
-            $user_ids = User::whereIn('id',$employeeIds)
-                        ->whereRelation('roles', 'name', 'employee')
-                        ->pluck('id')
-                        ->toArray();
-
-            DB::table('assigned_user')->whereIn('employee_id', $user_ids)->update(['isIndirectEvaluator' => null]);
-
-
             return response()->json(
                 [
-                    'message'   =>  "success",
+                    'message'   =>  "success"
                 ]
                 ,201
             );
