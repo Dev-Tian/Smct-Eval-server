@@ -44,7 +44,7 @@ class EvaluatorDashboardController extends Controller
                 ]
             )
             ->where('evaluator_id', $user->id)
-            ->orWhere('evaluator_head_id ', $user->id)
+            ->orWhere('evaluator_head_id', $user->id)
             ->search($search)
             ->when($status,  fn($q)  =>  $q->where('status', $status))
             ->when($quarter, fn($q)  =>  $q->where('quarter_of_submission_id', $quarter))
