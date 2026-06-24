@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 // use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -504,7 +505,12 @@ class UserController extends Controller
                     ]
                 )
                 ->where( fn($q) => $q->whereNot('fname' ,'HR')->orWhereNot('lname' ,'Administrator')->orWhereNot('email' ,'hr@smct.com'))
-                ->where('is_active', 'active')
+                ->where(
+                    fn($q)
+                    =>
+                    $q->where('is_active', 'active')
+                    ->whereNot('id',Auth::id())
+                )
                 ->whereRelation('roles', fn($w) => $w->where(fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr')))
                 ->search($search)
                 ->paginate($per_page);
@@ -1024,6 +1030,54 @@ class UserController extends Controller
             ]
             ,200
         );
+    }
+
+    public function setEvaluatorAsIndirect(User $user, Request $request)
+    {
+        $Ids = $request->employee_ids;
+            $employeeIds = is_array($Ids)
+                ? $Ids
+                : explode(',', $Ids);
+
+          DB::table('assigned_user')
+            ->where('evaluator_id', $user->id)
+            ->whereIn('employee_id', $employeeIds)
+            ->update(
+                [
+                    'isIndirectEvaluator'       => true
+                ]
+            );
+
+            return response()->json(
+                [
+                    'message'   =>  "success"
+                ]
+                ,201
+            );
+    }
+
+    public function setEvaluatorAsDirect(User $user, Request $request)
+    {
+        $Ids = $request->employee_ids;
+            $employeeIds = is_array($Ids)
+                ? $Ids
+                : explode(',', $Ids);
+
+          DB::table('assigned_user')
+            ->where('evaluator_id', $user->id)
+            ->whereIn('employee_id', $employeeIds)
+            ->update(
+                [
+                    'isIndirectEvaluator'       => false
+                ]
+            );
+
+            return response()->json(
+                [
+                    'message'   =>  "success"
+                ]
+                ,201
+            );
     }
 
     public function assignEmployees(User $user, Request $request)
