@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MemorandumViolation extends Model
 {
-    protected function casts(): array
-    {
-        return [
-            'violation_date' => 'datetime',
-        ];
-    }
+    // protected function casts(): array
+    // {
+    //     return [
+    //         'violation_date' => 'datetime',
+    //     ];
+    // }
     protected $guarded = [];
 
     public function user(): BelongsTo
