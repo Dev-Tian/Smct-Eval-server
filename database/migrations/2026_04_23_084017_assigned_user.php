@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class, 'evaluator_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(User::class, 'employee_id')->constrained()->cascadeOnDelete();
-            $table->boolean('isIndirectEvaluator')->default(false);
+            $table->boolean('isIndirectEvaluator')->nullable()->default(false);
             });
     }
 
