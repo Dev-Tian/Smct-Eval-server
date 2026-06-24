@@ -70,12 +70,12 @@ class BranchRankNFile extends FormRequest
             'qualityOfWorkScore2'                   => ['required', 'numeric'],
             'qualityOfWorkScore3'                   => ['required', 'numeric'],
             'qualityOfWorkScore4'                   => ['required', 'numeric'],
-            'qualityOfWorkScore5'                   => ['required', 'numeric'],
+            'qualityOfWorkScore5'                   => ['nullable', 'numeric'],
             'qualityOfWorkComments1'                => ['required', 'string'],
             'qualityOfWorkComments2'                => ['required', 'string'],
             'qualityOfWorkComments3'                => ['required', 'string'],
             'qualityOfWorkComments4'                => ['required', 'string'],
-            'qualityOfWorkComments5'                => ['required', 'string'],
+            'qualityOfWorkComments5'                => ['nullable', 'string'],
         ];
     }
 
