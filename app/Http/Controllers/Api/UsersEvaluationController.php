@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enum\EvalStatus;
 use App\Enum\QuarterDateRange;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BranchBasic;
@@ -36,6 +37,8 @@ class UsersEvaluationController extends Controller
             $branches = array_merge(explode(',',$request->input('branch'))) ;
         }
 
+        $isHr = Auth::user()->hasRole('hr');
+
         $all_evaluations = UsersEvaluation::query()
             ->with(
                 [
@@ -50,6 +53,7 @@ class UsersEvaluationController extends Controller
                     'evaluator.positions:id,label',
                     'evaluator.roles:id,name',
                 ])
+            ->when($isHr, fn($q) => $q->whereIn('status', [EvalStatus::pending, EvalStatus::completed]))
             ->search($search)
             ->when($status,  fn($q) => $q->where('status', $status))
             ->when($quarter, fn($q) => $q->where(fn($sub) => $sub->where('reviewTypeRegular', $quarter)->orWhere('reviewTypeProbationary', $quarter)))
@@ -132,9 +136,27 @@ class UsersEvaluationController extends Controller
      * Store a newly created resource in storage.
      */
 
+    public function IndirectEvaluatorsHead(int $id)
+    {
+           return DB::table('assigned_user')->where('employee_id', $id)->where('isIndirectEvaluator', true)->value('evaluator_id');
+    }
+
     public function BranchRankNFile(BranchRankNFile $validated, User $user)
     {
         $auth_user_evaluator = Auth::user();
+
+        $status = '';
+        $head_eval = null;
+
+        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
+
+        if(!empty($eval_head) || !$eval_head == null){
+            $status = EvalStatus::draft;
+            $head_eval = $eval_head;
+        }else{
+                $status = EvalStatus::pending;
+
+        }
 
         $evalDateFrom = $validated['coverageFrom'];
         $evalDateTo = $validated['coverageTo'];
@@ -155,6 +177,7 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
+                'evaluator_head_id'             => $eval_head,
                 'evaluationType'                => 'BranchRankNFile',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -169,6 +192,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
+                'status'                        => $status
             ]
         );
 
@@ -274,6 +298,19 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
+        $status = '';
+        $head_eval = null;
+
+        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
+
+        if(!empty($eval_head) || !$eval_head == null){
+            $status = EvalStatus::draft;
+            $head_eval = $eval_head;
+        }else{
+                $status = EvalStatus::pending;
+
+        }
+
         $evalDateFrom = $validated['coverageFrom'];
         $evalDateTo = $validated['coverageTo'];
 
@@ -292,6 +329,7 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
+                'evaluator_head_id'             => $eval_head,
                 'evaluationType'                => 'BranchBasicAreaManager',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -306,6 +344,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
+                'status'                        => $status
             ]
         );
 
@@ -409,6 +448,19 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
+        $status = '';
+        $head_eval = null;
+
+        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
+
+        if(!empty($eval_head) || !$eval_head == null){
+            $status = EvalStatus::draft;
+            $head_eval = $eval_head;
+        }else{
+                $status = EvalStatus::pending;
+
+        }
+
         $evalDateFrom = $validated['coverageFrom'];
         $evalDateTo = $validated['coverageTo'];
 
@@ -428,6 +480,7 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
+                'evaluator_head_id'             => $eval_head,
                 'evaluationType'                => 'BranchBasic',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -442,6 +495,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
+                'status'                        => $status
             ]
         );
 
@@ -563,6 +617,19 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
+        $status = '';
+        $head_eval = null;
+
+        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
+
+        if(!empty($eval_head) || !$eval_head == null){
+            $status = EvalStatus::draft;
+            $head_eval = $eval_head;
+        }else{
+                $status = EvalStatus::pending;
+
+        }
+
         $evalDateFrom = $validated['coverageFrom'];
         $evalDateTo = $validated['coverageTo'];
 
@@ -582,6 +649,7 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
+                'evaluator_head_id'             => $eval_head,
                 'evaluationType'                => 'HoRankNFile',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -596,6 +664,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
+                'status'                        => $status
             ]
         );
 
@@ -691,6 +760,19 @@ class UsersEvaluationController extends Controller
     {
         $auth_user_evaluator = Auth::user();
 
+        $status = '';
+        $head_eval = null;
+
+        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
+
+        if(!empty($eval_head) || !$eval_head == null){
+            $status = EvalStatus::draft;
+            $head_eval = $eval_head;
+        }else{
+                $status = EvalStatus::pending;
+
+        }
+
         $evalDateFrom = $validated['coverageFrom'];
         $evalDateTo = $validated['coverageTo'];
 
@@ -710,6 +792,7 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
+                'evaluator_head_id'             => $eval_head,
                 'evaluationType'                => 'HoBasic',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -724,6 +807,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
                 'evaluatorApprovedAt'           => Carbon::now(),
+                'status'                        => $status
             ]
         );
 
@@ -867,6 +951,7 @@ class UsersEvaluationController extends Controller
                 'customerServices'
             ])
             ->where('employee_id', $user->id)
+            ->whereIn('status', [EvalStatus::pending, EvalStatus::completed])
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
@@ -902,6 +987,7 @@ class UsersEvaluationController extends Controller
         $year = $request->input('year');
 
         $user = Auth::user();
+
         $user_eval = UsersEvaluation::query()
             ->with(
                 [
@@ -923,6 +1009,7 @@ class UsersEvaluationController extends Controller
                 ]
             )
             ->where('evaluator_id', $user->id)
+            ->where('evaluator_head_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
