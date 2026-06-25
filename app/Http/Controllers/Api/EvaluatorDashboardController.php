@@ -23,6 +23,7 @@ class EvaluatorDashboardController extends Controller
         // Eval approvals
         $total_pending = UsersEvaluation::where('evaluator_id', $user->id)->where('status', 'pending')->whereNotNull('rating')->count() ?: 0;
         $total_approved = UsersEvaluation::where('evaluator_id', $user->id)->where('status', 'completed')->whereNotNull('rating')->count() ?: 0;
+        $total_employees = Auth::user()->assignedEmployees()->count() ?: 0;
 
         $page = $request->input('per_page', 10);
         $search = $request->input('search');
@@ -43,7 +44,7 @@ class EvaluatorDashboardController extends Controller
                     'customerServices'
                 ]
             )
-            ->where( fn($q)=> $q->where('evaluator_id', $user->id)->orWhere('evaluator_head_id', $user->id))
+            ->orWhereAny(['evaluator_id','evaluator_head_id'], $user->id)
             ->search($search)
             ->when($status,  fn($q)  =>  $q->where('status', $status))
             ->when($quarter, fn($q)  =>  $q->where('quarter_of_submission_id', $quarter))
@@ -57,6 +58,7 @@ class EvaluatorDashboardController extends Controller
                 'team_average'                => $team_average,
                 'total_pending'               => $total_pending,
                 'total_approved'              => $total_approved,
+                'total_employees'             => $total_employees,
                 'myEval_as_Evaluator'         => $user_eval
             ],
             200

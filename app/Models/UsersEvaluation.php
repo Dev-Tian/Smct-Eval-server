@@ -31,6 +31,11 @@ class UsersEvaluation extends Model
         return $this->belongsTo(User::class, 'evaluator_id');
     }
 
+    public function evaluatorsHead(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'evaluator_head_id');
+    }
+
     public function jobKnowledge(): HasMany
     {
         return $this->hasMany(JobKnowledge::class, 'users_evaluation_id');

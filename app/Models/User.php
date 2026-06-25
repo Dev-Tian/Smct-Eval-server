@@ -84,6 +84,11 @@ class User extends Authenticatable
         return $this->hasMany(UsersEvaluation::class, 'evaluator_id');
     }
 
+    public function doesEvaluatorsHead(): HasMany
+    {
+        return $this->hasMany(UsersEvaluation::class, 'evaluator_head_id');
+    }
+
     public function memos(): HasMany
     {
         return $this->hasMany(MemorandumViolation::class, 'evaluator_id');

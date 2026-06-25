@@ -996,15 +996,14 @@ class UsersEvaluationController extends Controller
                     'customerServices'
                 ]
             )
-            ->where('evaluator_id', $user->id)
-            ->orWhere('evaluator_head_id', $user->id)
+            ->orWhereAny(['evaluator_id','evaluator_head_id'], $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
                 $quarter,
                 fn($q) => $q->where(function ($subq) use ($quarter) {
                     match ($quarter) {
-                        'Others'    => $subq->whereNot('reviewTypeOthersImprovement', 0)->orWhereNotNull('reviewTypeOthersCustom'),
+                        'Others'    => $subq->whereNot('reviewTypeOthersImprovement', false)->orWhereNotNull('reviewTypeOthersCustom'),
                         default     => $subq->where('reviewTypeProbationary', $quarter)->orWhere('reviewTypeRegular', $quarter),
                     };
                 }),
