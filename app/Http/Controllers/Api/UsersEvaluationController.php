@@ -1087,7 +1087,23 @@ class UsersEvaluationController extends Controller
             ]
             ,400
         );
+    }
 
+    public function acceptDraftEvaluation(UsersEvaluation $usersEvaluation)
+    {
+        $usersEvaluation->update(
+            [
+                'headApprovedAt'        =>  now(),
+                'status'                =>  EvalStatus::pending
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'       =>  'Approval Successfully'
+            ]
+            ,201
+        );
     }
 
     public function getAllYears()
