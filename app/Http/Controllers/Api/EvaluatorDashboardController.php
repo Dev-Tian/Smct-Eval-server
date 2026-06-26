@@ -33,8 +33,11 @@ class EvaluatorDashboardController extends Controller
 
         $user_eval = UsersEvaluation::with(
                 [
-                    'employee',
-                    'evaluator',
+                    'employee:id,position_id,branch_id,fname,lname,emp_id,contact,date_hired,signature',
+                    'employee.branch:id,branch_code,branch_name',
+                    'employee.positions:id,label',
+                    'evaluator:id,fname,lname,signature',
+                    'evaluatorsHead:id,fname,lname,signature',
                     'jobKnowledge',
                     'adaptability',
                     'qualityOfWorks',

@@ -42,17 +42,13 @@ class UsersEvaluationController extends Controller
         $all_evaluations = UsersEvaluation::query()
             ->with(
                 [
-                    'employee',
+                    'employee:id,position_id,branch_id,fname,lname,emp_id,contact,date_hired,signature',
                     'employee.branch:id,branch_code,branch_name',
-                    'employee.branches:id,branch_code,branch_name',
                     'employee.positions:id,label',
-                    'employee.roles:id,name',
-                    'evaluator',
-                    'evaluator.branch:id,branch_code,branch_name',
-                    'evaluator.branches:id,branch_code,branch_name',
-                    'evaluator.positions:id,label',
-                    'evaluator.roles:id,name',
-                ])
+                    'evaluator:id,fname,lname,signature',
+                    'evaluatorsHead:id,fname,lname,signature',
+                ]
+            )
             ->when($isHr, fn($q) => $q->whereIn('status', [EvalStatus::pending, EvalStatus::completed]))
             ->search($search)
             ->when($status,  fn($q) => $q->where('status', $status))
@@ -921,23 +917,21 @@ class UsersEvaluationController extends Controller
 
         $user = Auth::user();
         $user_eval = UsersEvaluation::with(
-            [
-                'employee',
-                'employee.branches',
-                'employee.branch',
-                'employee.positions',
-                'evaluator',
-                'evaluator.branches',
-                'evaluator.branch',
-                'evaluator.positions',
-                'jobKnowledge',
-                'adaptability',
-                'qualityOfWorks',
-                'teamworks',
-                'reliabilities',
-                'ethicals',
-                'customerServices'
-            ])
+                [
+                    'employee:id,position_id,branch_id,fname,lname,emp_id,contact,date_hired,signature',
+                    'employee.branch:id,branch_code,branch_name',
+                    'employee.positions:id,label',
+                    'evaluator:id,fname,lname,signature',
+                    'evaluatorsHead:id,fname,lname,signature',
+                    'jobKnowledge',
+                    'adaptability',
+                    'qualityOfWorks',
+                    'teamworks',
+                    'reliabilities',
+                    'ethicals',
+                    'customerServices'
+                ]
+            )
             ->where('employee_id', $user->id)
             ->whereIn('status', [EvalStatus::pending, EvalStatus::completed])
             ->search($search)
@@ -979,14 +973,11 @@ class UsersEvaluationController extends Controller
         $user_eval = UsersEvaluation::query()
             ->with(
                 [
-                    'employee',
-                    'employee.branches',
-                    'employee.branch',
-                    'employee.positions',
-                    'evaluator',
-                    'evaluator.branches',
-                    'evaluator.branch',
-                    'evaluator.positions',
+                    'employee:id,position_id,branch_id,fname,lname,emp_id,contact,date_hired,signature',
+                    'employee.branch:id,branch_code,branch_name',
+                    'employee.positions:id,label',
+                    'evaluator:id,fname,lname,signature',
+                    'evaluatorsHead:id,fname,lname,signature',
                     'jobKnowledge',
                     'adaptability',
                     'qualityOfWorks',
@@ -1104,6 +1095,31 @@ class UsersEvaluationController extends Controller
             ]
             ,201
         );
+    }
+
+    public function rejectDraftEvaluation(UsersEvaluation $usersEvaluation,Request $request)
+    {
+        $validated = $request->validate(
+            [
+                'note'      =>  ['required','string','max:20']
+            ]
+        );
+
+        $usersEvaluation->update(
+            [
+                'status'            =>  EvalStatus::rejected,
+                'noteIfRejected'    =>  $validated['note']
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'   =>  'Evaluation reject Successfully'
+            ]
+            ,201
+        );
+
+
     }
 
     public function getAllYears()

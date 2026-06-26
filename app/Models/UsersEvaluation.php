@@ -79,16 +79,11 @@ class UsersEvaluation extends Model
     public function loadRelations()
     {
         $relations = [
-            'employee',
+            'employee:id,position_id,branch_id,fname,lname,emp_id,contact,date_hired,signature',
             'employee.branch:id,branch_code,branch_name',
-            'employee.branches:id,branch_code,branch_name',
             'employee.positions:id,label',
-            'employee.roles:id,name',
-            'evaluator',
-            'evaluator.branch:id,branch_code,branch_name',
-            'evaluator.branches:id,branch_code,branch_name',
-            'evaluator.positions:id,label',
-            'evaluator.roles:id,name',
+            'evaluator:id,fname,lname,signature',
+            'evaluatorsHead:id,fname,lname,signature',
             'jobKnowledge',
             'adaptability',
             'qualityOfWorks',
