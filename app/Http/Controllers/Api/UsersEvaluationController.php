@@ -132,10 +132,10 @@ class UsersEvaluationController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function IndirectEvaluatorsHead(int $id)
-    {
-           return DB::table('assigned_user')->where('employee_id', $id)->where('isIndirectEvaluator', true)->value('evaluator_id');
-    }
+    // public function IndirectEvaluatorsHead(int $id)
+    // {
+    //        return DB::table('assigned_user')->where('employee_id', $id)->where('isIndirectEvaluator', true)->value('evaluator_id');
+    // }
 
     public function BranchRankNFile(BranchRankNFile $validated, User $user)
     {

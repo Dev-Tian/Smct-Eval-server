@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(
         Route::controller(UserController::class)->group(
             function () {
                 // Route::get('getAllUsers', 'getAllUsers');
+                Route::get('getEvaluatorsByBranch/{user}', 'getEvaluatorsByBranch');
                 Route::get('getAllActiveUsers', 'getAllActiveUsers');
                 Route::get('getPendingRegistrations', 'getAllPendingUsers');
                 Route::get('getAllBranchHeads', 'getAllBranchHeads');
@@ -153,10 +154,6 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('markAllAsRead', 'markAllAsRead');
             }
         );
-
-        // assign direct/indirectEvaluation
-        Route::post('setAsInDirect/{user}', [UserController::class, 'setEvaluatorAsIndirect']);
-        Route::post('setAsDirect/{user}', [UserController::class, 'setEvaluatorAsDirect']);
 
         //Dashboards
         Route::get('adminDashboard', [AdminDashboardController::class, 'index']);

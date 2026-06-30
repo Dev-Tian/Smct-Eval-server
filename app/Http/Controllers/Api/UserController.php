@@ -327,6 +327,25 @@ class UserController extends Controller
         );
     }
 
+    public function getEvaluatorsByBranch(User $user)
+    {
+        $userBranch = array_merge($user->branches()->pluck('branches.id')->toArray(), [$user->branch_id]);
+        $users = User::where(
+                        fn($q) =>
+                            $q->whereHas('branch', fn($q)=>$q->whereIn('id', $userBranch ) )
+                            ->orWhereHas('branches', fn($q)=>$q->whereIn('id', $userBranch) )
+                        )
+                        ->whereRelation('role' , 'name', 'evaluator')
+                        ->get();
+
+        return response()->json(
+            [
+                'users'     =>  $users
+            ]
+            ,200
+        );
+    }
+
     public function getAllPendingUsers(Request $request)
     {
         $perPage = $request->input('per_page', 10);
@@ -1027,54 +1046,6 @@ class UserController extends Controller
             ]
             ,200
         );
-    }
-
-    public function setEvaluatorAsIndirect(User $user, Request $request)
-    {
-        $Ids = $request->employee_ids;
-            $employeeIds = is_array($Ids)
-                ? $Ids
-                : explode(',', $Ids);
-
-          DB::table('assigned_user')
-            ->where('evaluator_id', $user->id)
-            ->whereIn('employee_id', $employeeIds)
-            ->update(
-                [
-                    'isIndirectEvaluator'       => true
-                ]
-            );
-
-            return response()->json(
-                [
-                    'message'   =>  "success"
-                ]
-                ,201
-            );
-    }
-
-    public function setEvaluatorAsDirect(User $user, Request $request)
-    {
-        $Ids = $request->employee_ids;
-            $employeeIds = is_array($Ids)
-                ? $Ids
-                : explode(',', $Ids);
-
-          DB::table('assigned_user')
-            ->where('evaluator_id', $user->id)
-            ->whereIn('employee_id', $employeeIds)
-            ->update(
-                [
-                    'isIndirectEvaluator'       => false
-                ]
-            );
-
-            return response()->json(
-                [
-                    'message'   =>  "success"
-                ]
-                ,201
-            );
     }
 
     public function assignEmployees(User $user, Request $request)

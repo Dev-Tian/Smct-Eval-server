@@ -15,7 +15,8 @@ return new class extends Migration
         Schema::create('assigned_user', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class, 'evaluator_id')->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(User::class, 'employee_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class, 'assistant_manager_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignIdFor(User::class, 'manager_id')->constrained()->cascadeOnDelete();
         });
     }
 
