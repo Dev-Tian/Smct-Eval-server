@@ -743,7 +743,6 @@ class UserController extends Controller
                             )
                             ->where('is_active', 'active')
                             ->search($search)
-                            ->whereDoesntHave('assignedEvaluators')
                             ->get();
 
         //boolean conditions
