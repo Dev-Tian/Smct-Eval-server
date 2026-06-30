@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class, 'employee_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(User::class, 'evaluator_id')->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(User::class, 'evaluator_head_id')->nullable()->constrained()->cascadeOnDelete();
 
             $table->decimal('rating', 3, 2);
             $table->string('percentage');
@@ -39,7 +38,8 @@ return new class extends Migration
             $table->string("noteIfRejected")->nullable();
 
             $table->date('evaluatorApprovedAt');
-            $table->date('headApprovedAt')->nullable();
+            $table->date('firstApproverApprovedAt')->nullable();
+            $table->date('secondApproverApprovedAt')->nullable();
             $table->date('employeeApprovedAt')->nullable();
 
             $table->timestamps();

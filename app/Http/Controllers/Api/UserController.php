@@ -335,7 +335,9 @@ class UserController extends Controller
                             $q->whereHas('branch', fn($q)=>$q->whereIn('id', $userBranch ) )
                             ->orWhereHas('branches', fn($q)=>$q->whereIn('id', $userBranch) )
                         )
-                        ->whereRelation('role' , 'name', 'evaluator')
+
+                        ->where
+                        ->whereRelation('roles' , 'name', 'evaluator')
                         ->get();
 
         return response()->json(
@@ -743,6 +745,7 @@ class UserController extends Controller
                             )
                             ->where('is_active', 'active')
                             ->search($search)
+                            ->whereDoesntHave('assignedEvaluators')
                             ->get();
 
         //boolean conditions
