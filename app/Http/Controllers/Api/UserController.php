@@ -336,7 +336,6 @@ class UserController extends Controller
                             ->orWhereHas('branches', fn($q)=>$q->whereIn('id', $userBranch) )
                         )
 
-                        ->where
                         ->whereRelation('roles' , 'name', 'evaluator')
                         ->get();
 
