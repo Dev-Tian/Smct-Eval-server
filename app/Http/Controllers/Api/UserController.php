@@ -332,8 +332,8 @@ class UserController extends Controller
         $userBranch = array_merge($user->branches()->pluck('branches.id')->toArray(), [$user->branch_id]);
         $users = User::where(
                         fn($q) =>
-                            $q->whereHas('branch', fn($q)=>$q->whereIn('id', $userBranch ) )
-                            ->orWhereHas('branches', fn($q)=>$q->whereIn('id', $userBranch) )
+                            $q->whereHas('branch', fn($q)=>$q->whereIn('branches.id', $userBranch ) )
+                            ->orWhereHas('branches', fn($q)=>$q->whereIn('branches.id', $userBranch) )
                         )
 
                         ->whereRelation('roles' , 'name', 'evaluator')
