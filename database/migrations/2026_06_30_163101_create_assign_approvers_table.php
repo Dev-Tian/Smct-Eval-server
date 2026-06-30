@@ -12,11 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('assigned_user', function (Blueprint $table) {
+        Schema::create('assign_approvers', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class, 'evaluator_id')->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(User::class, 'assistant_manager_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignIdFor(User::class, 'manager_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class, 'approver_id')->constrained()->cascadeOnDelete();
+            $table->integer('sequence');
+            $table->timestamps();
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('assigned_user');
+        Schema::dropIfExists('assign_approvers');
     }
 };
