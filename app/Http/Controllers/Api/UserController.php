@@ -336,7 +336,7 @@ class UserController extends Controller
                             $q->whereHas('branch', fn($q)=>$q->whereIn('branches.id', $userBranch ) )
                             ->orWhereHas('branches', fn($q)=>$q->whereIn('branches.id', $userBranch) )
                         )
-                        ->whereDoesntHave('assigned_as_approvers')
+                        ->whereDoesntHave('assigned_as_evaluators')
                         ->whereNot('id', $user->id)
                         ->whereRelation('roles' , 'name', 'evaluator')
                         ->get();
@@ -1082,12 +1082,13 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'approver_ids'      => ['required', 'array'],
-            'approver_ids.*'    => ['exists:users,id'],
+            'approver_ids.*'    => [Rule::exists('users','id')],
         ]);
 
         $syncData = [];
 
-        foreach ($validated['approver_ids'] as $index => $approverId) {
+        foreach ($validated['approver_ids'] as $index => $approverId)
+        {
             $syncData[$approverId] = [
                 'sequence' => $index + 1,
             ];

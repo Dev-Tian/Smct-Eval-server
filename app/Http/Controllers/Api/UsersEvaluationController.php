@@ -14,7 +14,6 @@ use App\Models\Assign_approver;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -132,11 +131,6 @@ class UsersEvaluationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-
-    // public function IndirectEvaluatorsHead(int $id)
-    // {
-    //        return DB::table('assigned_user')->where('employee_id', $id)->where('isIndirectEvaluator', true)->value('evaluator_id');
-    // }
 
     public function getApprovers(int $id)
     {
@@ -1000,7 +994,6 @@ class UsersEvaluationController extends Controller
                     'employee.branch:id,branch_code,branch_name',
                     'employee.positions:id,label',
                     'evaluator:id,fname,lname,signature',
-                    'evaluatorsHead:id,fname,lname,signature',
                     'jobKnowledge',
                     'adaptability',
                     'qualityOfWorks',
@@ -1010,7 +1003,7 @@ class UsersEvaluationController extends Controller
                     'customerServices'
                 ]
             )
-            ->orWhereAny(['evaluator_id','evaluator_head_id'], $user->id)
+            ->orWhereAny(['evaluator_id','approver1_id ','approver2_id'], $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
@@ -1020,9 +1013,9 @@ class UsersEvaluationController extends Controller
                         'Others'    => $subq->whereNot('reviewTypeOthersImprovement', false)->orWhereNotNull('reviewTypeOthersCustom'),
                         default     => $subq->where('reviewTypeProbationary', $quarter)->orWhere('reviewTypeRegular', $quarter),
                     };
-                }),
+                })
             )
-            ->when($year, fn($q) => $q->where( fn($r)=> $r->whereYear('coverageFrom', $year)->orWhereYear('coverageTo', $year)))
+            ->when($year, fn($q) => $q->where( fn($r) => $r->whereYear('coverageFrom', $year)->orWhereYear('coverageTo', $year)))
             ->latest('created_at')
             ->paginate($perPage);
 
@@ -1103,14 +1096,27 @@ class UsersEvaluationController extends Controller
         );
     }
 
-    public function acceptDraftEvaluation(UsersEvaluation $usersEvaluation)
+    public function approveEvaluation(UsersEvaluation $usersEvaluation)
     {
-        $usersEvaluation->update(
-            [
-                'headApprovedAt'        =>  now(),
-                'status'                =>  EvalStatus::pending
-            ]
-        );
+        if(Auth::id() == $usersEvaluation->approver1_id )
+        {
+            $usersEvaluation->update(
+                [
+                    'firstApproverApprovedAt'        =>  now(),
+                    'status'                =>  EvalStatus::pending_approval_2
+                ]
+            );
+        }
+
+        if(Auth::id() == $usersEvaluation->approver2_id )
+        {
+            $usersEvaluation->update(
+                [
+                    'headApprovedAt'        =>  now(),
+                    'status'                =>  EvalStatus::pending
+                ]
+            );
+        }
 
         return response()->json(
             [
