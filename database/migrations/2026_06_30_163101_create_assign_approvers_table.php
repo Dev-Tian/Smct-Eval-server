@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'evaluator_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(User::class, 'approver_id')->constrained()->cascadeOnDelete();
             $table->integer('sequence');
-            $table->timestamps();
         });
     }
 

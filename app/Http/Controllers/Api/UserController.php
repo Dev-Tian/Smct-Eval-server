@@ -1080,14 +1080,9 @@ class UserController extends Controller
 
     public function assignApprovers(User $user,Request $request)
     {
-        $validated = $request->validate([
-            'approver_ids'      => ['required', 'array'],
-            'approver_ids.*'    => [Rule::exists('users','id')],
-        ]);
-
         $syncData = [];
 
-        foreach ($validated['approver_ids'] as $index => $approverId)
+        foreach ($request->approver_ids as $index => $approverId)
         {
             $syncData[$approverId] = [
                 'sequence' => $index + 1,
