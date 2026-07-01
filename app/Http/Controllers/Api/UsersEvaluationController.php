@@ -10,6 +10,7 @@ use App\Http\Requests\BranchBasicAreaManager;
 use App\Http\Requests\BranchRankNFile;
 use App\Http\Requests\HoBasic;
 use App\Http\Requests\HoRankNFile;
+use App\Models\Assign_approver;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
@@ -102,8 +103,8 @@ class UsersEvaluationController extends Controller
                 ->orWhereNotNull('reviewTypeRegular');
             })
             ->where(function($q) {
-                $q->whereYear('coverageFrom', Carbon::now()->year)
-                ->orWhereYear('coverageTo', Carbon::now()->year);
+                $q->whereYear('coverageFrom', now()->year)
+                ->orWhereYear('coverageTo', now()->year);
             })
             ->get(
                     [
@@ -137,19 +138,26 @@ class UsersEvaluationController extends Controller
     //        return DB::table('assigned_user')->where('employee_id', $id)->where('isIndirectEvaluator', true)->value('evaluator_id');
     // }
 
+    public function getApprovers(int $id)
+    {
+        return Assign_approver::where('evaluator_id', $id)->get();
+    }
+
     public function BranchRankNFile(BranchRankNFile $validated, User $user)
     {
         $auth_user_evaluator = Auth::user();
 
         $status = '';
+        $approver1 = null;
+        $approver2 = null;
+        $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
-        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
-
-        if(!empty($eval_head) || !$eval_head == null){
-            $status = EvalStatus::draft;
-        }else{
+        if(!$approverModel || $approverModel->isEmpty()){
             $status = EvalStatus::pending;
-
+        }else{
+            $status = EvalStatus::pending_approval_1;
+            $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
+            $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
         }
 
         $evalDateFrom = $validated['coverageFrom'];
@@ -157,7 +165,6 @@ class UsersEvaluationController extends Controller
 
         if(!empty($validated['reviewTypeRegular']))
         {
-
             [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
            {
                 "Q1"    =>  QuarterDateRange::Q1->range(),
@@ -171,7 +178,8 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
-                'evaluator_head_id'             => $eval_head,
+                'approver1_id'                  => $approver1,
+                'approver2_id'                  => $approver2,
                 'evaluationType'                => 'BranchRankNFile',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -185,7 +193,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
-                'evaluatorApprovedAt'           => Carbon::now(),
+                'evaluatorApprovedAt'           => now(),
                 'status'                        => $status
             ]
         );
@@ -293,14 +301,16 @@ class UsersEvaluationController extends Controller
         $auth_user_evaluator = Auth::user();
 
         $status = '';
+        $approver1 = null;
+        $approver2 = null;
+        $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
-        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
-
-        if(!empty($eval_head) || !$eval_head == null){
-            $status = EvalStatus::draft;
-        }else{
+        if(!$approverModel || $approverModel->isEmpty()){
             $status = EvalStatus::pending;
-
+        }else{
+            $status = EvalStatus::pending_approval_1;
+            $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
+            $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
         }
 
         $evalDateFrom = $validated['coverageFrom'];
@@ -321,7 +331,8 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
-                'evaluator_head_id'             => $eval_head,
+                'approver1_id'                  => $approver1,
+                'approver2_id'                  => $approver2,
                 'evaluationType'                => 'BranchBasicAreaManager',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -335,7 +346,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
-                'evaluatorApprovedAt'           => Carbon::now(),
+                'evaluatorApprovedAt'           => now(),
                 'status'                        => $status
             ]
         );
@@ -441,15 +452,18 @@ class UsersEvaluationController extends Controller
         $auth_user_evaluator = Auth::user();
 
         $status = '';
+        $approver1 = null;
+        $approver2 = null;
+        $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
-        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
-
-        if(!empty($eval_head) || !$eval_head == null){
-            $status = EvalStatus::draft;
-        }else{
+        if(!$approverModel || $approverModel->isEmpty()){
             $status = EvalStatus::pending;
-
+        }else{
+            $status = EvalStatus::pending_approval_1;
+            $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
+            $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
         }
+
 
         $evalDateFrom = $validated['coverageFrom'];
         $evalDateTo = $validated['coverageTo'];
@@ -470,7 +484,8 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
-                'evaluator_head_id'             => $eval_head,
+                'approver1_id'                  => $approver1,
+                'approver2_id'                  => $approver2,
                 'evaluationType'                => 'BranchBasic',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -484,7 +499,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
-                'evaluatorApprovedAt'           => Carbon::now(),
+                'evaluatorApprovedAt'           => now(),
                 'status'                        => $status
             ]
         );
@@ -608,13 +623,16 @@ class UsersEvaluationController extends Controller
         $auth_user_evaluator = Auth::user();
 
         $status = '';
+        $approver1 = null;
+        $approver2 = null;
+        $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
-        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
-
-        if(!empty($eval_head) || !$eval_head == null){
-            $status = EvalStatus::draft;
-        }else{
+        if(!$approverModel || $approverModel->isEmpty()){
             $status = EvalStatus::pending;
+        }else{
+            $status = EvalStatus::pending_approval_1;
+            $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
+            $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
         }
 
         $evalDateFrom = $validated['coverageFrom'];
@@ -636,7 +654,8 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
-                'evaluator_head_id'             => $eval_head,
+                'approver1_id'                  => $approver1,
+                'approver2_id'                  => $approver2,
                 'evaluationType'                => 'HoRankNFile',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -650,7 +669,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
-                'evaluatorApprovedAt'           => Carbon::now(),
+                'evaluatorApprovedAt'           => now(),
                 'status'                        => $status
             ]
         );
@@ -748,13 +767,16 @@ class UsersEvaluationController extends Controller
         $auth_user_evaluator = Auth::user();
 
         $status = '';
+        $approver1 = null;
+        $approver2 = null;
+        $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
-        $eval_head = $this->IndirectEvaluatorsHead($auth_user_evaluator->id);
-
-        if(!empty($eval_head) || !$eval_head == null){
-            $status = EvalStatus::draft;
-        }else{
+        if(!$approverModel || $approverModel->isEmpty()){
             $status = EvalStatus::pending;
+        }else{
+            $status = EvalStatus::pending_approval_1;
+            $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
+            $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
         }
 
         $evalDateFrom = $validated['coverageFrom'];
@@ -776,7 +798,8 @@ class UsersEvaluationController extends Controller
             [
                 'employee_id'                   => $user->id,
                 'evaluator_id'                  => $auth_user_evaluator->id,
-                'evaluator_head_id'             => $eval_head,
+                'approver1_id'                  => $approver1,
+                'approver2_id'                  => $approver2,
                 'evaluationType'                => 'HoBasic',
                 'rating'                        => $validated['rating'],
                 'percentage'                    => $validated['performanceScore'],
@@ -790,7 +813,7 @@ class UsersEvaluationController extends Controller
                 'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                 'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                 'remarks'                       => $validated['remarks'] ?: null,
-                'evaluatorApprovedAt'           => Carbon::now(),
+                'evaluatorApprovedAt'           => now(),
                 'status'                        => $status
             ]
         );
@@ -1027,7 +1050,7 @@ class UsersEvaluationController extends Controller
         $usersEvaluation->update(
             [
                 'status' => 'completed',
-                'employeeApprovedAt' => Carbon::now(),
+                'employeeApprovedAt' => now(),
             ]
         );
 

@@ -79,16 +79,6 @@ class User extends Authenticatable
         return $this->hasMany(UsersEvaluation::class, 'employee_id');
     }
 
-    public function assigned_as_evaluators():HasMany
-    {
-        return $this->hasMany(Assign_approver::class, 'evaluator_id');
-    }
-
-    public function assigned_as_approvers():HasMany
-    {
-        return $this->hasMany(Assign_approver::class, 'approver_id');
-    }
-
     public function doesEvaluated(): HasMany
     {
         return $this->hasMany(UsersEvaluation::class, 'evaluator_id');
@@ -112,6 +102,18 @@ class User extends Authenticatable
     public function assignedEvaluators(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'assigned_user',  'employee_id', 'evaluator_id');
+    }
+
+    public function assigned_as_evaluators(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'assign_approvers',  'approver_id', 'evaluator_id')
+                        ->withPivot('sequence');
+    }
+
+    public function assigned_as_approvers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'assign_approvers', 'evaluator_id', 'approver_id')
+                        ->withPivot('sequence');
     }
 
     public function employeeLastEvaluation(): HasOne

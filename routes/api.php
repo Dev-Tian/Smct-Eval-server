@@ -78,6 +78,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('updateProfileUserAuth', 'updateProfileUserAuth');
                 Route::post('addUser', 'store');
                 Route::post('assignEmployees/{user}', 'assignEmployees');
+                Route::post('saveApprovalFlow/{user}', 'assignApprovers');
                 Route::post('updateUserBranch/{user}', 'updateUserBranch');
                 Route::post('removeUserBranches/{user}', 'removeUserBranches');
                 Route::post('approveRegistration/{user}', 'approveRegistration');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Assign_approver;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Position;
@@ -340,9 +341,19 @@ class UserController extends Controller
                         ->whereRelation('roles' , 'name', 'evaluator')
                         ->get();
 
+          $user->load(
+            [
+                'assigned_as_approvers' => function ($q) {
+                    $q->select('users.id', 'fname', 'lname', 'email')
+                        ->orderBy('sequence', 'asc');
+                }
+            ]);
+
+
         return response()->json(
             [
-                'users'     =>  $users
+                'users'                 =>  $users,
+                'assigned_approver'     =>  $user->assigned_as_approvers
             ]
             ,200
         );
@@ -1069,7 +1080,26 @@ class UserController extends Controller
 
     public function assignApprovers(User $user,Request $request)
     {
+        $validated = $request->validate([
+            'approver_ids'      => ['required', 'array'],
+            'approver_ids.*'    => ['exists:users,id'],
+        ]);
 
+        $syncData = [];
+
+        foreach ($validated['approver_ids'] as $index => $approverId) {
+            $syncData[$approverId] = [
+                'sequence' => $index + 1,
+            ];
+        }
+
+        $user->assigned_as_approvers()->sync($syncData);
+
+        return response()->json(
+            [
+                'message'   => 'Assigned successfully'
+            ]
+        );
     }
 
     public function removeUserBranches(User $user)
