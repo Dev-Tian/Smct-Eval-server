@@ -79,6 +79,16 @@ class User extends Authenticatable
         return $this->hasMany(UsersEvaluation::class, 'employee_id');
     }
 
+    public function assigned_as_evaluators():HasMany
+    {
+        return $this->hasMany(Assign_approver::class, 'evaluator_id');
+    }
+
+    public function assigned_as_approvers():HasMany
+    {
+        return $this->hasMany(Assign_approver::class, 'approver_id');
+    }
+
     public function doesEvaluated(): HasMany
     {
         return $this->hasMany(UsersEvaluation::class, 'evaluator_id');

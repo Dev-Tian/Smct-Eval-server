@@ -16,10 +16,12 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class, 'employee_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(User::class, 'evaluator_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class, 'approver1_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignIdFor(User::class, 'approver2_id')->nullable()->constrained()->nullOnDelete();
 
             $table->decimal('rating', 3, 2);
             $table->string('percentage');
-            $table->enum('status', ['draft','rejected','pending', 'completed'])->default('pending');
+            $table->enum('status', ['pending', 'pending_approval_1', 'pending_approval_2', 'rejected', 'completed'])->default('pending');
             $table->enum('evaluationType', ['HoBasic', 'HoRankNFile', 'BranchBasic', 'BranchRankNFile','BranchBasicAreaManager']);
 
             $table->date('coverageFrom');

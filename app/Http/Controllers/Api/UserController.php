@@ -11,7 +11,6 @@ use App\Models\User;
 use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 // use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -330,12 +329,14 @@ class UserController extends Controller
     public function getEvaluatorsByBranch(User $user)
     {
         $userBranch = array_merge($user->branches()->pluck('branches.id')->toArray(), [$user->branch_id]);
-        $users = User::where(
+        $users = User::select(['id', 'fname', 'lname', 'email'])
+                        ->where(
                         fn($q) =>
                             $q->whereHas('branch', fn($q)=>$q->whereIn('branches.id', $userBranch ) )
                             ->orWhereHas('branches', fn($q)=>$q->whereIn('branches.id', $userBranch) )
                         )
-
+                        ->whereDoesntHave('assigned_as_approvers')
+                        ->whereNot('id', $user->id)
                         ->whereRelation('roles' , 'name', 'evaluator')
                         ->get();
 
@@ -1064,6 +1065,11 @@ class UserController extends Controller
                 ]
                 ,201
             );
+    }
+
+    public function assignApprovers(User $user,Request $request)
+    {
+
     }
 
     public function removeUserBranches(User $user)
