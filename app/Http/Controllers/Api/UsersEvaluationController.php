@@ -1101,15 +1101,38 @@ class UsersEvaluationController extends Controller
 
     public function approveEvaluation(UsersEvaluation $usersEvaluation)
     {
-        if(Auth::id() == $usersEvaluation->approver1_id )
+        if(Auth::id() == $usersEvaluation->approver1_id)
         {
+            if(empty($usersEvaluation->approver2_id))
+            {
+                $usersEvaluation->update(
+                    [
+                        'firstApproverApprovedAt'        =>  now(),
+                        'status'                =>  EvalStatus::pending
+                    ]
+                );
+                return response()->json(
+                [
+                    'message'       =>  'Approval Successfully'
+                ]
+                ,200
+            );
+            }
             $usersEvaluation->update(
                 [
                     'firstApproverApprovedAt'        =>  now(),
                     'status'                =>  EvalStatus::pending_approval_2
                 ]
             );
+
+            return response()->json(
+                [
+                    'message'       =>  'Approval Successfully'
+                ]
+                ,200
+            );
         }
+
 
         if(Auth::id() == $usersEvaluation->approver2_id )
         {
@@ -1119,13 +1142,20 @@ class UsersEvaluationController extends Controller
                     'status'                =>  EvalStatus::pending
                 ]
             );
+
+            return response()->json(
+                [
+                    'message'       =>  'Approval Successfully'
+                ]
+                ,200
+            );
         }
 
         return response()->json(
             [
-                'message'       =>  'Approval Successfully'
+                'message'       =>  'Approval Unsuccessfully'
             ]
-            ,201
+            ,400
         );
     }
 
