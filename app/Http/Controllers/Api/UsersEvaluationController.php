@@ -10,7 +10,6 @@ use App\Http\Requests\BranchBasicAreaManager;
 use App\Http\Requests\BranchRankNFile;
 use App\Http\Requests\HoBasic;
 use App\Http\Requests\HoRankNFile;
-use App\Models\Assign_approver;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
@@ -46,7 +45,8 @@ class UsersEvaluationController extends Controller
                     'employee.branch:id,branch_code,branch_name',
                     'employee.positions:id,label',
                     'evaluator:id,fname,lname,signature',
-                    'evaluatorsHead:id,fname,lname,signature',
+                    'approver1:id,fname,lname,signature',
+                    'approver2:id,fname,lname,signature',
                 ]
             )
             ->when($isHr, fn($q) => $q->whereIn('status', [EvalStatus::pending, EvalStatus::completed]))
@@ -939,7 +939,8 @@ class UsersEvaluationController extends Controller
                     'employee.branch:id,branch_code,branch_name',
                     'employee.positions:id,label',
                     'evaluator:id,fname,lname,signature',
-                    'evaluatorsHead:id,fname,lname,signature',
+                    'approver1:id,fname,lname,signature',
+                    'approver2:id,fname,lname,signature',
                     'jobKnowledge',
                     'adaptability',
                     'qualityOfWorks',
@@ -994,6 +995,8 @@ class UsersEvaluationController extends Controller
                     'employee.branch:id,branch_code,branch_name',
                     'employee.positions:id,label',
                     'evaluator:id,fname,lname,signature',
+                    'approver1:id,fname,lname,signature',
+                    'approver2:id,fname,lname,signature',
                     'jobKnowledge',
                     'adaptability',
                     'qualityOfWorks',
