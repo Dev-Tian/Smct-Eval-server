@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Assign_approver;
 use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Position;
@@ -13,7 +12,6 @@ use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-// use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -22,7 +20,6 @@ use Spatie\Permission\Models\Role;
 // use App\Mail\BulkRegister;
 use Illuminate\Support\Facades\Mail;
 
-use function Pest\Laravel\json;
 use function Symfony\Component\Clock\now;
 
 class UserController extends Controller

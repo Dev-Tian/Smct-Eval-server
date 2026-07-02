@@ -134,7 +134,7 @@ class UsersEvaluationController extends Controller
 
     public function getApprovers(int $id)
     {
-        return Assign_approver::where('evaluator_id', $id)->get();
+        return DB::table('assign_approvers')->where('evaluator_id', $id)->get();
     }
 
     public function BranchRankNFile(BranchRankNFile $validated, User $user)
@@ -1003,7 +1003,7 @@ class UsersEvaluationController extends Controller
                     'customerServices'
                 ]
             )
-            ->orWhereAny(['evaluator_id','approver1_id ','approver2_id'], $user->id)
+            ->orWhereAny(['evaluator_id','approver1_id','approver2_id'], $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(

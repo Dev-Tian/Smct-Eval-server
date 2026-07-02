@@ -37,7 +37,6 @@ class EvaluatorDashboardController extends Controller
                     'employee.branch:id,branch_code,branch_name',
                     'employee.positions:id,label',
                     'evaluator:id,fname,lname,signature',
-                    'evaluatorsHead:id,fname,lname,signature',
                     'jobKnowledge',
                     'adaptability',
                     'qualityOfWorks',
@@ -47,7 +46,7 @@ class EvaluatorDashboardController extends Controller
                     'customerServices'
                 ]
             )
-            ->orWhereAny(['evaluator_id','evaluator_head_id'], $user->id)
+            ->orWhereAny(['evaluator_id','approver1_id','approver2_id'], $user->id)
             ->search($search)
             ->when($status,  fn($q)  =>  $q->where('status', $status))
             ->when($quarter, fn($q)  =>  $q->where('quarter_of_submission_id', $quarter))
