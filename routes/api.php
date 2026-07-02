@@ -96,8 +96,8 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('submissions/{usersEvaluation}', 'show');
                 Route::post('approvedByEmployee/{usersEvaluation}', 'approvedByEmployee');
                 Route::post('deleteEval/{usersEvaluation}', 'destroy');
-                Route::post('acceptDraftEvaluation/{usersEvaluation}', 'approveEvaluation');
-                Route::post('rejectDraftEvaluation/{usersEvaluation}', 'rejectDraftEvaluation');
+                Route::post('acceptApprovalEvaluation/{usersEvaluation}', 'approveEvaluation');
+                Route::post('rejectApprovalEvaluation/{usersEvaluation}', 'rejectDraftEvaluation');
                 //submissions
                 //branch rank n file
                 Route::post('BranchRankNFile/{user}', 'BranchRankNFile');

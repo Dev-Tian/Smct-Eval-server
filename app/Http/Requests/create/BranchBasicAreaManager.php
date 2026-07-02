@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\create;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BranchBasic extends FormRequest
+class BranchBasicAreaManager extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,6 @@ class BranchBasic extends FormRequest
             $this->teamworkRules(),
             $this->reliabilityRules(),
             $this->ethicalRules(),
-            $this->customerServiceRules(),
             $this->managerialSkillsRules(),
         );
     }
@@ -145,27 +144,11 @@ class BranchBasic extends FormRequest
         ];
     }
 
-    public function customerServiceRules()
-    {
-        return [
-            'customerServiceScore1'                 => ['required', 'numeric'],
-            'customerServiceScore2'                 => ['required', 'numeric'],
-            'customerServiceScore3'                 => ['required', 'numeric'],
-            'customerServiceScore4'                 => ['required', 'numeric'],
-            'customerServiceScore5'                 => ['required', 'numeric'],
-            'customerServiceExplanation1'           => ['required', 'string'],
-            'customerServiceExplanation2'           => ['required', 'string'],
-            'customerServiceExplanation3'           => ['required', 'string'],
-            'customerServiceExplanation4'           => ['required', 'string'],
-            'customerServiceExplanation5'           => ['required', 'string'],
-        ];
-    }
-
     public function managerialSkillsRules()
     {
         return [
             'managerialSkillsScore1'                 => ['required', 'numeric'],
-            'managerialSkillsScore2'                 => ['required', 'numeric'],    
+            'managerialSkillsScore2'                 => ['required', 'numeric'],
             'managerialSkillsScore3'                 => ['required', 'numeric'],
             'managerialSkillsScore4'                 => ['required', 'numeric'],
             'managerialSkillsScore5'                 => ['required', 'numeric'],

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\create;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BranchRankNFile extends FormRequest
+class HoBasic extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,7 @@ class BranchRankNFile extends FormRequest
             $this->teamworkRules(),
             $this->reliabilityRules(),
             $this->ethicalRules(),
-            $this->customerServiceRules(),
+            $this->managerialSkillsRules()
         );
     }
 
@@ -70,12 +70,10 @@ class BranchRankNFile extends FormRequest
             'qualityOfWorkScore2'                   => ['required', 'numeric'],
             'qualityOfWorkScore3'                   => ['required', 'numeric'],
             'qualityOfWorkScore4'                   => ['required', 'numeric'],
-            'qualityOfWorkScore5'                   => ['nullable', 'numeric'],
             'qualityOfWorkComments1'                => ['required', 'string'],
             'qualityOfWorkComments2'                => ['required', 'string'],
             'qualityOfWorkComments3'                => ['required', 'string'],
             'qualityOfWorkComments4'                => ['required', 'string'],
-            'qualityOfWorkComments5'                => ['nullable', 'string'],
         ];
     }
 
@@ -131,19 +129,21 @@ class BranchRankNFile extends FormRequest
         ];
     }
 
-    public function customerServiceRules()
+    public function managerialSkillsRules()
     {
         return [
-            'customerServiceScore1'                 => ['required', 'numeric'],
-            'customerServiceScore2'                 => ['required', 'numeric'],
-            'customerServiceScore3'                 => ['required', 'numeric'],
-            'customerServiceScore4'                 => ['required', 'numeric'],
-            'customerServiceScore5'                 => ['required', 'numeric'],
-            'customerServiceExplanation1'           => ['required', 'string'],
-            'customerServiceExplanation2'           => ['required', 'string'],
-            'customerServiceExplanation3'           => ['required', 'string'],
-            'customerServiceExplanation4'           => ['required', 'string'],
-            'customerServiceExplanation5'           => ['required', 'string'],
+            'managerialSkillsScore1'                 => ['required', 'numeric'],
+            'managerialSkillsScore2'                 => ['required', 'numeric'],
+            'managerialSkillsScore3'                 => ['required', 'numeric'],
+            'managerialSkillsScore4'                 => ['required', 'numeric'],
+            'managerialSkillsScore5'                 => ['required', 'numeric'],
+            'managerialSkillsScore6'                 => ['required', 'numeric'],
+            'managerialSkillsExplanation1'           => ['required', 'string'],
+            'managerialSkillsExplanation2'           => ['required', 'string'],
+            'managerialSkillsExplanation3'           => ['required', 'string'],
+            'managerialSkillsExplanation4'           => ['required', 'string'],
+            'managerialSkillsExplanation5'           => ['required', 'string'],
+            'managerialSkillsExplanation6'           => ['required', 'string'],
         ];
     }
 }

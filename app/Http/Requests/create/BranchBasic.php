@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\create;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class HoRankNFile extends FormRequest
+class BranchBasic extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,8 @@ class HoRankNFile extends FormRequest
             $this->teamworkRules(),
             $this->reliabilityRules(),
             $this->ethicalRules(),
-
+            $this->customerServiceRules(),
+            $this->managerialSkillsRules(),
         );
     }
 
@@ -70,13 +71,28 @@ class HoRankNFile extends FormRequest
             'qualityOfWorkScore2'                   => ['required', 'numeric'],
             'qualityOfWorkScore3'                   => ['required', 'numeric'],
             'qualityOfWorkScore4'                   => ['required', 'numeric'],
+            'qualityOfWorkScore5'                   => ['nullable', 'numeric'],
+            'qualityOfWorkScore6'                   => ['nullable', 'numeric'],
+            'qualityOfWorkScore7'                   => ['nullable', 'numeric'],
+            'qualityOfWorkScore8'                   => ['nullable', 'numeric'],
+            'qualityOfWorkScore9'                   => ['nullable', 'numeric'],
+            'qualityOfWorkScore10'                  => ['nullable', 'numeric'],
+            'qualityOfWorkScore11'                  => ['nullable', 'numeric'],
+            'qualityOfWorkScore12'                  => ['nullable', 'numeric'],
             'qualityOfWorkComments1'                => ['required', 'string'],
             'qualityOfWorkComments2'                => ['required', 'string'],
             'qualityOfWorkComments3'                => ['required', 'string'],
             'qualityOfWorkComments4'                => ['required', 'string'],
+            'qualityOfWorkComments5'                => ['nullable', 'string'],
+            'qualityOfWorkComments6'                => ['nullable', 'string'],
+            'qualityOfWorkComments7'                => ['nullable', 'string'],
+            'qualityOfWorkComments8'                => ['nullable', 'string'],
+            'qualityOfWorkComments9'                => ['nullable', 'string'],
+            'qualityOfWorkComments10'               => ['nullable', 'string'],
+            'qualityOfWorkComments11'               => ['nullable', 'string'],
+            'qualityOfWorkComments12'               => ['nullable', 'string'],
         ];
     }
-
     public function adaptabilityRules()
     {
         return [
@@ -126,6 +142,40 @@ class HoRankNFile extends FormRequest
             'ethicalExplanation2'                   => ['required', 'string'],
             'ethicalExplanation3'                   => ['required', 'string'],
             'ethicalExplanation4'                   => ['required', 'string'],
+        ];
+    }
+
+    public function customerServiceRules()
+    {
+        return [
+            'customerServiceScore1'                 => ['required', 'numeric'],
+            'customerServiceScore2'                 => ['required', 'numeric'],
+            'customerServiceScore3'                 => ['required', 'numeric'],
+            'customerServiceScore4'                 => ['required', 'numeric'],
+            'customerServiceScore5'                 => ['required', 'numeric'],
+            'customerServiceExplanation1'           => ['required', 'string'],
+            'customerServiceExplanation2'           => ['required', 'string'],
+            'customerServiceExplanation3'           => ['required', 'string'],
+            'customerServiceExplanation4'           => ['required', 'string'],
+            'customerServiceExplanation5'           => ['required', 'string'],
+        ];
+    }
+
+    public function managerialSkillsRules()
+    {
+        return [
+            'managerialSkillsScore1'                 => ['required', 'numeric'],
+            'managerialSkillsScore2'                 => ['required', 'numeric'],
+            'managerialSkillsScore3'                 => ['required', 'numeric'],
+            'managerialSkillsScore4'                 => ['required', 'numeric'],
+            'managerialSkillsScore5'                 => ['required', 'numeric'],
+            'managerialSkillsScore6'                 => ['required', 'numeric'],
+            'managerialSkillsExplanation1'           => ['required', 'string'],
+            'managerialSkillsExplanation2'           => ['required', 'string'],
+            'managerialSkillsExplanation3'           => ['required', 'string'],
+            'managerialSkillsExplanation4'           => ['required', 'string'],
+            'managerialSkillsExplanation5'           => ['required', 'string'],
+            'managerialSkillsExplanation6'           => ['required', 'string'],
         ];
     }
 }

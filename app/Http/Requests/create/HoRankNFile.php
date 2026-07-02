@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\create;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class HoBasic extends FormRequest
+class HoRankNFile extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,7 @@ class HoBasic extends FormRequest
             $this->teamworkRules(),
             $this->reliabilityRules(),
             $this->ethicalRules(),
-            $this->managerialSkillsRules()
+
         );
     }
 
@@ -126,24 +126,6 @@ class HoBasic extends FormRequest
             'ethicalExplanation2'                   => ['required', 'string'],
             'ethicalExplanation3'                   => ['required', 'string'],
             'ethicalExplanation4'                   => ['required', 'string'],
-        ];
-    }
-
-    public function managerialSkillsRules()
-    {
-        return [
-            'managerialSkillsScore1'                 => ['required', 'numeric'],
-            'managerialSkillsScore2'                 => ['required', 'numeric'],
-            'managerialSkillsScore3'                 => ['required', 'numeric'],
-            'managerialSkillsScore4'                 => ['required', 'numeric'],
-            'managerialSkillsScore5'                 => ['required', 'numeric'],
-            'managerialSkillsScore6'                 => ['required', 'numeric'],
-            'managerialSkillsExplanation1'           => ['required', 'string'],
-            'managerialSkillsExplanation2'           => ['required', 'string'],
-            'managerialSkillsExplanation3'           => ['required', 'string'],
-            'managerialSkillsExplanation4'           => ['required', 'string'],
-            'managerialSkillsExplanation5'           => ['required', 'string'],
-            'managerialSkillsExplanation6'           => ['required', 'string'],
         ];
     }
 }
