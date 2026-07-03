@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'evaluator_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(User::class, 'approver1_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(User::class, 'approver2_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignIdFor(User::class, 'rejected_by_id')->nullable()->constrained()->nullOnDelete();
 
             $table->decimal('rating', 3, 2);
             $table->string('percentage');

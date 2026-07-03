@@ -41,6 +41,11 @@ class UsersEvaluation extends Model
         return $this->belongsTo(User::class, 'approver2_id');
     }
 
+    public function rejectedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'rejected_by_id');
+    }
+
     public function jobKnowledge(): HasMany
     {
         return $this->hasMany(JobKnowledge::class, 'users_evaluation_id');
@@ -90,6 +95,7 @@ class UsersEvaluation extends Model
             'evaluator:id,fname,lname,signature',
             'approver1:id,fname,lname,signature',
             'approver2:id,fname,lname,signature',
+            'rejectedBy:id,fname,lname',
             'jobKnowledge',
             'adaptability',
             'qualityOfWorks',

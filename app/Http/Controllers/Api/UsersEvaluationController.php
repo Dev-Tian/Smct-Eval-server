@@ -47,6 +47,7 @@ class UsersEvaluationController extends Controller
                     'evaluator:id,fname,lname,signature',
                     'approver1:id,fname,lname,signature',
                     'approver2:id,fname,lname,signature',
+                    'rejectedBy:id,fname,lname',
                 ]
             )
             ->when($isHr, fn($q) => $q->whereIn('status', [EvalStatus::pending, EvalStatus::completed]))
@@ -269,7 +270,7 @@ class UsersEvaluationController extends Controller
             );
         }
         //notification for employee
-        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
 
         //notification for admin and hr
         $notificationData = new EvalNotifications('A new evaluation submitted for ' . $user->fname . ' ' . $user->lname . ' was submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname);
@@ -422,7 +423,7 @@ class UsersEvaluationController extends Controller
             );
         }
         //notification for employee
-        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
 
         //notification for admin and hr
         $notificationData = new EvalNotifications('A new evaluation submitted for ' . $user->fname . ' ' . $user->lname . ' was submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname);
@@ -586,7 +587,7 @@ class UsersEvaluationController extends Controller
             );
         }
         //notification for employee
-        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
 
         //notification for admin and hr
         $notificationData = new EvalNotifications('A new evaluation submitted for ' . $user->fname . ' ' . $user->lname . ' was submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname);
@@ -735,7 +736,7 @@ class UsersEvaluationController extends Controller
         }
 
         //notification for employee
-        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
 
         //notification for admin and hr
         $notificationData = new EvalNotifications('A new evaluation submitted for ' . $user->fname . ' ' . $user->lname . ' was submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname);
@@ -890,7 +891,7 @@ class UsersEvaluationController extends Controller
         }
 
         //notification for employee
-        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+        $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
 
         //notification for admin and hr
         $notificationData = new EvalNotifications('A new evaluation submitted for ' . $user->fname . ' ' . $user->lname . ' was submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname);
@@ -941,6 +942,7 @@ class UsersEvaluationController extends Controller
                     'evaluator:id,fname,lname,signature',
                     'approver1:id,fname,lname,signature',
                     'approver2:id,fname,lname,signature',
+                    'rejectedBy:id,fname,lname',
                     'jobKnowledge',
                     'adaptability',
                     'qualityOfWorks',
@@ -997,6 +999,7 @@ class UsersEvaluationController extends Controller
                     'evaluator:id,fname,lname,signature',
                     'approver1:id,fname,lname,signature',
                     'approver2:id,fname,lname,signature',
+                    'rejectedBy:id,fname,lname',
                     'jobKnowledge',
                     'adaptability',
                     'qualityOfWorks',

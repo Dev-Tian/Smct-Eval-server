@@ -33,20 +33,20 @@ class UpdateHoRankNFile extends FormRequest
         );
     }
 
-   public function mainRules()
+    public function mainRules()
     {
         return [
             'rating'                                => ['required', 'numeric'],
             'performance_score'                     => ['required', 'numeric'],
-            'coverageFrom'                          => ['required', 'date'],
-            'coverageTo'                            => ['required', 'date'],
+            'coverage_from'                         => ['required', 'date'],
+            'coverage_to'                           => ['required', 'date'],
             'reviewTypeProbationary'                => ['nullable', 'numeric'],
             'reviewTypeRegular'                     => ['nullable', 'string'],
             'reviewTypeOthersImprovement'           => ['nullable', 'boolean'],
             'reviewTypeOthersCustom'                => ['nullable', 'string'],
-            'priorityArea1'                         => ['required', 'string', 'min:20'],
-            'priorityArea2'                         => ['nullable', 'string', 'min:20'],
-            'priorityArea3'                         => ['nullable', 'string', 'min:20'],
+            'priority_area_1'                       => ['required', 'string', 'min:20'],
+            'priority_area_2'                       => ['nullable', 'string', 'min:20'],
+            'priority_area_3'                       => ['nullable', 'string', 'min:20'],
             'remarks'                               => ['nullable', 'string', 'min:20'],
         ];
     }
@@ -66,10 +66,11 @@ class UpdateHoRankNFile extends FormRequest
         return [
             'quality_of_works'                             => ['required', 'array'],
             'quality_of_works.*.id'                        => ['required', 'numeric'],
-            'quality_of_works.*.score'                     => ['required', 'numeric'],
-            'quality_of_works.*.comment'                   => ['required', 'string'],
+            'quality_of_works.*.score'                     => ['nullable', 'numeric'],
+            'quality_of_works.*.comment'                   => ['nullable', 'string'],
         ];
     }
+
     public function adaptabilityRules()
     {
         return [
@@ -106,7 +107,7 @@ class UpdateHoRankNFile extends FormRequest
             'ethicals'                             => ['required', 'array'],
             'ethicals.*.id'                        => ['required', 'numeric'],
             'ethicals.*.score'                     => ['required', 'numeric'],
-            'ethicals.*.comment'                   => ['required', 'string'],
+            'ethicals.*.explanation'               => ['required', 'string'],
         ];
     }
 }

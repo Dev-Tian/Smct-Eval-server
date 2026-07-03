@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\HrDashboardController;
 use App\Http\Controllers\Api\MemorandumViolationController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\OtpController;
+use App\Http\Controllers\Api\UpdateUsersEvaluationController;
 use App\Http\Controllers\Api\UsersEvaluationController;
 use App\Http\Resources\ProfileResource;
 use Illuminate\Support\Facades\Auth;
@@ -83,6 +84,16 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('removeUserBranches/{user}', 'removeUserBranches');
                 Route::post('approveRegistration/{user}', 'approveRegistration');
                 Route::post('deleteUser/{user}', 'deleteUser');
+            }
+        );
+
+        Route::controller(UpdateUsersEvaluationController::class)->group(
+            function () {
+                Route::post('BranchBasic/resubmit/{usersEvaluation}', 'BranchBasic');
+                Route::post('BranchRankNFile/resubmit/{usersEvaluation}', 'BranchRankNFile');
+                Route::post('HoBasic/resubmit/{usersEvaluation}', 'HoBasic');
+                Route::post('HoRankNFile/resubmit/{usersEvaluation}', 'HoRankNFile');
+                Route::post('BranchBasicAreaManager/resubmit/{usersEvaluation}', 'BranchBasicAreaManager');
             }
         );
 

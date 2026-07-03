@@ -1,0 +1,704 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Enum\EvalStatus;
+use App\Enum\QuarterDateRange;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\update\UpdateBranchBasic;
+use App\Http\Requests\update\UpdateBranchBasicAreaManager;
+use App\Http\Requests\update\UpdateBranchRankNFile;
+use App\Http\Requests\update\UpdateHoBasic;
+use App\Http\Requests\update\UpdateHoRankNFile;
+use App\Models\UsersEvaluation;
+use App\Notifications\EvalNotifications;
+use Illuminate\Support\Facades\Auth;
+
+class UpdateUsersEvaluationController extends Controller
+{
+
+    public function BranchBasic(UpdateBranchBasic $validated, UsersEvaluation $usersEvaluation)
+    {
+        $status = '';
+
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $status = EvalStatus::pending;
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $status = EvalStatus::pending_approval_1;
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $status = EvalStatus::pending_approval_2;
+            }
+        }
+
+        $evalDateFrom = $validated['coverage_from'];
+        $evalDateTo = $validated['coverage_to'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            {
+                    "Q1"    =>  QuarterDateRange::Q1->range(),
+                    "Q2"    =>  QuarterDateRange::Q2->range(),
+                    "Q3"    =>  QuarterDateRange::Q3->range(),
+                    "Q4"    =>  QuarterDateRange::Q4->range(),
+            };
+        }
+
+        $usersEvaluation->update(
+            [
+                'rating'                        => $validated['rating'],
+                'percentage'                    => $validated['performance_score'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priority_area_1'] ?: null,
+                'priorityArea2'                 => $validated['priority_area_2'] ?: null,
+                'priorityArea3'                 => $validated['priority_area_3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
+                'evaluatorApprovedAt'           => now(),
+                'status'                        => $status
+            ]
+        );
+
+        foreach ($validated['job_knowledge'] as $jobKnowledge) {
+            $usersEvaluation->jobKnowledge()
+                ->whereKey($jobKnowledge['id'])
+                ->update([
+                    'score'     => $jobKnowledge['score'],
+                    'comment'   => $jobKnowledge['comment'],
+                ]);
+        }
+
+        foreach ($validated['quality_of_works'] as $qualityOfWorks) {
+            $usersEvaluation->qualityOfWorks()
+                ->whereKey($qualityOfWorks['id'])
+                ->update([
+                    'score'     => $qualityOfWorks['score'],
+                    'comment'   => $qualityOfWorks['comment'],
+                ]);
+        }
+
+        foreach ($validated['adaptabilities'] as $adaptability) {
+            $usersEvaluation->adaptability()
+                ->whereKey($adaptability['id'])
+                ->update([
+                    'score'     => $adaptability['score'],
+                    'comment'   => $adaptability['comment'],
+                ]);
+        }
+
+        foreach ($validated['teamworks'] as $teamworks) {
+            $usersEvaluation->teamworks()
+                ->whereKey($teamworks['id'])
+                ->update([
+                    'score'     => $teamworks['score'],
+                    'comment'   => $teamworks['comment'],
+                ]);
+        }
+
+        foreach ($validated['reliabilities'] as $reliabilities) {
+            $usersEvaluation->reliabilities()
+                ->whereKey($reliabilities['id'])
+                ->update([
+                    'score'     => $reliabilities['score'],
+                    'comment'   => $reliabilities['comment'],
+                ]);
+        }
+
+        foreach ($validated['ethicals'] as $ethicals) {
+            $usersEvaluation->ethicals()
+                ->whereKey($ethicals['id'])
+                ->update([
+                    'score'         => $ethicals['score'],
+                    'explanation'   => $ethicals['explanation'],
+                ]);
+        }
+
+        foreach ($validated['customer_services'] as $customerServices) {
+            $usersEvaluation->customerServices()
+                ->whereKey($customerServices['id'])
+                ->update([
+                    'score'         => $customerServices['score'],
+                    'explanation'   => $customerServices['explanation'],
+                ]);
+        }
+
+        foreach ($validated['managerial_skills'] as $managerialSkills) {
+            $usersEvaluation->managerialSkills()
+                ->whereKey($managerialSkills['id'])
+                ->update([
+                    'score'         => $managerialSkills['score'],
+                    'explanation'   => $managerialSkills['explanation'],
+                ]);
+        }
+
+        $auth_user_evaluator = Auth::user();
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+        }
+
+        return response()->json(
+            [
+                'message' => 'Updated Successfully',
+            ],
+            201
+        );
+    }
+
+    public function BranchRankNFile(UpdateBranchRankNFile $validated, UsersEvaluation $usersEvaluation)
+    {
+        $status = '';
+
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $status = EvalStatus::pending;
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $status = EvalStatus::pending_approval_1;
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $status = EvalStatus::pending_approval_2;
+            }
+        }
+
+        $evalDateFrom = $validated['coverage_from'];
+        $evalDateTo = $validated['coverage_to'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            {
+                    "Q1"    =>  QuarterDateRange::Q1->range(),
+                    "Q2"    =>  QuarterDateRange::Q2->range(),
+                    "Q3"    =>  QuarterDateRange::Q3->range(),
+                    "Q4"    =>  QuarterDateRange::Q4->range(),
+            };
+        }
+
+        $usersEvaluation->update(
+            [
+                'rating'                        => $validated['rating'],
+                'percentage'                    => $validated['performance_score'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priority_area_1'] ?: null,
+                'priorityArea2'                 => $validated['priority_area_2'] ?: null,
+                'priorityArea3'                 => $validated['priority_area_3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
+                'evaluatorApprovedAt'           => now(),
+                'status'                        => $status
+            ]
+        );
+
+        foreach ($validated['job_knowledge'] as $jobKnowledge) {
+            $usersEvaluation->jobKnowledge()
+                ->whereKey($jobKnowledge['id'])
+                ->update([
+                    'score'     => $jobKnowledge['score'],
+                    'comment'   => $jobKnowledge['comment'],
+                ]);
+        }
+
+        foreach ($validated['quality_of_works'] as $qualityOfWorks) {
+            $usersEvaluation->qualityOfWorks()
+                ->whereKey($qualityOfWorks['id'])
+                ->update([
+                    'score'     => $qualityOfWorks['score'],
+                    'comment'   => $qualityOfWorks['comment'],
+                ]);
+        }
+
+        foreach ($validated['adaptabilities'] as $adaptability) {
+            $usersEvaluation->adaptability()
+                ->whereKey($adaptability['id'])
+                ->update([
+                    'score'     => $adaptability['score'],
+                    'comment'   => $adaptability['comment'],
+                ]);
+        }
+
+        foreach ($validated['teamworks'] as $teamworks) {
+            $usersEvaluation->teamworks()
+                ->whereKey($teamworks['id'])
+                ->update([
+                    'score'     => $teamworks['score'],
+                    'comment'   => $teamworks['comment'],
+                ]);
+        }
+
+        foreach ($validated['reliabilities'] as $reliabilities) {
+            $usersEvaluation->reliabilities()
+                ->whereKey($reliabilities['id'])
+                ->update([
+                    'score'     => $reliabilities['score'],
+                    'comment'   => $reliabilities['comment'],
+                ]);
+        }
+
+        foreach ($validated['ethicals'] as $ethicals) {
+            $usersEvaluation->ethicals()
+                ->whereKey($ethicals['id'])
+                ->update([
+                    'score'         => $ethicals['score'],
+                    'explanation'   => $ethicals['explanation'],
+                ]);
+        }
+
+        foreach ($validated['customer_services'] as $customerServices) {
+            $usersEvaluation->customerServices()
+                ->whereKey($customerServices['id'])
+                ->update([
+                    'score'         => $customerServices['score'],
+                    'explanation'   => $customerServices['explanation'],
+                ]);
+        }
+
+        $auth_user_evaluator = Auth::user();
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+        }
+
+        return response()->json(
+            [
+                'message' => 'Updated Successfully',
+            ],
+            201
+        );
+    }
+
+    public function HoBasic(UpdateHoBasic $validated, UsersEvaluation $usersEvaluation)
+    {
+        $status = '';
+
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $status = EvalStatus::pending;
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $status = EvalStatus::pending_approval_1;
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $status = EvalStatus::pending_approval_2;
+            }
+        }
+
+        $evalDateFrom = $validated['coverage_from'];
+        $evalDateTo = $validated['coverage_to'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            {
+                    "Q1"    =>  QuarterDateRange::Q1->range(),
+                    "Q2"    =>  QuarterDateRange::Q2->range(),
+                    "Q3"    =>  QuarterDateRange::Q3->range(),
+                    "Q4"    =>  QuarterDateRange::Q4->range(),
+            };
+        }
+
+        $usersEvaluation->update(
+            [
+                'rating'                        => $validated['rating'],
+                'percentage'                    => $validated['performance_score'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priority_area_1'] ?: null,
+                'priorityArea2'                 => $validated['priority_area_2'] ?: null,
+                'priorityArea3'                 => $validated['priority_area_3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
+                'evaluatorApprovedAt'           => now(),
+                'status'                        => $status
+            ]
+        );
+
+        foreach ($validated['job_knowledge'] as $jobKnowledge) {
+            $usersEvaluation->jobKnowledge()
+                ->whereKey($jobKnowledge['id'])
+                ->update([
+                    'score'     => $jobKnowledge['score'],
+                    'comment'   => $jobKnowledge['comment'],
+                ]);
+        }
+
+        foreach ($validated['quality_of_works'] as $qualityOfWorks) {
+            $usersEvaluation->qualityOfWorks()
+                ->whereKey($qualityOfWorks['id'])
+                ->update([
+                    'score'     => $qualityOfWorks['score'],
+                    'comment'   => $qualityOfWorks['comment'],
+                ]);
+        }
+
+        foreach ($validated['adaptabilities'] as $adaptability) {
+            $usersEvaluation->adaptability()
+                ->whereKey($adaptability['id'])
+                ->update([
+                    'score'     => $adaptability['score'],
+                    'comment'   => $adaptability['comment'],
+                ]);
+        }
+
+        foreach ($validated['teamworks'] as $teamworks) {
+            $usersEvaluation->teamworks()
+                ->whereKey($teamworks['id'])
+                ->update([
+                    'score'     => $teamworks['score'],
+                    'comment'   => $teamworks['comment'],
+                ]);
+        }
+
+        foreach ($validated['reliabilities'] as $reliabilities) {
+            $usersEvaluation->reliabilities()
+                ->whereKey($reliabilities['id'])
+                ->update([
+                    'score'     => $reliabilities['score'],
+                    'comment'   => $reliabilities['comment'],
+                ]);
+        }
+
+        foreach ($validated['ethicals'] as $ethicals) {
+            $usersEvaluation->ethicals()
+                ->whereKey($ethicals['id'])
+                ->update([
+                    'score'         => $ethicals['score'],
+                    'explanation'   => $ethicals['explanation'],
+                ]);
+        }
+
+        foreach ($validated['managerial_skills'] as $managerialSkills) {
+            $usersEvaluation->managerialSkills()
+                ->whereKey($managerialSkills['id'])
+                ->update([
+                    'score'         => $managerialSkills['score'],
+                    'explanation'   => $managerialSkills['explanation'],
+                ]);
+        }
+
+        $auth_user_evaluator = Auth::user();
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+        }
+
+        return response()->json(
+            [
+                'message' => 'Updated Successfully',
+            ],
+            201
+        );
+    }
+
+    public function HoRankNFile(UpdateHoRankNFile $validated, UsersEvaluation $usersEvaluation)
+    {
+        $status = '';
+
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $status = EvalStatus::pending;
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $status = EvalStatus::pending_approval_1;
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $status = EvalStatus::pending_approval_2;
+            }
+        }
+
+        $evalDateFrom = $validated['coverage_from'];
+        $evalDateTo = $validated['coverage_to'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            {
+                    "Q1"    =>  QuarterDateRange::Q1->range(),
+                    "Q2"    =>  QuarterDateRange::Q2->range(),
+                    "Q3"    =>  QuarterDateRange::Q3->range(),
+                    "Q4"    =>  QuarterDateRange::Q4->range(),
+            };
+        }
+
+        $usersEvaluation->update(
+            [
+                'rating'                        => $validated['rating'],
+                'percentage'                    => $validated['performance_score'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priority_area_1'] ?: null,
+                'priorityArea2'                 => $validated['priority_area_2'] ?: null,
+                'priorityArea3'                 => $validated['priority_area_3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
+                'evaluatorApprovedAt'           => now(),
+                'status'                        => $status
+            ]
+        );
+
+        foreach ($validated['job_knowledge'] as $jobKnowledge) {
+            $usersEvaluation->jobKnowledge()
+                ->whereKey($jobKnowledge['id'])
+                ->update([
+                    'score'     => $jobKnowledge['score'],
+                    'comment'   => $jobKnowledge['comment'],
+                ]);
+        }
+
+        foreach ($validated['quality_of_works'] as $qualityOfWorks) {
+            $usersEvaluation->qualityOfWorks()
+                ->whereKey($qualityOfWorks['id'])
+                ->update([
+                    'score'     => $qualityOfWorks['score'],
+                    'comment'   => $qualityOfWorks['comment'],
+                ]);
+        }
+
+        foreach ($validated['adaptabilities'] as $adaptability) {
+            $usersEvaluation->adaptability()
+                ->whereKey($adaptability['id'])
+                ->update([
+                    'score'     => $adaptability['score'],
+                    'comment'   => $adaptability['comment'],
+                ]);
+        }
+
+        foreach ($validated['teamworks'] as $teamworks) {
+            $usersEvaluation->teamworks()
+                ->whereKey($teamworks['id'])
+                ->update([
+                    'score'     => $teamworks['score'],
+                    'comment'   => $teamworks['comment'],
+                ]);
+        }
+
+        foreach ($validated['reliabilities'] as $reliabilities) {
+            $usersEvaluation->reliabilities()
+                ->whereKey($reliabilities['id'])
+                ->update([
+                    'score'     => $reliabilities['score'],
+                    'comment'   => $reliabilities['comment'],
+                ]);
+        }
+
+        foreach ($validated['ethicals'] as $ethicals) {
+            $usersEvaluation->ethicals()
+                ->whereKey($ethicals['id'])
+                ->update([
+                    'score'         => $ethicals['score'],
+                    'explanation'   => $ethicals['explanation'],
+                ]);
+        }
+
+        $auth_user_evaluator = Auth::user();
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+        }
+
+        return response()->json(
+            [
+                'message' => 'Updated Successfully',
+            ],
+            201
+        );
+    }
+
+    public function BranchBasicAreaManager(UpdateBranchBasicAreaManager $validated, UsersEvaluation $usersEvaluation)
+    {
+        $status = '';
+
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $status = EvalStatus::pending;
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $status = EvalStatus::pending_approval_1;
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $status = EvalStatus::pending_approval_2;
+            }
+        }
+
+        $evalDateFrom = $validated['coverage_from'];
+        $evalDateTo = $validated['coverage_to'];
+
+        if(!empty($validated['reviewTypeRegular']))
+        {
+            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            {
+                    "Q1"    =>  QuarterDateRange::Q1->range(),
+                    "Q2"    =>  QuarterDateRange::Q2->range(),
+                    "Q3"    =>  QuarterDateRange::Q3->range(),
+                    "Q4"    =>  QuarterDateRange::Q4->range(),
+            };
+        }
+
+        $usersEvaluation->update(
+            [
+                'rating'                        => $validated['rating'],
+                'percentage'                    => $validated['performance_score'],
+                'coverageFrom'                  => $evalDateFrom,
+                'coverageTo'                    => $evalDateTo,
+                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'priorityArea1'                 => $validated['priority_area_1'] ?: null,
+                'priorityArea2'                 => $validated['priority_area_2'] ?: null,
+                'priorityArea3'                 => $validated['priority_area_3'] ?: null,
+                'remarks'                       => $validated['remarks'] ?: null,
+                'evaluatorApprovedAt'           => now(),
+                'status'                        => $status
+            ]
+        );
+
+        foreach ($validated['job_knowledge'] as $jobKnowledge) {
+            $usersEvaluation->jobKnowledge()
+                ->whereKey($jobKnowledge['id'])
+                ->update([
+                    'score'     => $jobKnowledge['score'],
+                    'comment'   => $jobKnowledge['comment'],
+                ]);
+        }
+
+        foreach ($validated['quality_of_works'] as $qualityOfWorks) {
+            $usersEvaluation->qualityOfWorks()
+                ->whereKey($qualityOfWorks['id'])
+                ->update([
+                    'score'     => $qualityOfWorks['score'],
+                    'comment'   => $qualityOfWorks['comment'],
+                ]);
+        }
+
+        foreach ($validated['adaptabilities'] as $adaptability) {
+            $usersEvaluation->adaptability()
+                ->whereKey($adaptability['id'])
+                ->update([
+                    'score'     => $adaptability['score'],
+                    'comment'   => $adaptability['comment'],
+                ]);
+        }
+
+        foreach ($validated['teamworks'] as $teamworks) {
+            $usersEvaluation->teamworks()
+                ->whereKey($teamworks['id'])
+                ->update([
+                    'score'     => $teamworks['score'],
+                    'comment'   => $teamworks['comment'],
+                ]);
+        }
+
+        foreach ($validated['reliabilities'] as $reliabilities) {
+            $usersEvaluation->reliabilities()
+                ->whereKey($reliabilities['id'])
+                ->update([
+                    'score'     => $reliabilities['score'],
+                    'comment'   => $reliabilities['comment'],
+                ]);
+        }
+
+        foreach ($validated['ethicals'] as $ethicals) {
+            $usersEvaluation->ethicals()
+                ->whereKey($ethicals['id'])
+                ->update([
+                    'score'         => $ethicals['score'],
+                    'explanation'   => $ethicals['explanation'],
+                ]);
+        }
+
+        foreach ($validated['managerial_skills'] as $managerialSkills) {
+            $usersEvaluation->managerialSkills()
+                ->whereKey($managerialSkills['id'])
+                ->update([
+                    'score'         => $managerialSkills['score'],
+                    'explanation'   => $managerialSkills['explanation'],
+                ]);
+        }
+
+        $auth_user_evaluator = Auth::user();
+        if(empty($usersEvaluation->rejected_by))
+        {
+            $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
+        }else{
+            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            {
+                $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            {
+                $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
+            }
+        }
+
+        return response()->json(
+            [
+                'message' => 'Updated Successfully',
+            ],
+            201
+        );
+    }
+}
