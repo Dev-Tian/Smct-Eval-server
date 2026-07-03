@@ -186,7 +186,8 @@ Route::middleware('auth:sanctum')->group(
                 [
                     'message' => 'Logged out successfully'
                 ]
-                ,200);
+                ,200
+            );
         });
     }
 );
