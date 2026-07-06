@@ -21,15 +21,15 @@ class UpdateUsersEvaluationController extends Controller
     {
         $status = '';
 
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $status = EvalStatus::pending;
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $status = EvalStatus::pending_approval_1;
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $status = EvalStatus::pending_approval_2;
             }
@@ -141,15 +141,15 @@ class UpdateUsersEvaluationController extends Controller
         }
 
         $auth_user_evaluator = Auth::user();
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
@@ -167,15 +167,15 @@ class UpdateUsersEvaluationController extends Controller
     {
         $status = '';
 
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $status = EvalStatus::pending;
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $status = EvalStatus::pending_approval_1;
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $status = EvalStatus::pending_approval_2;
             }
@@ -278,15 +278,15 @@ class UpdateUsersEvaluationController extends Controller
         }
 
         $auth_user_evaluator = Auth::user();
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
@@ -304,15 +304,15 @@ class UpdateUsersEvaluationController extends Controller
     {
         $status = '';
 
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $status = EvalStatus::pending;
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $status = EvalStatus::pending_approval_1;
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $status = EvalStatus::pending_approval_2;
             }
@@ -415,15 +415,15 @@ class UpdateUsersEvaluationController extends Controller
         }
 
         $auth_user_evaluator = Auth::user();
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
@@ -441,15 +441,15 @@ class UpdateUsersEvaluationController extends Controller
     {
         $status = '';
 
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $status = EvalStatus::pending;
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $status = EvalStatus::pending_approval_1;
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $status = EvalStatus::pending_approval_2;
             }
@@ -543,15 +543,15 @@ class UpdateUsersEvaluationController extends Controller
         }
 
         $auth_user_evaluator = Auth::user();
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
@@ -569,15 +569,15 @@ class UpdateUsersEvaluationController extends Controller
     {
         $status = '';
 
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $status = EvalStatus::pending;
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $status = EvalStatus::pending_approval_1;
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $status = EvalStatus::pending_approval_2;
             }
@@ -680,15 +680,15 @@ class UpdateUsersEvaluationController extends Controller
         }
 
         $auth_user_evaluator = Auth::user();
-        if(empty($usersEvaluation->rejected_by))
+        if(empty($usersEvaluation->rejected_by_id))
         {
             $usersEvaluation->employee->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
         }else{
-            if($usersEvaluation->rejected_by->id == $usersEvaluation->approver1->id)
+            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
             {
                 $usersEvaluation->approver1->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
-            elseif($usersEvaluation->rejected_by->id == $usersEvaluation->approver2->id)
+            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
             {
                 $usersEvaluation->approver2->notify(new EvalNotifications('An evaluation edited by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your approval.'));
             }
