@@ -1173,7 +1173,8 @@ class UsersEvaluationController extends Controller
         $usersEvaluation->update(
             [
                 'status'            =>  EvalStatus::rejected,
-                'noteIfRejected'    =>  $validated['note']
+                'noteIfRejected'    =>  $validated['note'],
+                'rejected_by_id'    =>  Auth::id()
             ]
         );
 
