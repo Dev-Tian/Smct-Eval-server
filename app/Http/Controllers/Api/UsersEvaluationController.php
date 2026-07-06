@@ -1141,8 +1141,8 @@ class UsersEvaluationController extends Controller
         {
             $usersEvaluation->update(
                 [
-                    'headApprovedAt'        =>  now(),
-                    'status'                =>  EvalStatus::pending
+                    'secondApproverApprovedAt'      =>  now(),
+                    'status'                        =>  EvalStatus::pending
                 ]
             );
 
