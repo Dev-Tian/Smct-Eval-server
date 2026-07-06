@@ -38,9 +38,9 @@ class UpdateUsersEvaluationController extends Controller
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
 
-        if(!empty($validated['reviewTypeRegular']))
+        if(!empty($validated['review_type_regular']))
         {
-            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            [$evalDateFrom, $evalDateTo] = match($validated['review_type_regular'])
             {
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
@@ -55,10 +55,10 @@ class UpdateUsersEvaluationController extends Controller
                 'percentage'                    => $validated['performance_score'],
                 'coverageFrom'                  => $evalDateFrom,
                 'coverageTo'                    => $evalDateTo,
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'reviewTypeProbationary'        => $validated['review_type_probationary'] ?: null,
+                'reviewTypeRegular'             => $validated['review_type_regular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['review_type_others_improvement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['review_type_others_custom'] ?: null,
                 'priorityArea1'                 => $validated['priority_area_1'] ?: null,
                 'priorityArea2'                 => $validated['priority_area_2'] ?: null,
                 'priorityArea3'                 => $validated['priority_area_3'] ?: null,
@@ -184,9 +184,9 @@ class UpdateUsersEvaluationController extends Controller
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
 
-        if(!empty($validated['reviewTypeRegular']))
+        if(!empty($validated['review_type_regular']))
         {
-            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            [$evalDateFrom, $evalDateTo] = match($validated['review_type_regular'])
             {
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
@@ -201,10 +201,10 @@ class UpdateUsersEvaluationController extends Controller
                 'percentage'                    => $validated['performance_score'],
                 'coverageFrom'                  => $evalDateFrom,
                 'coverageTo'                    => $evalDateTo,
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'reviewTypeProbationary'        => $validated['review_type_probationary'] ?: null,
+                'reviewTypeRegular'             => $validated['review_type_regular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['review_type_others_improvement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['review_type_others_custom'] ?: null,
                 'priorityArea1'                 => $validated['priority_area_1'] ?: null,
                 'priorityArea2'                 => $validated['priority_area_2'] ?: null,
                 'priorityArea3'                 => $validated['priority_area_3'] ?: null,
@@ -321,9 +321,9 @@ class UpdateUsersEvaluationController extends Controller
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
 
-        if(!empty($validated['reviewTypeRegular']))
+        if(!empty($validated['review_type_regular']))
         {
-            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            [$evalDateFrom, $evalDateTo] = match($validated['review_type_regular'])
             {
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
@@ -338,10 +338,10 @@ class UpdateUsersEvaluationController extends Controller
                 'percentage'                    => $validated['performance_score'],
                 'coverageFrom'                  => $evalDateFrom,
                 'coverageTo'                    => $evalDateTo,
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'reviewTypeProbationary'        => $validated['review_type_probationary'] ?: null,
+                'reviewTypeRegular'             => $validated['review_type_regular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['review_type_others_improvement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['review_type_others_custom'] ?: null,
                 'priorityArea1'                 => $validated['priority_area_1'] ?: null,
                 'priorityArea2'                 => $validated['priority_area_2'] ?: null,
                 'priorityArea3'                 => $validated['priority_area_3'] ?: null,
@@ -458,9 +458,9 @@ class UpdateUsersEvaluationController extends Controller
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
 
-        if(!empty($validated['reviewTypeRegular']))
+        if(!empty($validated['review_type_regular']))
         {
-            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            [$evalDateFrom, $evalDateTo] = match($validated['review_type_regular'])
             {
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
@@ -475,10 +475,10 @@ class UpdateUsersEvaluationController extends Controller
                 'percentage'                    => $validated['performance_score'],
                 'coverageFrom'                  => $evalDateFrom,
                 'coverageTo'                    => $evalDateTo,
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'reviewTypeProbationary'        => $validated['review_type_probationary'] ?: null,
+                'reviewTypeRegular'             => $validated['review_type_regular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['review_type_others_improvement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['review_type_others_custom'] ?: null,
                 'priorityArea1'                 => $validated['priority_area_1'] ?: null,
                 'priorityArea2'                 => $validated['priority_area_2'] ?: null,
                 'priorityArea3'                 => $validated['priority_area_3'] ?: null,
@@ -586,9 +586,9 @@ class UpdateUsersEvaluationController extends Controller
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
 
-        if(!empty($validated['reviewTypeRegular']))
+        if(!empty($validated['review_type_regular']))
         {
-            [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+            [$evalDateFrom, $evalDateTo] = match($validated['review_type_regular'])
             {
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
@@ -603,10 +603,10 @@ class UpdateUsersEvaluationController extends Controller
                 'percentage'                    => $validated['performance_score'],
                 'coverageFrom'                  => $evalDateFrom,
                 'coverageTo'                    => $evalDateTo,
-                'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                'reviewTypeProbationary'        => $validated['review_type_probationary'] ?: null,
+                'reviewTypeRegular'             => $validated['review_type_regular'] ?: null,
+                'reviewTypeOthersImprovement'   => $validated['review_type_others_improvement'] ?: null,
+                'reviewTypeOthersCustom'        => $validated['review_type_others_custom'] ?: null,
                 'priorityArea1'                 => $validated['priority_area_1'] ?: null,
                 'priorityArea2'                 => $validated['priority_area_2'] ?: null,
                 'priorityArea3'                 => $validated['priority_area_3'] ?: null,
