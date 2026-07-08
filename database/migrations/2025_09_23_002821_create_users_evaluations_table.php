@@ -20,6 +20,8 @@ return new class extends Migration
             $table->foreignIdFor(User::class, 'approver2_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignIdFor(User::class, 'rejected_by_id')->nullable()->constrained()->nullOnDelete();
 
+            $table->string('employee_branch_code');
+
             $table->decimal('rating', 3, 2);
             $table->string('percentage');
             $table->enum('status', ['pending', 'pending_approval_1', 'pending_approval_2', 'rejected', 'completed'])->default('pending');

@@ -10,4 +10,4 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('evaluation:auto-sign')
-    ->daily();
+    ->saturdays();
