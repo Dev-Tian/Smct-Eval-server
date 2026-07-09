@@ -1124,8 +1124,10 @@ class UsersEvaluationController extends Controller
             {
                 $usersEvaluation->update(
                     [
-                        'firstApproverApprovedAt'        =>  now(),
-                        'status'                =>  EvalStatus::pending
+                        'noteIfRejected'                => null,
+                        'rejected_by_id'                => null,
+                        'firstApproverApprovedAt'       =>  now(),
+                        'status'                        =>  EvalStatus::pending
                     ]
                 );
                 return response()->json(
@@ -1137,6 +1139,8 @@ class UsersEvaluationController extends Controller
             }
             $usersEvaluation->update(
                 [
+                    'noteIfRejected'                => null,
+                    'rejected_by_id'                => null,
                     'firstApproverApprovedAt'        =>  now(),
                     'status'                =>  EvalStatus::pending_approval_2
                 ]
@@ -1155,6 +1159,8 @@ class UsersEvaluationController extends Controller
         {
             $usersEvaluation->update(
                 [
+                    'noteIfRejected'                => null,
+                    'rejected_by_id'                => null,
                     'secondApproverApprovedAt'      =>  now(),
                     'status'                        =>  EvalStatus::pending
                 ]
