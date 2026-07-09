@@ -17,23 +17,23 @@ use Illuminate\Support\Facades\Auth;
 class UpdateUsersEvaluationController extends Controller
 {
 
+    public function statusLogic(UsersEvaluation $usersEvaluation) : EvalStatus
+    {
+        return match (true) {
+
+            $usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id
+            => EvalStatus::pending_approval_2,
+
+            $usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id || !empty($usersEvaluation->approver1_id)
+                => EvalStatus::pending_approval_1,
+
+            default => EvalStatus::pending,
+        };
+    }
+
     public function BranchBasic(UpdateBranchBasic $validated, UsersEvaluation $usersEvaluation)
     {
-        $status = '';
-
-        if(empty($usersEvaluation->rejected_by_id))
-        {
-            $status = EvalStatus::pending;
-        }else{
-            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
-            {
-                $status = EvalStatus::pending_approval_1;
-            }
-            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
-            {
-                $status = EvalStatus::pending_approval_2;
-            }
-        }
+        $status = $this->statusLogic($usersEvaluation);
 
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
@@ -165,21 +165,7 @@ class UpdateUsersEvaluationController extends Controller
 
     public function BranchRankNFile(UpdateBranchRankNFile $validated, UsersEvaluation $usersEvaluation)
     {
-        $status = '';
-
-        if(empty($usersEvaluation->rejected_by_id))
-        {
-            $status = EvalStatus::pending;
-        }else{
-            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
-            {
-                $status = EvalStatus::pending_approval_1;
-            }
-            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
-            {
-                $status = EvalStatus::pending_approval_2;
-            }
-        }
+        $status = $this->statusLogic($usersEvaluation);
 
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
@@ -302,21 +288,7 @@ class UpdateUsersEvaluationController extends Controller
 
     public function HoBasic(UpdateHoBasic $validated, UsersEvaluation $usersEvaluation)
     {
-        $status = '';
-
-        if(empty($usersEvaluation->rejected_by_id))
-        {
-            $status = EvalStatus::pending;
-        }else{
-            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
-            {
-                $status = EvalStatus::pending_approval_1;
-            }
-            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
-            {
-                $status = EvalStatus::pending_approval_2;
-            }
-        }
+        $status = $this->statusLogic($usersEvaluation);
 
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
@@ -439,21 +411,7 @@ class UpdateUsersEvaluationController extends Controller
 
     public function HoRankNFile(UpdateHoRankNFile $validated, UsersEvaluation $usersEvaluation)
     {
-        $status = '';
-
-        if(empty($usersEvaluation->rejected_by_id))
-        {
-            $status = EvalStatus::pending;
-        }else{
-            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
-            {
-                $status = EvalStatus::pending_approval_1;
-            }
-            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
-            {
-                $status = EvalStatus::pending_approval_2;
-            }
-        }
+        $status = $this->statusLogic($usersEvaluation);
 
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
@@ -567,21 +525,7 @@ class UpdateUsersEvaluationController extends Controller
 
     public function BranchBasicAreaManager(UpdateBranchBasicAreaManager $validated, UsersEvaluation $usersEvaluation)
     {
-        $status = '';
-
-        if(empty($usersEvaluation->rejected_by_id))
-        {
-            $status = EvalStatus::pending;
-        }else{
-            if($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id)
-            {
-                $status = EvalStatus::pending_approval_1;
-            }
-            elseif($usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id)
-            {
-                $status = EvalStatus::pending_approval_2;
-            }
-        }
+        $status = $this->statusLogic($usersEvaluation);
 
         $evalDateFrom = $validated['coverage_from'];
         $evalDateTo = $validated['coverage_to'];
