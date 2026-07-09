@@ -21,10 +21,10 @@ class UpdateUsersEvaluationController extends Controller
     {
         return match (true) {
 
-            $usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id && !empty($usersEvaluation->rejected_by_id)
+            $usersEvaluation->rejected_by_id == $usersEvaluation->approver2_id && !empty($usersEvaluation->approver2_id)
                 => EvalStatus::pending_approval_2,
 
-            $usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id || !empty($usersEvaluation->approver1_id)
+            ($usersEvaluation->rejected_by_id == $usersEvaluation->approver1_id && !empty($usersEvaluation->approver1_id)) || !empty($usersEvaluation->approver1_id)
                 => EvalStatus::pending_approval_1,
 
             default => EvalStatus::pending,
