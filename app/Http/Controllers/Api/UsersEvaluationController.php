@@ -1014,7 +1014,16 @@ class UsersEvaluationController extends Controller
                     'customerServices'
                 ]
             )
-            ->orWhereAny(['evaluator_id','approver1_id','approver2_id'], $user->id)
+            ->where(
+                fn($q)
+                =>
+                $q->where(
+                    fn($q) => $q->where('status', "pending_approval_1")->where('approver1_id', $user->id)
+                )->orWhere(
+                    fn($q) => $q->where('status', "pending_approval_2")->where('approver2_id', $user->id)
+                )
+            )
+            ->orWhere('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
