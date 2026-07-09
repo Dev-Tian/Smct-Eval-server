@@ -1097,8 +1097,8 @@ class UsersEvaluationController extends Controller
     public function destroy(UsersEvaluation $usersEvaluation)
     {
         $authUser = Auth::user();
-        if(($usersEvaluation->status !== "completed" && $usersEvaluation->employeeApprovedAt === null) || $authUser->roles->name === "admin"){
-             $usersEvaluation->delete();
+        if($authUser->roles()->where('name', 'admin')->exists()){
+            $usersEvaluation->delete();
 
             return response()->json(
                 [
