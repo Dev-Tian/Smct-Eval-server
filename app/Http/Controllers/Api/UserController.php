@@ -333,7 +333,7 @@ class UserController extends Controller
                             $q->whereHas('branch', fn($q)=>$q->whereIn('branches.id', $userBranch ) )
                             ->orWhereHas('branches', fn($q)=>$q->whereIn('branches.id', $userBranch) )
                         )
-                        ->whereDoesntHave('assigned_as_evaluators')
+                        // ->whereDoesntHave('assigned_as_evaluators')
                         ->whereNot('id', $user->id)
                         ->whereRelation('roles' , 'name', 'evaluator')
                         ->get();
