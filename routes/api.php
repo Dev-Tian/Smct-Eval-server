@@ -156,6 +156,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('showUserMemorandumViolation/{id}', 'show_perUser');
                 Route::post('addMemorandumViolation', 'store');
                 Route::post('updateMemorandumViolation/{memorandumViolation}', 'update');
+                Route::post('deleteMemorandumViolation/{memorandumViolation}', 'destroy');
             }
         );
 

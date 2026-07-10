@@ -187,8 +187,25 @@ class MemorandumViolationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(MemorandumViolation $MemorandumViolation)
+    public function destroy(MemorandumViolation $memorandumViolation)
     {
-        //
+        if(Auth::user()->roles()->where('name', 'hr')->exists())
+        {
+            $memorandumViolation->delete();
+
+            return response()->json(
+                [
+                    'message'       =>  "Memorandum has been deleted."
+                ]
+                ,200
+            );
+        }
+
+        return response()->json(
+            [
+                'message'       =>  "You must be assigned as an HR to delete this memorandum."
+            ]
+            ,403
+        );
     }
 }
