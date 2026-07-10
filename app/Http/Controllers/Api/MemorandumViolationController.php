@@ -87,7 +87,7 @@ class MemorandumViolationController extends Controller
                 'title'                => ['required', 'string'],
                 'violation_date'       => ['required', 'date'],
                 'offense'              => ['required', 'string'],
-                'sanction'             => ['string']
+                'sanction'             => ['nullable','string']
             ]
         );
 
