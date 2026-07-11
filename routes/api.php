@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\AdminDashboardController;
+use App\Http\Controllers\Api\CreateUsersEvaluationController;
 use App\Http\Controllers\Api\EmployeeDashboardController;
 use App\Http\Controllers\Api\EvaluatorDashboardController;
 use App\Http\Controllers\Api\HrDashboardController;
@@ -96,6 +97,15 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('BranchBasicAreaManager/resubmit/{usersEvaluation}', 'BranchBasicAreaManager');
             }
         );
+        Route::controller(CreateUsersEvaluationController::class)->group(
+            function () {
+                Route::post('BranchRankNFile/{user}', 'BranchRankNFile');
+                Route::post('BranchBasic/{user}', 'BranchBasic');
+                Route::post('HoBasic/{user}', 'HoBasic');
+                Route::post('HoRankNFile/{user}', 'HoRankNFile');
+                Route::post('BranchBasicAreaManager/{user}', 'BranchBasicAreaManager');
+            }
+        );
 
         Route::controller(UsersEvaluationController::class)->group(
             function () {
@@ -109,17 +119,6 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('deleteEval/{usersEvaluation}', 'destroy');
                 Route::post('acceptApprovalEvaluation/{usersEvaluation}', 'approveEvaluation');
                 Route::post('rejectApprovalEvaluation/{usersEvaluation}', 'rejectDraftEvaluation');
-                //submissions
-                //branch rank n file
-                Route::post('BranchRankNFile/{user}', 'BranchRankNFile');
-                //branch basic
-                Route::post('BranchBasic/{user}', 'BranchBasic');
-                //ho basic
-                Route::post('HoBasic/{user}', 'HoBasic');
-                //ho rank n file
-                Route::post('HoRankNFile/{user}', 'HoRankNFile');
-                // area managers
-                Route::post('BranchBasicAreaManager/{user}', 'BranchBasicAreaManager');
             }
         );
 
