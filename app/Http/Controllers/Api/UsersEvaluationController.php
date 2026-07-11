@@ -103,11 +103,11 @@ class UsersEvaluationController extends Controller
                 ->orWhereYear('coverageTo', now()->year);
             })
             ->get(
-                    [
-                        'reviewTypeProbationary',
-                        'reviewTypeRegular'
-                    ]
-                );
+                [
+                    'reviewTypeProbationary',
+                    'reviewTypeRegular'
+                ]
+            );
 
         return response()->json(
             [
@@ -124,12 +124,6 @@ class UsersEvaluationController extends Controller
     {
         //
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-
-
 
     /**
      * Display the specified resource.
