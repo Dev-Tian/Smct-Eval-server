@@ -10,4 +10,6 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('evaluation:auto-sign')
-    ->saturdays();
+    ->daily()
+    ->at('17:00')
+    ->withoutOverlapping();
