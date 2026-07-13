@@ -582,7 +582,14 @@ class UserController extends Controller
         // $per_page = $request->input('per_page', 10);
 
         $users = User::query()
-            ->select(['id','branch_id', 'fname', 'lname'])
+            ->select(
+                [
+                    'id',
+                    'branch_id',
+                    'fname',
+                    'lname'
+                ]
+            )
             ->with(
                 [
                     'branch:id,branch_code,branch_name',
@@ -745,7 +752,12 @@ class UserController extends Controller
                                         ->whereRelation('assignedEvaluators', 'evaluator_id', $manager->id);
                                     }
                                 )
-                                ->get(['id','label']);
+                                ->get(
+                                    [
+                                        'id',
+                                        'label'
+                                    ]
+                                );
 
         return response()->json(
             [
@@ -759,7 +771,6 @@ class UserController extends Controller
 
     public function getAllEvaluatorEmployees(Request $request, User $user)
     {
-        //filtering
         $search = $request->input('search');
 
         $unassignedEmp = User::query()
@@ -978,8 +989,6 @@ class UserController extends Controller
             ->chunk(100, function ($hrs) use ($notificationData) {
                 Notification::send($hrs, $notificationData);
             });
-
-
 
         return response()->json(
             [
