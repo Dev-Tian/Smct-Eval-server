@@ -31,19 +31,35 @@ class EvaluatorDashboardController extends Controller
         $quarter = $request->input('quarter');
         $year = $request->input('year');
 
-        $user_eval = UsersEvaluation::with(
+        $user_eval = UsersEvaluation::query()
+            ->with(
                 [
-                    'employee:id,position_id,branch_id,fname,lname,emp_id,contact,date_hired,signature',
+                    'employee:id,branch_id,fname,lname',
                     'employee.branch:id,branch_code,branch_name',
-                    'employee.positions:id,label',
-                    'evaluator:id,fname,lname,signature',
-                    'jobKnowledge',
-                    'adaptability',
-                    'qualityOfWorks',
-                    'teamworks',
-                    'reliabilities',
-                    'ethicals',
-                    'customerServices'
+                    // 'evaluator:id,fname,lname',
+                    // 'approver1:id,fname,lname,signature',
+                    // 'approver2:id,fname,lname,signature',
+                    // 'rejectedBy:id,fname,lname',
+                    // 'jobKnowledge',
+                    // 'adaptability',
+                    // 'qualityOfWorks',
+                    // 'teamworks',
+                    // 'reliabilities',
+                    // 'ethicals',
+                    // 'customerServices'
+                ]
+            )
+            ->select(
+                [
+                    "id",
+                    "employee_id",
+                    "rating",
+                    "status",
+                    "reviewTypeProbationary",
+                    "reviewTypeRegular",
+                    "reviewTypeOthersImprovement",
+                    "reviewTypeOthersCustom",
+                    "created_at",
                 ]
             )
             ->orWhereAny(['evaluator_id','approver1_id','approver2_id'], $user->id)

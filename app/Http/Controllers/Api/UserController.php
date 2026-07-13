@@ -20,6 +20,7 @@ use Spatie\Permission\Models\Role;
 // use App\Mail\BulkRegister;
 use Illuminate\Support\Facades\Mail;
 
+use function Laravel\Prompts\select;
 use function Symfony\Component\Clock\now;
 
 class UserController extends Controller
@@ -538,7 +539,7 @@ class UserController extends Controller
                     fn($q)
                     =>
                     $q->where('is_active', 'active')
-                    ->whereNot('id',Auth::id())
+                    // ->whereNot('id',Auth::id())
                 )
                 ->whereRelation('roles', fn($w) => $w->where(fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr')))
                 ->search($search)
@@ -716,6 +717,17 @@ class UserController extends Controller
                                 'roles:id,name',
                             ]
                         )
+                        ->select(
+                            [
+                                "id",
+                                "position_id",
+                                "department_id",
+                                "branch_id",
+                                "fname",
+                                "lname",
+                                "email",
+                            ]
+                        )
                         ->where('is_active', 'active')
                         ->whereRelation('assignedEvaluators', 'evaluator_id', $manager->id)
                         ->when($position_filter, fn($q) => $q->whereRelation('positions','id', $position_filter))
@@ -725,13 +737,21 @@ class UserController extends Controller
 
         $new_hires = (clone $userQuery)->whereBetween('created_at', [Carbon::now()->subDays(7), now()])->count();
 
-        // // final query
         $employees = $userQuery->paginate($perPage);
+
+        $positions_4_filter = Position::whereHas( 'users',
+                                    function ($query) use ($manager) {
+                                        $query->where('is_active', 'active')
+                                        ->whereRelation('assignedEvaluators', 'evaluator_id', $manager->id);
+                                    }
+                                )
+                                ->get(['id','label']);
 
         return response()->json(
             [
                 'employees' => $employees,
                 'new_count' => $new_hires,
+                'positions' => $positions_4_filter,
             ]
             ,200
         );
