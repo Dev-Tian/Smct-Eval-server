@@ -72,21 +72,21 @@ services:
       - performance
     restart: unless-stopped
 
-  performance-scheduler:
-    image: performance-server
-    container_name: performance-server-scheduler
-    working_dir: /var/www/
-    depends_on:
-      - performance-server
-    command: php artisan schedule:run
-    volumes:
-      - ./storage:/var/www/storage
-      - ./bootstrap/cache:/var/www/bootstrap/cache
-      - /home/webserver/systems/Performance-Evaluation/Smct-Eval-server/.env:/var/www/.env
-      - ./:/var/www
-    networks:
-      - performance
-    restart: unless-stopped
+#   performance-scheduler:
+#     image: performance-server
+#     container_name: performance-server-scheduler
+#     working_dir: /var/www/
+#     depends_on:
+#       - performance-server
+#     command: php artisan schedule:run
+#     volumes:
+#       - ./storage:/var/www/storage
+#       - ./bootstrap/cache:/var/www/bootstrap/cache
+#       - /home/webserver/systems/Performance-Evaluation/Smct-Eval-server/.env:/var/www/.env
+#       - ./:/var/www
+#     networks:
+#       - performance
+#     restart: unless-stopped
 
 networks:
   performance:
