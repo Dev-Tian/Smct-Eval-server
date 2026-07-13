@@ -78,7 +78,7 @@ services:
     working_dir: /var/www/
     depends_on:
       - performance-server
-    command: php artisan schedule:work
+    command: php artisan schedule:run
     volumes:
       - ./storage:/var/www/storage
       - ./bootstrap/cache:/var/www/bootstrap/cache
