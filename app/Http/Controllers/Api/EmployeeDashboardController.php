@@ -18,11 +18,27 @@ class EmployeeDashboardController extends Controller
     {
         $user = Auth::user();
 
-        $user_eval = UsersEvaluation::where('employee_id', $user->id)->whereIn('status', ['pending', 'completed'])->get();
+        $user_eval = UsersEvaluation::select(
+                                [
+                                    "id",
+                                    "evaluator_id",
+                                    "rating",
+                                    "status",
+                                    "reviewTypeProbationary",
+                                    "reviewTypeRegular",
+                                    "reviewTypeOthersImprovement",
+                                    "reviewTypeOthersCustom",
+                                    "created_at",
+                                ]
+                            )
+                            ->where('employee_id', $user->id)
+                            ->whereIn('status', ['pending', 'completed'])
+                            ->get();
+
         $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->whereIn('status', ['pending', 'completed'])->count() ?: 0;
         $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->whereIn('status', ['pending', 'completed'])->whereNotNull("rating")->sum('rating') ?: 0;
         $average = empty(!$total_evaluations) ? round($sum_ratings / $total_evaluations, 2) : 0;
-        $recent_evaluation = UsersEvaluation::where('employee_id', $user->id)
+        $recent_evaluation_rating = UsersEvaluation::where('employee_id', $user->id)
             ->whereIn('status', ['pending', 'completed'])
             ->latest('created_at')
             ->select('id', 'rating')
@@ -32,7 +48,7 @@ class EmployeeDashboardController extends Controller
             [
                 'total_evaluations'     =>  $total_evaluations,
                 'average'               =>  $average,
-                'recent_evaluation'     =>  $recent_evaluation,
+                'recent_evaluation'     =>  $recent_evaluation_rating,
                 'user_eval'             =>  $user_eval,
             ],
             200
@@ -41,7 +57,23 @@ class EmployeeDashboardController extends Controller
 
     public function index2(User $user)
     {
-        $user_eval = UsersEvaluation::where('employee_id', $user->id)->whereIn('status', ['pending', 'completed'])->get();
+        $user_eval = UsersEvaluation::select(
+                                [
+                                    "id",
+                                    "evaluator_id",
+                                    "rating",
+                                    "status",
+                                    "reviewTypeProbationary",
+                                    "reviewTypeRegular",
+                                    "reviewTypeOthersImprovement",
+                                    "reviewTypeOthersCustom",
+                                    "created_at",
+                                ]
+                            )
+                            ->where('employee_id', $user->id)
+                            ->whereIn('status', ['pending', 'completed'])
+                            ->get();
+
         $total_evaluations = UsersEvaluation::where('employee_id', $user->id)->whereIn('status', ['pending', 'completed'])->count() ?: 0;
         $sum_ratings = UsersEvaluation::where('employee_id', $user->id)->whereIn('status', ['pending', 'completed'])->whereNotNull("rating")->sum('rating') ?: 0;
         $average = empty(!$total_evaluations) ? round($sum_ratings / $total_evaluations, 2) : 0;
@@ -50,6 +82,7 @@ class EmployeeDashboardController extends Controller
                             ->latest('created_at')
                             ->select('id', 'rating')
                             ->first();
+
         $highest_rating = UsersEvaluation::where('employee_id', $user->id)
                             ->max('rating');
 

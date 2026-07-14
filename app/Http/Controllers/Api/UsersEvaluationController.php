@@ -37,13 +37,27 @@ class UsersEvaluationController extends Controller
         $all_evaluations = UsersEvaluation::query()
             ->with(
                 [
-                    'employee:id,position_id,branch_id,fname,lname,emp_id,contact,date_hired,signature',
+                    'employee:id,branch_id,fname,lname',
                     'employee.branch:id,branch_code,branch_name',
-                    'employee.positions:id,label',
+                    // 'employee.positions:id,label',
                     'evaluator:id,fname,lname,signature',
-                    'approver1:id,fname,lname,signature',
-                    'approver2:id,fname,lname,signature',
-                    'rejectedBy:id,fname,lname',
+                ]
+            )
+            ->select(
+                [
+                    "id",
+                    "employee_id",
+                    "evaluator_id",
+                    "employee_branch_code",
+                    "rating",
+                    "status",
+                    "reviewTypeProbationary",
+                    "reviewTypeRegular",
+                    "reviewTypeOthersImprovement",
+                    "reviewTypeOthersCustom",
+                    "evaluatorApprovedAt",
+                    "employeeApprovedAt",
+                    "created_at",
                 ]
             )
             ->when($isHr, fn($q) => $q->whereIn('status', [EvalStatus::pending, EvalStatus::completed]))
@@ -340,9 +354,9 @@ class UsersEvaluationController extends Controller
 
             return response()->json(
                 [
-                    'message' => 'Deleted Successfully',
-                ],
-                200
+                            'message' => 'Deleted Successfully',
+                        ],
+                        200
             );
         }
 
@@ -380,7 +394,7 @@ class UsersEvaluationController extends Controller
                     'noteIfRejected'                => null,
                     'rejected_by_id'                => null,
                     'firstApproverApprovedAt'       => now(),
-                    'status'                =>  EvalStatus::pending_approval_2
+                    'status'                        =>  EvalStatus::pending_approval_2
                 ]
             );
 
