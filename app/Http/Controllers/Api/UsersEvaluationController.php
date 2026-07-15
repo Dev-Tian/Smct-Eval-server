@@ -314,8 +314,8 @@ class UsersEvaluationController extends Controller
     {
         $usersEvaluation->update(
             [
-                'status' => 'completed',
-                'employeeApprovedAt' => now(),
+                'status'                => 'completed',
+                'employeeApprovedAt'    => now(),
             ]
         );
 
@@ -354,9 +354,9 @@ class UsersEvaluationController extends Controller
 
             return response()->json(
                 [
-                            'message' => 'Deleted Successfully',
-                        ],
-                        200
+                    'message' => 'Deleted Successfully',
+                ],
+                200
             );
         }
 
@@ -382,19 +382,21 @@ class UsersEvaluationController extends Controller
                         'status'                        => EvalStatus::pending
                     ]
                 );
+
                 return response()->json(
-                [
-                    'message'       =>  'Approval Successfully'
-                ]
-                ,200
-            );
+                    [
+                        'message'       =>  'Approval Successfully'
+                    ]
+                    ,200
+                );
             }
+
             $usersEvaluation->update(
                 [
                     'noteIfRejected'                => null,
                     'rejected_by_id'                => null,
                     'firstApproverApprovedAt'       => now(),
-                    'status'                        =>  EvalStatus::pending_approval_2
+                    'status'                        => EvalStatus::pending_approval_2
                 ]
             );
 
@@ -456,8 +458,6 @@ class UsersEvaluationController extends Controller
             ]
             ,201
         );
-
-
     }
 
     public function getAllYears()
