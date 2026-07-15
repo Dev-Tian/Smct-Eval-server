@@ -1090,18 +1090,18 @@ class UserController extends Controller
     public function assignEmployees(User $user, Request $request)
     {
         $Ids = $request->employee_ids ?: [];
-            $employeeIds = is_array($Ids)
+        $employeeIds = is_array($Ids)
                 ? $Ids
                 : explode(',', $Ids);
 
-            $user->assignedEmployees()->sync($employeeIds);
+        $user->assignedEmployees()->sync($employeeIds);
 
-            return response()->json(
-                [
-                    'message'   =>  "success"
-                ]
-                ,201
-            );
+        return response()->json(
+            [
+                'message'   =>  "success"
+            ]
+            ,201
+        );
     }
 
     public function assignApprovers(User $user,Request $request)

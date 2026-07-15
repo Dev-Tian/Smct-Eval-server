@@ -37,9 +37,9 @@ class UsersEvaluationController extends Controller
         $all_evaluations = UsersEvaluation::query()
             ->with(
                 [
-                    'employee:id,branch_id,fname,lname',
+                    'employee:id,position_id,branch_id,fname,lname',
                     'employee.branch:id,branch_code,branch_name',
-                    // 'employee.positions:id,label',
+                    'employee.positions:id,label',
                     'evaluator:id,fname,lname,signature',
                 ]
             )
