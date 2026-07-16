@@ -686,12 +686,12 @@ class UserController extends Controller
                         ->paginate($perPage);
 
         return response()->json(
-                [
-                    'message'       =>  'List of assigned employees under specific evaluator',
-                    'employees'     =>  $employees
-                ]
-                ,200
-            );
+            [
+                'message'       =>  'List of assigned employees under specific evaluator',
+                'employees'     =>  $employees
+            ]
+            ,200
+        );
     }
 
     //applicable for area manager / branch manager/supervisor /department manager / avp manager
@@ -722,6 +722,7 @@ class UserController extends Controller
                                 'departments:id,department_name',
                                 'positions:id,label',
                                 'roles:id,name',
+                                'assignedEvaluators:id,fname,lname,email'
                             ]
                         )
                         ->select(
@@ -733,6 +734,8 @@ class UserController extends Controller
                                 "fname",
                                 "lname",
                                 "email",
+                                "emp_id",
+                                "date_hired"
                             ]
                         )
                         ->where('is_active', 'active')
