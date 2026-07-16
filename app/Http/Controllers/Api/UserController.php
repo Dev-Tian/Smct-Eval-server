@@ -722,6 +722,7 @@ class UserController extends Controller
                                 'departments:id,department_name',
                                 'positions:id,label',
                                 'roles:id,name',
+                                'assignedEvaluators:id,fname,lname,email'
                             ]
                         )
                         ->select(
@@ -733,6 +734,8 @@ class UserController extends Controller
                                 "fname",
                                 "lname",
                                 "email",
+                                "emp_id",
+                                "date_hired"
                             ]
                         )
                         ->where('is_active', 'active')
