@@ -112,6 +112,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('allEvaluations', 'index');
                 Route::get('getQuarters/{user}', 'getQuarters');
                 Route::get('getEvalAuthEvaluator', 'getEvalAuthEvaluator');
+                Route::get('getPendingApprovalEvaluations', 'getPendingApprovalEvaluations');
                 Route::get('getMyEvalAuthEmployee', 'getMyEvalAuthEmployee');
                 Route::get('getAllYears', 'getAllYears');
                 Route::get('submissions/{usersEvaluation}', 'show');
