@@ -722,7 +722,12 @@ class UserController extends Controller
                                 'departments:id,department_name',
                                 'positions:id,label',
                                 'roles:id,name',
-                                'assignedEvaluators:id,fname,lname,email'
+                                'assignedEvaluators' => function ($query) {
+                                    $query->select('users.id', 'fname', 'lname', 'email')
+                                        ->with([
+                                            'assigned_as_approvers:id,fname,lname,email'
+                                        ]);
+                                },
                             ]
                         )
                         ->select(

@@ -269,6 +269,88 @@ class UsersEvaluationController extends Controller
                     "created_at",
                 ]
             )
+            // ->where(
+            //     fn($q)
+            //     =>
+            //     $q->where(
+            //         fn($q) => $q->where('status', "pending_approval_1")->where('approver1_id', $user->id)
+            //     )->orWhere(
+            //         fn($q) => $q->where('status', "pending_approval_2")->where('approver2_id', $user->id)
+            //     )
+            // )
+            ->whereIn('status',[EvalStatus::pending, EvalStatus::completed])
+            ->orWhere('evaluator_id', $user->id)
+            ->search($search)
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when(
+                $quarter,
+                fn($q) => $q->where(function ($subq) use ($quarter) {
+                    match ($quarter) {
+                        'Others'    => $subq->whereNot('reviewTypeOthersImprovement', false)->orWhereNotNull('reviewTypeOthersCustom'),
+                        default     => $subq->where('reviewTypeProbationary', $quarter)->orWhere('reviewTypeRegular', $quarter),
+                    };
+                })
+            )
+            ->when($year, fn($q) => $q->where( fn($r) => $r->whereYear('coverageFrom', $year)->orWhereYear('coverageTo', $year)))
+            ->latest('created_at')
+            ->paginate($perPage);
+
+        return response()->json(
+            [
+                'myEval_as_Evaluator' => $user_eval,
+            ],
+            200
+        );
+    }
+
+    public function getPendingApprovalEvaluations(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $search = $request->input('search');
+        $status = $request->input('status');
+        $quarter = $request->input('quarter');
+        $year = $request->input('year');
+
+        $user = Auth::user();
+
+        $user_eval = UsersEvaluation::query()
+            ->with(
+                [
+                    'employee:id,branch_id,fname,lname',
+                    'employee.branch:id,branch_code,branch_name',
+                    'evaluator:id,fname,lname',
+                    'approver1:id,fname,lname,signature',
+                    'approver2:id,fname,lname,signature',
+                    'rejectedBy:id,fname,lname',
+                    // 'jobKnowledge',
+                    // 'adaptability',
+                    // 'qualityOfWorks',
+                    // 'teamworks',
+                    // 'reliabilities',
+                    // 'ethicals',
+                    // 'customerServices'
+                ]
+            )
+            ->select(
+                [
+                    "id",
+                    "employee_id",
+                    "evaluator_id",
+                    "approver1_id",
+                    "approver2_id",
+                    "rejected_by_id",
+                    "employee_branch_code",
+                    "rating",
+                    "status",
+                    "reviewTypeProbationary",
+                    "reviewTypeRegular",
+                    "reviewTypeOthersImprovement",
+                    "reviewTypeOthersCustom",
+                    "evaluatorApprovedAt",
+                    "employeeApprovedAt",
+                    "created_at",
+                ]
+            )
             ->where(
                 fn($q)
                 =>
@@ -278,6 +360,7 @@ class UsersEvaluationController extends Controller
                     fn($q) => $q->where('status', "pending_approval_2")->where('approver2_id', $user->id)
                 )
             )
+            ->whereIn('status',[EvalStatus::rejected, EvalStatus::pending_approval_1, EvalStatus::pending_approval_2])
             ->orWhere('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
