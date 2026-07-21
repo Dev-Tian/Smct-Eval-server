@@ -361,10 +361,11 @@ class UsersEvaluationController extends Controller
                     fn($q) => $q->where('status', "pending_approval_1")->where('approver1_id', $user->id)
                 )->orWhere(
                     fn($q) => $q->where('status', "pending_approval_2")->where('approver2_id', $user->id)
+                )->orWhere(
+                    fn($q) => $q->where('evaluator_id', $user->id)
                 )
             )
             ->whereIn('status',[EvalStatus::rejected, EvalStatus::pending_approval_1, EvalStatus::pending_approval_2])
-            ->orWhere('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
