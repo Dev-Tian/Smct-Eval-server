@@ -364,7 +364,7 @@ class UsersEvaluationController extends Controller
                 )
             )
             ->whereIn('status',[EvalStatus::rejected, EvalStatus::pending_approval_1, EvalStatus::pending_approval_2])
-            ->orWhere('evaluator_id', $user->id)
+            ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
