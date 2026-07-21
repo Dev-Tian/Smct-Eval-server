@@ -298,7 +298,8 @@ class UsersEvaluationController extends Controller
 
         return response()->json(
             [
-                'myEval_as_Evaluator' => $user_eval,
+                'myEval_as_Evaluator'       => $user_eval,
+                'myEval_as_Evaluator_count' => $user_eval->total(),
             ],
             200
         );
@@ -381,7 +382,8 @@ class UsersEvaluationController extends Controller
 
         return response()->json(
             [
-                'myEval_as_Evaluator' => $user_eval,
+                'myEval_as_Evaluator'       => $user_eval,
+                'myEval_as_Evaluator_count' => $user_eval->total(),
             ],
             200
         );
