@@ -749,7 +749,6 @@ class UserController extends Controller
                         ->search($search)
                         ->latest('id');
 
-
         $new_hires = (clone $userQuery)->whereBetween('created_at', [Carbon::now()->subDays(7), now()])->count();
 
         $employees = $userQuery->paginate($perPage);

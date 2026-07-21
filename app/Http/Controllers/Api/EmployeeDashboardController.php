@@ -84,6 +84,7 @@ class EmployeeDashboardController extends Controller
                             ->first();
 
         $highest_rating = UsersEvaluation::where('employee_id', $user->id)
+                            ->whereIn('status', ['pending', 'completed'])
                             ->max('rating');
 
         return response()->json(
