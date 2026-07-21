@@ -260,6 +260,7 @@ class UsersEvaluationController extends Controller
                     "employee_branch_code",
                     "rating",
                     "status",
+                    "noteIfRejected",
                     "reviewTypeProbationary",
                     "reviewTypeRegular",
                     "reviewTypeOthersImprovement",
@@ -279,7 +280,7 @@ class UsersEvaluationController extends Controller
             //     )
             // )
             ->whereIn('status',[EvalStatus::pending, EvalStatus::completed])
-            ->orWhere('evaluator_id', $user->id)
+            ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
@@ -342,6 +343,7 @@ class UsersEvaluationController extends Controller
                     "employee_branch_code",
                     "rating",
                     "status",
+                    "noteIfRejected",
                     "reviewTypeProbationary",
                     "reviewTypeRegular",
                     "reviewTypeOthersImprovement",
@@ -517,6 +519,7 @@ class UsersEvaluationController extends Controller
         return response()->json(
             [
                 'message'       =>  'Approval Unsuccessfully'
+
             ]
             ,400
         );
