@@ -343,6 +343,7 @@ class UsersEvaluationController extends Controller
                     "employee_branch_code",
                     "rating",
                     "status",
+                    "noteIfRejected",
                     "reviewTypeProbationary",
                     "reviewTypeRegular",
                     "reviewTypeOthersImprovement",
