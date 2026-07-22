@@ -953,7 +953,8 @@ class UserController extends Controller
             $path = $signature->storeAs('user-signatures', $name, 'public');
 
             if ($user->signature) {
-                if (Storage::disk('public')->exists($user->signature)) {
+                if (Storage::disk('public')->exists($user->signature))
+                {
                     Storage::disk('public')->delete($user->signature);
                 } else {
                     return response()->json(
@@ -994,8 +995,9 @@ class UserController extends Controller
         User::with('roles')
             ->whereHas('roles', fn($q) => $q->where('name', 'hr')->orWhere('name', 'admin'))
             ->chunk(100, function ($hrs) use ($notificationData) {
-                Notification::send($hrs, $notificationData);
-            });
+                    Notification::send($hrs, $notificationData);
+                }
+            );
 
         return response()->json(
             [
