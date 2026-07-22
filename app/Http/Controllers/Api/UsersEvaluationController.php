@@ -298,7 +298,8 @@ class UsersEvaluationController extends Controller
 
         return response()->json(
             [
-                'myEval_as_Evaluator' => $user_eval,
+                'myEval_as_Evaluator'       => $user_eval,
+                'myEval_as_Evaluator_count' => $user_eval->total(),
             ],
             200
         );
@@ -363,7 +364,7 @@ class UsersEvaluationController extends Controller
                 )
             )
             ->whereIn('status',[EvalStatus::rejected, EvalStatus::pending_approval_1, EvalStatus::pending_approval_2])
-            ->orWhere('evaluator_id', $user->id)
+            ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
             ->when(
@@ -381,7 +382,8 @@ class UsersEvaluationController extends Controller
 
         return response()->json(
             [
-                'myEval_as_Evaluator' => $user_eval,
+                'myEval_as_Evaluator'       => $user_eval,
+                'myEval_as_Evaluator_count' => $user_eval->total(),
             ],
             200
         );
