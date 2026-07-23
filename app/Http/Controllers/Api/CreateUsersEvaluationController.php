@@ -52,12 +52,12 @@ class CreateUsersEvaluationController extends Controller
                 if(!empty($validated['reviewTypeRegular']))
                 {
                     [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
-                {
-                        "Q1"    =>  QuarterDateRange::Q1->range(),
-                        "Q2"    =>  QuarterDateRange::Q2->range(),
-                        "Q3"    =>  QuarterDateRange::Q3->range(),
-                        "Q4"    =>  QuarterDateRange::Q4->range(),
-                };
+                    {
+                            "Q1"    =>  QuarterDateRange::Q1->range(),
+                            "Q2"    =>  QuarterDateRange::Q2->range(),
+                            "Q3"    =>  QuarterDateRange::Q3->range(),
+                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                    };
                 }
 
                 $submission = UsersEvaluation::create(
@@ -223,12 +223,12 @@ class CreateUsersEvaluationController extends Controller
                 if(!empty($validated['reviewTypeRegular']))
                 {
                     [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
-                {
-                        "Q1"    =>  QuarterDateRange::Q1->range(),
-                        "Q2"    =>  QuarterDateRange::Q2->range(),
-                        "Q3"    =>  QuarterDateRange::Q3->range(),
-                        "Q4"    =>  QuarterDateRange::Q4->range(),
-                };
+                    {
+                            "Q1"    =>  QuarterDateRange::Q1->range(),
+                            "Q2"    =>  QuarterDateRange::Q2->range(),
+                            "Q3"    =>  QuarterDateRange::Q3->range(),
+                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                    };
                 }
 
                 $submission = UsersEvaluation::create(
@@ -394,14 +394,13 @@ class CreateUsersEvaluationController extends Controller
 
                 if(!empty($validated['reviewTypeRegular']))
                 {
-
-                [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
-                {
-                        "Q1"    =>  QuarterDateRange::Q1->range(),
-                        "Q2"    =>  QuarterDateRange::Q2->range(),
-                        "Q3"    =>  QuarterDateRange::Q3->range(),
-                        "Q4"    =>  QuarterDateRange::Q4->range(),
-                };
+                    [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+                    {
+                            "Q1"    =>  QuarterDateRange::Q1->range(),
+                            "Q2"    =>  QuarterDateRange::Q2->range(),
+                            "Q3"    =>  QuarterDateRange::Q3->range(),
+                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                    };
                 }
 
                 $submission = UsersEvaluation::create(
@@ -580,14 +579,13 @@ class CreateUsersEvaluationController extends Controller
 
                 if(!empty($validated['reviewTypeRegular']))
                 {
-
-                [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
-                {
-                        "Q1"    =>  QuarterDateRange::Q1->range(),
-                        "Q2"    =>  QuarterDateRange::Q2->range(),
-                        "Q3"    =>  QuarterDateRange::Q3->range(),
-                        "Q4"    =>  QuarterDateRange::Q4->range(),
-                };
+                    [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+                    {
+                            "Q1"    =>  QuarterDateRange::Q1->range(),
+                            "Q2"    =>  QuarterDateRange::Q2->range(),
+                            "Q3"    =>  QuarterDateRange::Q3->range(),
+                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                    };
                 }
 
                 $submission = UsersEvaluation::create(
@@ -742,14 +740,13 @@ class CreateUsersEvaluationController extends Controller
 
                 if(!empty($validated['reviewTypeRegular']))
                 {
-
-                [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
-                {
-                        "Q1"    =>  QuarterDateRange::Q1->range(),
-                        "Q2"    =>  QuarterDateRange::Q2->range(),
-                        "Q3"    =>  QuarterDateRange::Q3->range(),
-                        "Q4"    =>  QuarterDateRange::Q4->range(),
-                };
+                    [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
+                    {
+                            "Q1"    =>  QuarterDateRange::Q1->range(),
+                            "Q2"    =>  QuarterDateRange::Q2->range(),
+                            "Q3"    =>  QuarterDateRange::Q3->range(),
+                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                    };
                 }
 
                 $submission = UsersEvaluation::create(
