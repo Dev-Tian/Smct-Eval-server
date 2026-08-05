@@ -922,8 +922,8 @@ class UserController extends Controller
             return response()->json(
                 [
                     'message' => 'Signature is required',
-                ],
-                422
+                ]
+                ,422
             );
         }
 
@@ -971,6 +971,7 @@ class UserController extends Controller
                     );
                 }
             }
+
             $items['signature'] = $path;
             $items['requestSignatureReset'] = false;
             $items['approvedSignatureReset'] = false;
@@ -1026,6 +1027,7 @@ class UserController extends Controller
                         'signature' => null,
                     ]
                 );
+
                 $user->notify(new EvalNotifications('Your signature reset request has been approved.'));
 
                 return response()->json(
