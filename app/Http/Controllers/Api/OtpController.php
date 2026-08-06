@@ -107,7 +107,8 @@ class OtpController extends Controller
                 [
                     'message' => 'Failed to authenticate user'
                 ]
-                ,401);
+                ,401
+            );
         }
 
         $role = $userAuth->getRoleNames();
