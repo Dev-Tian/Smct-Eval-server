@@ -29,9 +29,12 @@ class OtpController extends Controller
         $key = 'action:' . $request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 1)) {
-            return response()->json([
-                'message' => 'Too many attempts.'
-            ], 429);
+            return response()->json(
+                [
+                    'message' => 'Too many attempts.'
+                ]
+                ,429
+            );
         }
 
             $otp = rand(100000,999999);
@@ -49,7 +52,7 @@ class OtpController extends Controller
                 ]
             );
 
-            Mail::to($validated['email'])->queue( new ForgotPassword($user->fname, $user->lname, $user->username, $user->email, $otp));
+            Mail::to($validated['email'])->queue(new ForgotPassword($user->fname, $user->lname, $user->username, $user->email, $otp));
 
             if ($result) {
                 RateLimiter::hit($key, 5);

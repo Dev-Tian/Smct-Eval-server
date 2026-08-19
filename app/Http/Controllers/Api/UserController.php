@@ -949,6 +949,7 @@ class UserController extends Controller
         if ($request->filled('new_password') && $request->filled('confirm_password'))
         {
             $items['password'] = $validated['confirm_password'];
+            $items['isResetPass'] = false;
         }
 
         //file handling | storing
