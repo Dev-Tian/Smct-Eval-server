@@ -20,7 +20,6 @@ use Spatie\Permission\Models\Role;
 // use App\Mail\BulkRegister;
 use Illuminate\Support\Facades\Mail;
 
-use function Laravel\Prompts\select;
 use function Symfony\Component\Clock\now;
 
 class UserController extends Controller
@@ -932,7 +931,7 @@ class UserController extends Controller
                 'username'          => ['nullable', 'string'],
                 'email'             => ['nullable', 'email'],
                 'current_password'  => [
-                                            Rule::excludeIf(!$user->isResetPass),
+                                            Rule::excludeIf($user->isResetPass),
                                             'required',
                                             'current_password:sanctum',
                                         ],
