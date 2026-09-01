@@ -347,7 +347,6 @@ class UserController extends Controller
             ]
         );
 
-
         return response()->json(
             [
                 'users'                 =>  $users,
@@ -439,9 +438,11 @@ class UserController extends Controller
             ->when($role_filter, fn($role) => $role->whereRelation('roles', 'id', $role_filter))
             ->when($branch_filter,
                 fn($q) =>
-                    $q->where( fn($query) => $query->whereRelation('branches', 'branches.id', $branch_filter)
-                    ->orWhereRelation('branch', 'branches.id', $branch_filter)
-            ))
+                    $q->where(
+                        fn($query) => $query->whereRelation('branches', 'branches.id', $branch_filter)
+                                            ->orWhereRelation('branch', 'branches.id', $branch_filter)
+                        )
+            )
             ->when($department_filter, fn($q) => $q->where('department_id', $department_filter))
             ->whereRelation('roles', fn($q) => $q->whereNot('name', 'admin'))
             ->search($search_filter)
@@ -477,11 +478,11 @@ class UserController extends Controller
                                 'positions:id,label',
                             ]
                         )
-                            ->where('is_active','active')
-                            ->where('branch_id', $branch)
-                            ->when($department , fn($q) => $q->where('department_id', $department))
-                            ->whereRelation('roles', fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr'))
-                            ->paginate($perPage);
+                        ->where('is_active','active')
+                        ->where('branch_id', $branch)
+                        ->when($department , fn($q) => $q->where('department_id', $department))
+                        ->whereRelation('roles', fn($q) => $q->where('name', 'evaluator')->orWhere('name', 'hr'))
+                        ->paginate($perPage);
 
         $employees = User::select(
                             [
@@ -1023,8 +1024,8 @@ class UserController extends Controller
 
                 $user->update(
                     [
-                        'approvedSignatureReset' => true,
-                        'signature' => null,
+                        'approvedSignatureReset'    => true,
+                        'signature'                 => null,
                     ]
                 );
 

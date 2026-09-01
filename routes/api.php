@@ -76,7 +76,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('approvedSignatureReset/{user}', 'approvedSignatureReset');
                 Route::post('rejectSignatureReset/{user}', 'rejectSignatureReset');
                 Route::post('updateUser/{user}', 'updateUser');
-                Route::post('uploadAvatar', 'uploadAvatar');
+                // Route::post('uploadAvatar', 'uploadAvatar');
                 Route::post('updateProfileUserAuth', 'updateProfileUserAuth');
                 Route::post('addUser', 'store');
                 Route::post('assignEmployees/{user}', 'assignEmployees');
@@ -97,6 +97,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::post('BranchBasicAreaManager/resubmit/{usersEvaluation}', 'BranchBasicAreaManager');
             }
         );
+
         Route::controller(CreateUsersEvaluationController::class)->group(
             function () {
                 Route::post('BranchRankNFile/{user}', 'BranchRankNFile');
