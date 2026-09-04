@@ -97,12 +97,14 @@ class UsersEvaluation extends Model
             'approver1:id,fname,lname,signature',
             'approver2:id,fname,lname,signature',
             'rejectedBy:id,fname,lname',
-            'jobKnowledge',
-            'adaptability',
-            'qualityOfWorks',
-            'teamworks',
-            'reliabilities',
-            'ethicals',
+            'jobKnowledge:id,users_evaluation_id,question_number,score,comment',
+            'adaptability:id,users_evaluation_id,question_number,score,comment',
+            'qualityOfWorks:id,users_evaluation_id,question_number,score,comment',
+            'teamworks:id,users_evaluation_id,question_number,score,comment',
+            'reliabilities:id,users_evaluation_id,question_number,score,comment',
+            'ethicals:id,users_evaluation_id,question_number,score,explanation',
+            'customerServices:id,users_evaluation_id,question_number,score,explanation',
+            'managerialSkills:id,users_evaluation_id,question_number,score,explanation',
         ];
 
         if ($this->evaluationType === 'BranchRankNFile' || $this->evaluationType === 'BranchBasic') {
