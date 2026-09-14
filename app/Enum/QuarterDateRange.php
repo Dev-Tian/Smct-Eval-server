@@ -42,6 +42,5 @@ enum QuarterDateRange
                     Carbon::create($lastYear,12,1)->endOfMonth()
                 ],
         };
-
     }
 }

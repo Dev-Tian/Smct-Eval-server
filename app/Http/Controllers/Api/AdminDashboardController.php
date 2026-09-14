@@ -36,8 +36,8 @@ class AdminDashboardController extends Controller
                 'total_pending_evaluations'     => $total_pending_evaluations,
                 'total_completed_evaluations'   => $total_completed_evaluations,
                 'total_declined_users'          => $total_declined_users
-            ],
-            200
+            ]
+            ,200
         );
     }
 

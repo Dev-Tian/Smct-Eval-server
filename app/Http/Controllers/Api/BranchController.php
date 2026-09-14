@@ -19,8 +19,8 @@ class BranchController extends Controller
         return response()->json(
             [
                 'branches' => $branches
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -74,8 +74,8 @@ class BranchController extends Controller
         return response()->json(
             [
                 'branches' => $all
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -113,8 +113,8 @@ class BranchController extends Controller
         return response()->json(
             [
                 'message'       => 'Branch Successfully Created'
-            ],
-            201
+            ]
+            ,201
         );
     }
 
@@ -126,8 +126,8 @@ class BranchController extends Controller
         return response()->json(
             [
                 'branch'        =>  $branch
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -157,8 +157,8 @@ class BranchController extends Controller
         return response()->json(
             [
                 'message'       =>  'Branch Deleted Successfully'
-            ],
-            200
+            ]
+            ,200
         );
     }
 }

@@ -8,5 +8,6 @@ enum EvalStatus:string
     case pending_approval_2 = 'pending_approval_2';
     case rejected = 'rejected';
     case pending = 'pending';
+    case draft = 'draft';
     case completed = 'completed';
 }

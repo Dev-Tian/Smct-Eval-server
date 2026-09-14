@@ -100,8 +100,8 @@ class UsersEvaluationController extends Controller
         return response()->json(
             [
                 'evaluations' => $all_evaluations,
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -126,8 +126,8 @@ class UsersEvaluationController extends Controller
         return response()->json(
             [
                 'data' => $data,
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -147,8 +147,8 @@ class UsersEvaluationController extends Controller
         return response()->json(
             [
                 'user_eval' => $usersEvaluation->loadRelations(),
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -216,8 +216,8 @@ class UsersEvaluationController extends Controller
             [
                 'myEval_as_Employee' => $user_eval,
                 'years' => $years,
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -300,8 +300,8 @@ class UsersEvaluationController extends Controller
             [
                 'myEval_as_Evaluator'       => $user_eval,
                 'myEval_as_Evaluator_count' => $user_eval->total(),
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -385,8 +385,8 @@ class UsersEvaluationController extends Controller
             [
                 'myEval_as_Evaluator'       => $user_eval,
                 'myEval_as_Evaluator_count' => $user_eval->total(),
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -429,8 +429,8 @@ class UsersEvaluationController extends Controller
             [
                 'message'   => 'Evaluation approved by employee successfully',
                 'data'      => $usersEvaluation->loadRelations(),
-            ],
-            200
+            ]
+            ,200
         );
     }
 
@@ -446,8 +446,8 @@ class UsersEvaluationController extends Controller
             return response()->json(
                 [
                     'message' => 'Deleted Successfully',
-                ],
-                200
+                ]
+                ,200
             );
         }
 
@@ -498,7 +498,6 @@ class UsersEvaluationController extends Controller
                 ,200
             );
         }
-
 
         if(Auth::id() == $usersEvaluation->approver2_id )
         {
@@ -558,8 +557,8 @@ class UsersEvaluationController extends Controller
         return response()->json(
             [
                 'years' => $years,
-            ],
-            200
+            ]
+            ,200
         );
     }
 

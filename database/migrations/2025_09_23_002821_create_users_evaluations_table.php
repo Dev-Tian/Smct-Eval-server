@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->decimal('rating', 3, 2);
             $table->string('percentage');
-            $table->enum('status', ['pending', 'pending_approval_1', 'pending_approval_2', 'rejected', 'completed'])->default('pending');
+            $table->enum('status', ['draft', 'pending', 'pending_approval_1', 'pending_approval_2', 'rejected', 'completed'])->default('pending');
             $table->enum('evaluationType', ['HoBasic', 'HoRankNFile', 'BranchBasic', 'BranchRankNFile','BranchBasicAreaManager']);
 
             $table->date('coverageFrom');

@@ -55,7 +55,7 @@ class CreateUsersEvaluationController extends Controller
                             "Q1"    =>  QuarterDateRange::Q1->range(),
                             "Q2"    =>  QuarterDateRange::Q2->range(),
                             "Q3"    =>  QuarterDateRange::Q3->range(),
-                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                            "Q4"    =>  [$validated['coverageFrom'], $validated['coverageTo']]
                     };
                 }
 
@@ -179,16 +179,16 @@ class CreateUsersEvaluationController extends Controller
             return response()->json(
                 [
                     'message' => 'Submitted successfully.',
-                ],
-                201
+                ]
+                ,201
             );
 
         } catch (\Throwable $e) {
             return response()->json(
                 [
                     'message' => $e->getMessage(),
-                ],
-                500
+                ]
+                ,500
             );
         }
     }
@@ -223,7 +223,7 @@ class CreateUsersEvaluationController extends Controller
                             "Q1"    =>  QuarterDateRange::Q1->range(),
                             "Q2"    =>  QuarterDateRange::Q2->range(),
                             "Q3"    =>  QuarterDateRange::Q3->range(),
-                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                            "Q4"    =>  [$validated['coverageFrom'], $validated['coverageTo']]
                     };
                 }
 
@@ -392,7 +392,7 @@ class CreateUsersEvaluationController extends Controller
                             "Q1"    =>  QuarterDateRange::Q1->range(),
                             "Q2"    =>  QuarterDateRange::Q2->range(),
                             "Q3"    =>  QuarterDateRange::Q3->range(),
-                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                            "Q4"    =>  [$validated['coverageFrom'], $validated['coverageTo']]
                     };
                 }
 
@@ -575,7 +575,8 @@ class CreateUsersEvaluationController extends Controller
                             "Q1"    =>  QuarterDateRange::Q1->range(),
                             "Q2"    =>  QuarterDateRange::Q2->range(),
                             "Q3"    =>  QuarterDateRange::Q3->range(),
-                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                            "Q4"    =>  [$validated['coverageFrom'], $validated['coverageTo']],
+
                     };
                 }
 
@@ -730,10 +731,10 @@ class CreateUsersEvaluationController extends Controller
                 {
                     [$evalDateFrom, $evalDateTo] = match($validated['reviewTypeRegular'])
                     {
-                            "Q1"    =>  QuarterDateRange::Q1->range(),
-                            "Q2"    =>  QuarterDateRange::Q2->range(),
-                            "Q3"    =>  QuarterDateRange::Q3->range(),
-                            "Q4"    =>  QuarterDateRange::Q4->range(),
+                        "Q1"    =>  QuarterDateRange::Q1->range(),
+                        "Q2"    =>  QuarterDateRange::Q2->range(),
+                        "Q3"    =>  QuarterDateRange::Q3->range(),
+                        "Q4"    =>  [$validated['coverageFrom'], $validated['coverageTo']],
                     };
                 }
 
