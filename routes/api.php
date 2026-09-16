@@ -112,10 +112,10 @@ Route::middleware('auth:sanctum')->group(
         Route::controller(DraftUsersEvaluationContoller::class)->group(
             function () {
                 Route::post('BranchRankNFile/draft/{user}', 'BranchRankNFile');
-                // Route::post('BranchBasic/{user}', 'BranchBasic');
-                // Route::post('HoBasic/{user}', 'HoBasic');
-                // Route::post('HoRankNFile/{user}', 'HoRankNFile');
-                // Route::post('BranchBasicAreaManager/{user}', 'BranchBasicAreaManager');
+                Route::post('BranchBasic/draft/{user}', 'BranchBasic');
+                Route::post('HoBasic/draft/{user}', 'HoBasic');
+                Route::post('HoRankNFile/draft/{user}', 'HoRankNFile');
+                Route::post('BranchBasicAreaManager/draft/{user}', 'BranchBasicAreaManager');
             }
         );
 

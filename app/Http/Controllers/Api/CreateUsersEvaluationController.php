@@ -59,22 +59,24 @@ class CreateUsersEvaluationController extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::create(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
+                        'evaluationType'                => 'BranchRankNFile',
+                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
-                        'evaluationType'                => 'BranchRankNFile',
                         'employee_branch_code'          => $user->branch?->branch_code,
                         'rating'                        => $validated['rating'],
                         'percentage'                    => $validated['performanceScore'],
                         'coverageFrom'                  => $evalDateFrom,
                         'coverageTo'                    => $evalDateTo,
-                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
                         'priorityArea1'                 => $validated['priorityArea1'] ?: null,
                         'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
@@ -85,81 +87,89 @@ class CreateUsersEvaluationController extends Controller
                 );
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->jobKnowledge()->create(
+                    $submission->jobKnowledge()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['jobKnowledgeScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['jobKnowledgeScore' . $i] ?: 0,
                             'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 5; $i++) {
-                    $submission->qualityOfWorks()->create(
+                    $submission->qualityOfWorks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['qualityOfWorkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['qualityOfWorkScore' . $i] ?: 0,
                             'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->adaptability()->create(
+                    $submission->adaptability()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['adaptabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['adaptabilityScore' . $i] ?: 0,
                             'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->teamworks()->create(
+                    $submission->teamworks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['teamworkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['teamworkScore' . $i] ?: 0,
                             'comment'               => $validated['teamworkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->reliabilities()->create(
+                    $submission->reliabilities()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['reliabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['reliabilityScore' . $i] ?: 0,
                             'comment'               => $validated['reliabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->ethicals()->create(
+                    $submission->ethicals()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['ethicalScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['ethicalScore' . $i] ?: 0,
                             'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 5; $i++) {
-                    $submission->customerServices()->create(
+                    $submission->customerServices()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['customerServiceScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['customerServiceScore' . $i] ?: 0,
                             'explanation'           => $validated['customerServiceExplanation' . $i] ?: null,
                         ]
                     );
                 }
+
                 //notification for employee
                 $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
 
@@ -227,22 +237,24 @@ class CreateUsersEvaluationController extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::create(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
+                        'evaluationType'                => 'BranchBasicAreaManager',
+                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
-                        'evaluationType'                => 'BranchBasicAreaManager',
                         'employee_branch_code'          => $user->branch?->branch_code,
                         'rating'                        => $validated['rating'],
                         'percentage'                    => $validated['performanceScore'],
                         'coverageFrom'                  => $evalDateFrom,
                         'coverageTo'                    => $evalDateTo,
-                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
                         'priorityArea1'                 => $validated['priorityArea1'] ?: null,
                         'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
@@ -253,81 +265,89 @@ class CreateUsersEvaluationController extends Controller
                 );
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->jobKnowledge()->create(
+                    $submission->jobKnowledge()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['jobKnowledgeScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['jobKnowledgeScore' . $i] ?: 0,
                             'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 12; $i++) {
-                    $submission->qualityOfWorks()->create(
+                    $submission->qualityOfWorks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['qualityOfWorkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['qualityOfWorkScore' . $i] ?: 0,
                             'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->adaptability()->create(
+                    $submission->adaptability()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['adaptabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['adaptabilityScore' . $i] ?: 0,
                             'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->teamworks()->create(
+                    $submission->teamworks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['teamworkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['teamworkScore' . $i] ?: 0,
                             'comment'               => $validated['teamworkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->reliabilities()->create(
+                    $submission->reliabilities()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['reliabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['reliabilityScore' . $i] ?: 0,
                             'comment'               => $validated['reliabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->ethicals()->create(
+                    $submission->ethicals()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['ethicalScore' . $i],
-                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
+                        ],
+                        [
+                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
+                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 6; $i++) {
-                    $submission->managerialSkills()->create(
+                    $submission->managerialSkills()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['managerialSkillsScore' . $i],
-                            'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
+                        ],
+                        [
+                            'score'                 => $validated['managerialSkillsScore' . $i] ?: 0,
+                            'comment'               => $validated['managerialSkillsExplanation' . $i] ?: null,
                         ]
                     );
                 }
+
                 //notification for employee
                 $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
 
@@ -396,22 +416,24 @@ class CreateUsersEvaluationController extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::create(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
+                        'evaluationType'                => 'BranchBasic',
+                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
-                        'evaluationType'                => 'BranchBasic',
                         'employee_branch_code'          => $user->branch?->branch_code,
                         'rating'                        => $validated['rating'],
                         'percentage'                    => $validated['performanceScore'],
                         'coverageFrom'                  => $evalDateFrom,
                         'coverageTo'                    => $evalDateTo,
-                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
                         'priorityArea1'                 => $validated['priorityArea1'] ?: null,
                         'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
@@ -422,92 +444,101 @@ class CreateUsersEvaluationController extends Controller
                 );
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->jobKnowledge()->create(
+                    $submission->jobKnowledge()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['jobKnowledgeScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['jobKnowledgeScore' . $i] ?: 0,
                             'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 12; $i++) {
-                    $submission->qualityOfWorks()->create(
+                    $submission->qualityOfWorks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['qualityOfWorkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['qualityOfWorkScore' . $i] ?: 0,
                             'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->adaptability()->create(
+                    $submission->adaptability()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['adaptabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['adaptabilityScore' . $i] ?: 0,
                             'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->teamworks()->create(
+                    $submission->teamworks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['teamworkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['teamworkScore' . $i] ?: 0,
                             'comment'               => $validated['teamworkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->reliabilities()->create(
+                    $submission->reliabilities()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['reliabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['reliabilityScore' . $i] ?: 0,
                             'comment'               => $validated['reliabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->ethicals()->create(
+                    $submission->ethicals()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['ethicalScore' . $i],
-                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
+                        ],
+                        [
+                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
+                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
 
-                for ($i = 1; $i <= 5; $i++) {
-                    $submission->customerServices()->create(
+               for ($i = 1; $i <= 5; $i++) {
+                    $submission->customerServices()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['customerServiceScore' . $i],
-                            'explanation'           => $validated['customerServiceExplanation' . $i] ?: null,
+                        ],
+                        [
+                            'score'                 => $validated['customerServiceScore' . $i] ?: 0,
+                            'comment'               => $validated['customerServiceExplanation' . $i] ?: null,
                         ]
                     );
                 }
 
-                for ($i = 1; $i <= 6; $i++) {
-                    $submission->managerialSkills()->create(
+               for ($i = 1; $i <= 6; $i++) {
+                    $submission->managerialSkills()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['managerialSkillsScore' . $i],
-                            'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
+                        ],
+                        [
+                            'score'                 => $validated['managerialSkillsScore' . $i] ?: 0,
+                            'comment'               => $validated['managerialSkillsExplanation' . $i] ?: null,
                         ]
                     );
                 }
+
                 //notification for employee
                 $user->notify(new EvalNotifications('An evaluation submitted by ' . $auth_user_evaluator->fname . ' ' . $auth_user_evaluator->lname . ' is awaiting your sign.'));
 
@@ -580,22 +611,24 @@ class CreateUsersEvaluationController extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::create(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
+                        'evaluationType'                => 'HoRankNFile',
+                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
-                        'evaluationType'                => 'HoRankNFile',
                         'employee_branch_code'          => $user->branch?->branch_code,
                         'rating'                        => $validated['rating'],
                         'percentage'                    => $validated['performanceScore'],
                         'coverageFrom'                  => $evalDateFrom,
                         'coverageTo'                    => $evalDateTo,
-                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
                         'priorityArea1'                 => $validated['priorityArea1'] ?: null,
                         'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
@@ -606,67 +639,73 @@ class CreateUsersEvaluationController extends Controller
                 );
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->jobKnowledge()->create(
+                    $submission->jobKnowledge()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['jobKnowledgeScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['jobKnowledgeScore' . $i] ?: 0,
                             'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->qualityOfWorks()->create(
+                    $submission->qualityOfWorks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['qualityOfWorkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['qualityOfWorkScore' . $i] ?: 0,
                             'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->adaptability()->create(
+                    $submission->adaptability()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['adaptabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['adaptabilityScore' . $i] ?: 0,
                             'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->teamworks()->create(
+                    $submission->teamworks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['teamworkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['teamworkScore' . $i] ?: 0,
                             'comment'               => $validated['teamworkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->reliabilities()->create(
+                    $submission->reliabilities()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['reliabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['reliabilityScore' . $i] ?: 0,
                             'comment'               => $validated['reliabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->ethicals()->create(
+                    $submission->ethicals()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['ethicalScore' . $i],
-                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
+                        ],
+                        [
+                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
+                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -738,22 +777,24 @@ class CreateUsersEvaluationController extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::create(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
+                        'evaluationType'                => 'HoBasic',
+                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
-                        'evaluationType'                => 'HoBasic',
                         'employee_branch_code'          => $user->branch?->branch_code,
                         'rating'                        => $validated['rating'],
                         'percentage'                    => $validated['performanceScore'],
                         'coverageFrom'                  => $evalDateFrom,
                         'coverageTo'                    => $evalDateTo,
-                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
                         'priorityArea1'                 => $validated['priorityArea1'] ?: null,
                         'priorityArea2'                 => $validated['priorityArea2'] ?: null,
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
@@ -764,78 +805,85 @@ class CreateUsersEvaluationController extends Controller
                 );
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->jobKnowledge()->create(
+                    $submission->jobKnowledge()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['jobKnowledgeScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['jobKnowledgeScore' . $i] ?: 0,
                             'comment'               => $validated['jobKnowledgeComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->qualityOfWorks()->create(
+                    $submission->qualityOfWorks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['qualityOfWorkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['qualityOfWorkScore' . $i] ?: 0,
                             'comment'               => $validated['qualityOfWorkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->adaptability()->create(
+                    $submission->adaptability()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['adaptabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['adaptabilityScore' . $i] ?: 0,
                             'comment'               => $validated['adaptabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 3; $i++) {
-                    $submission->teamworks()->create(
+                    $submission->teamworks()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['teamworkScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['teamworkScore' . $i] ?: 0,
                             'comment'               => $validated['teamworkComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->reliabilities()->create(
+                    $submission->reliabilities()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['reliabilityScore' . $i],
+                        ],
+                        [
+                            'score'                 => $validated['reliabilityScore' . $i] ?: 0,
                             'comment'               => $validated['reliabilityComments' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 4; $i++) {
-                    $submission->ethicals()->create(
+                    $submission->ethicals()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['ethicalScore' . $i],
-                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
+                        ],
+                        [
+                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
+                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
 
                 for ($i = 1; $i <= 6; $i++) {
-                    $submission->managerialSkills()->create(
+                    $submission->managerialSkills()->updateOrCreate(
                         [
-                            'users_evaluation_id'   => $submission->id,
                             'question_number'       => $i,
-                            'score'                 => $validated['managerialSkillsScore' . $i],
-                            'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
+                        ],
+                        [
+                            'score'                 => $validated['managerialSkillsScore' . $i] ?: 0,
+                            'comment'               => $validated['managerialSkillsExplanation' . $i] ?: null,
                         ]
                     );
                 }

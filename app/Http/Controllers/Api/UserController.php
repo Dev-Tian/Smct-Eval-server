@@ -932,8 +932,7 @@ class UserController extends Controller
                 'username'          => ['nullable', 'string'],
                 'email'             => ['nullable', 'email'],
                 'current_password'  => [
-                                            Rule::excludeIf($user->isResetPass),
-                                            'required',
+                                            Rule::requiredIf(!$user->isResetPass),
                                             'current_password:sanctum',
                                         ],
                 'new_password'      => ['nullable', 'required_with:confirm_password'],

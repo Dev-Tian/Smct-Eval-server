@@ -3,6 +3,7 @@
 namespace App\Http\Requests\draft;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class DraftBranchRankNFile extends FormRequest
 {
@@ -36,15 +37,15 @@ class DraftBranchRankNFile extends FormRequest
     public function mainRules()
     {
         return [
-            'rating'                                => ['required', 'numeric'],
-            'performanceScore'                      => ['required', 'numeric'],
+            'rating'                                => ['nullable', 'numeric'],
+            'performanceScore'                      => ['nullable', 'numeric'],
             'coverageFrom'                          => ['required', 'date'],
             'coverageTo'                            => ['required', 'date'],
             'reviewTypeProbationary'                => ['nullable', 'numeric'],
             'reviewTypeRegular'                     => ['nullable', 'string'],
             'reviewTypeOthersImprovement'           => ['nullable', 'boolean'],
             'reviewTypeOthersCustom'                => ['nullable', 'string'],
-            'priorityArea1'                         => ['required', 'string', 'min:20'],
+            'priorityArea1'                         => ['nullable', 'string', 'min:20'],
             'priorityArea2'                         => ['nullable', 'string', 'min:20'],
             'priorityArea3'                         => ['nullable', 'string', 'min:20'],
             'remarks'                               => ['nullable', 'string',],
@@ -57,9 +58,9 @@ class DraftBranchRankNFile extends FormRequest
             'jobKnowledgeScore1'                    => ['nullable', 'numeric'],
             'jobKnowledgeScore2'                    => ['nullable', 'numeric'],
             'jobKnowledgeScore3'                    => ['nullable', 'numeric'],
-            'jobKnowledgeComments1'                 => ['required_with:jobKnowledgeScore1', 'string'],
-            'jobKnowledgeComments2'                 => ['required_with:jobKnowledgeScore2', 'string'],
-            'jobKnowledgeComments3'                 => ['required_with:jobKnowledgeScore3', 'string'],
+            'jobKnowledgeComments1'                 => [ Rule::requiredif( fn() => !empty(request()->jobKnowledgeScore1))],
+            'jobKnowledgeComments2'                 => [ Rule::requiredif( fn() => !empty(request()->jobKnowledgeScore2))],
+            'jobKnowledgeComments3'                 => [ Rule::requiredif( fn() => !empty(request()->jobKnowledgeScore3))],
         ];
     }
 
@@ -71,11 +72,11 @@ class DraftBranchRankNFile extends FormRequest
             'qualityOfWorkScore3'                   => ['nullable', 'numeric'],
             'qualityOfWorkScore4'                   => ['nullable', 'numeric'],
             'qualityOfWorkScore5'                   => ['nullable', 'numeric'],
-            'qualityOfWorkComments1'                => ['required_with:qualityOfWorkScore1', 'string'],
-            'qualityOfWorkComments2'                => ['required_with:qualityOfWorkScore2', 'string'],
-            'qualityOfWorkComments3'                => ['required_with:qualityOfWorkScore3', 'string'],
-            'qualityOfWorkComments4'                => ['required_with:qualityOfWorkScore4', 'string'],
-            'qualityOfWorkComments5'                => ['required_with:qualityOfWorkScore5', 'string'],
+            'qualityOfWorkComments1'                => [ Rule::requiredif( fn() => !empty(request()->qualityOfWorkScore1))],
+            'qualityOfWorkComments2'                => [ Rule::requiredif( fn() => !empty(request()->qualityOfWorkScore2))],
+            'qualityOfWorkComments3'                => [ Rule::requiredif( fn() => !empty(request()->qualityOfWorkScore3))],
+            'qualityOfWorkComments4'                => [ Rule::requiredif( fn() => !empty(request()->qualityOfWorkScore4))],
+            'qualityOfWorkComments5'                => [ Rule::requiredif( fn() => !empty(request()->qualityOfWorkScore5))],
         ];
     }
 
@@ -85,9 +86,9 @@ class DraftBranchRankNFile extends FormRequest
             'adaptabilityScore1'                    => ['nullable', 'numeric'],
             'adaptabilityScore2'                    => ['nullable', 'numeric'],
             'adaptabilityScore3'                    => ['nullable', 'numeric'],
-            'adaptabilityComments1'                 => ['required_with:adaptabilityScore1', 'string'],
-            'adaptabilityComments2'                 => ['required_with:adaptabilityScore2', 'string'],
-            'adaptabilityComments3'                 => ['required_with:adaptabilityScore3', 'string'],
+            'adaptabilityComments1'                 => [ Rule::requiredif( fn() => !empty(request()->adaptabilityScore1))],
+            'adaptabilityComments2'                 => [ Rule::requiredif( fn() => !empty(request()->adaptabilityScore2))],
+            'adaptabilityComments3'                 => [ Rule::requiredif( fn() => !empty(request()->adaptabilityScore3))],
         ];
     }
 
@@ -97,9 +98,9 @@ class DraftBranchRankNFile extends FormRequest
             'teamworkScore1'                        => ['nullable', 'numeric'],
             'teamworkScore2'                        => ['nullable', 'numeric'],
             'teamworkScore3'                        => ['nullable', 'numeric'],
-            'teamworkComments1'                     => ['required_with:teamworkScore1', 'string'],
-            'teamworkComments2'                     => ['required_with:teamworkScore2', 'string'],
-            'teamworkComments3'                     => ['required_with:teamworkScore3', 'string'],
+            'teamworkComments1'                     => [ Rule::requiredif( fn() => !empty(request()->teamworkScore1))],
+            'teamworkComments2'                     => [ Rule::requiredif( fn() => !empty(request()->teamworkScore2))],
+            'teamworkComments3'                     => [ Rule::requiredif( fn() => !empty(request()->teamworkScore3))],
         ];
     }
 
@@ -110,10 +111,10 @@ class DraftBranchRankNFile extends FormRequest
             'reliabilityScore2'                     => ['nullable', 'numeric'],
             'reliabilityScore3'                     => ['nullable', 'numeric'],
             'reliabilityScore4'                     => ['nullable', 'numeric'],
-            'reliabilityComments1'                  => ['required_with:reliabilityScore1', 'string'],
-            'reliabilityComments2'                  => ['required_with:reliabilityScore2', 'string'],
-            'reliabilityComments3'                  => ['required_with:reliabilityScore3', 'string'],
-            'reliabilityComments4'                  => ['required_with:reliabilityScore4', 'string'],
+            'reliabilityComments1'                  => [ Rule::requiredif( fn() => !empty(request()->reliabilityScore1))],
+            'reliabilityComments2'                  => [ Rule::requiredif( fn() => !empty(request()->reliabilityScore2))],
+            'reliabilityComments3'                  => [ Rule::requiredif( fn() => !empty(request()->reliabilityScore3))],
+            'reliabilityComments4'                  => [ Rule::requiredif( fn() => !empty(request()->reliabilityScore4))],
         ];
     }
 
@@ -124,10 +125,10 @@ class DraftBranchRankNFile extends FormRequest
             'ethicalScore2'                         => ['nullable', 'numeric'],
             'ethicalScore3'                         => ['nullable', 'numeric'],
             'ethicalScore4'                         => ['nullable', 'numeric'],
-            'ethicalExplanation1'                   => ['required_with:ethicalScore1', 'string'],
-            'ethicalExplanation2'                   => ['required_with:ethicalScore2', 'string'],
-            'ethicalExplanation3'                   => ['required_with:ethicalScore3', 'string'],
-            'ethicalExplanation4'                   => ['required_with:ethicalScore4', 'string'],
+            'ethicalExplanation1'                   => [ Rule::requiredif( fn() => !empty(request()->ethicalScore1))],
+            'ethicalExplanation2'                   => [ Rule::requiredif( fn() => !empty(request()->ethicalScore2))],
+            'ethicalExplanation3'                   => [ Rule::requiredif( fn() => !empty(request()->ethicalScore3))],
+            'ethicalExplanation4'                   => [ Rule::requiredif( fn() => !empty(request()->ethicalScore4))],
         ];
     }
 
@@ -139,11 +140,11 @@ class DraftBranchRankNFile extends FormRequest
             'customerServiceScore3'                 => ['nullable', 'numeric'],
             'customerServiceScore4'                 => ['nullable', 'numeric'],
             'customerServiceScore5'                 => ['nullable', 'numeric'],
-            'customerServiceExplanation1'           => ['required_with:customerServiceScore1', 'string'],
-            'customerServiceExplanation2'           => ['required_with:customerServiceScore2', 'string'],
-            'customerServiceExplanation3'           => ['required_with:customerServiceScore3', 'string'],
-            'customerServiceExplanation4'           => ['required_with:customerServiceScore4', 'string'],
-            'customerServiceExplanation5'           => ['required_with:customerServiceScore5', 'string'],
+            'customerServiceExplanation1'           => [ Rule::requiredif( fn() => !empty(request()->customerServiceScore1))],
+            'customerServiceExplanation2'           => [ Rule::requiredif( fn() => !empty(request()->customerServiceScore2))],
+            'customerServiceExplanation3'           => [ Rule::requiredif( fn() => !empty(request()->customerServiceScore3))],
+            'customerServiceExplanation4'           => [ Rule::requiredif( fn() => !empty(request()->customerServiceScore4))],
+            'customerServiceExplanation5'           => [ Rule::requiredif( fn() => !empty(request()->customerServiceScore5))],
         ];
     }
 }
