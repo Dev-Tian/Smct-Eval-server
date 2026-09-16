@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Notification;
 class CreateUsersEvaluationController extends Controller
 {
     //
-     public function getApprovers(int $id)
+    public function getApprovers(int $id)
     {
         return DB::table('assign_approvers')->where('evaluator_id', $id)->get();
     }

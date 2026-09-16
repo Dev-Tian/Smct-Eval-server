@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\create;
+namespace App\Http\Requests\draft;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BranchBasicAreaManager extends FormRequest
+class DraftBranchBasicAreaManager extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\create;
+namespace App\Http\Requests\draft;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class HoRankNFile extends FormRequest
+class DraftHoRankNFile extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

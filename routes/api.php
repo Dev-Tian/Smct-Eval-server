@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\CreateUsersEvaluationController;
+use App\Http\Controllers\Api\DraftUsersEvaluationContoller;
 use App\Http\Controllers\Api\EmployeeDashboardController;
 use App\Http\Controllers\Api\EvaluatorDashboardController;
 use App\Http\Controllers\Api\HrDashboardController;
@@ -88,6 +89,16 @@ Route::middleware('auth:sanctum')->group(
             }
         );
 
+        Route::controller(CreateUsersEvaluationController::class)->group(
+            function () {
+                Route::post('BranchRankNFile/{user}', 'BranchRankNFile');
+                Route::post('BranchBasic/{user}', 'BranchBasic');
+                Route::post('HoBasic/{user}', 'HoBasic');
+                Route::post('HoRankNFile/{user}', 'HoRankNFile');
+                Route::post('BranchBasicAreaManager/{user}', 'BranchBasicAreaManager');
+            }
+        );
+
         Route::controller(UpdateUsersEvaluationController::class)->group(
             function () {
                 Route::post('BranchBasic/resubmit/{usersEvaluation}', 'BranchBasic');
@@ -98,13 +109,13 @@ Route::middleware('auth:sanctum')->group(
             }
         );
 
-        Route::controller(CreateUsersEvaluationController::class)->group(
+        Route::controller(DraftUsersEvaluationContoller::class)->group(
             function () {
-                Route::post('BranchRankNFile/{user}', 'BranchRankNFile');
-                Route::post('BranchBasic/{user}', 'BranchBasic');
-                Route::post('HoBasic/{user}', 'HoBasic');
-                Route::post('HoRankNFile/{user}', 'HoRankNFile');
-                Route::post('BranchBasicAreaManager/{user}', 'BranchBasicAreaManager');
+                Route::post('BranchRankNFile/draft/{user}', 'BranchRankNFile');
+                // Route::post('BranchBasic/{user}', 'BranchBasic');
+                // Route::post('HoBasic/{user}', 'HoBasic');
+                // Route::post('HoRankNFile/{user}', 'HoRankNFile');
+                // Route::post('BranchBasicAreaManager/{user}', 'BranchBasicAreaManager');
             }
         );
 
