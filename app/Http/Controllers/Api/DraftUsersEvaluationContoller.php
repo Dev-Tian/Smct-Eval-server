@@ -316,7 +316,7 @@ class DraftUsersEvaluationContoller extends Controller
                         ],
                         [
                             'score'                 => $validated['ethicalsScore' . $i] ?: 0,
-                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
+                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -328,7 +328,7 @@ class DraftUsersEvaluationContoller extends Controller
                         ],
                         [
                             'score'                 => $validated['managerialSkillsScore' . $i] ?: 0,
-                            'comment'               => $validated['managerialSkillsExplanation' . $i] ?: null,
+                            'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -492,7 +492,7 @@ class DraftUsersEvaluationContoller extends Controller
                         ],
                         [
                             'score'                 => $validated['ethicalsScore' . $i] ?: 0,
-                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
+                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -504,7 +504,7 @@ class DraftUsersEvaluationContoller extends Controller
                         ],
                         [
                             'score'                 => $validated['customerServiceScore' . $i] ?: 0,
-                            'comment'               => $validated['customerServiceExplanation' . $i] ?: null,
+                            'explanation'           => $validated['customerServiceExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -516,7 +516,7 @@ class DraftUsersEvaluationContoller extends Controller
                         ],
                         [
                             'score'                 => $validated['managerialSkillsScore' . $i] ?: 0,
-                            'comment'               => $validated['managerialSkillsExplanation' . $i] ?: null,
+                            'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -684,7 +684,7 @@ class DraftUsersEvaluationContoller extends Controller
                         ],
                         [
                             'score'                 => $validated['ethicalsScore' . $i] ?: 0,
-                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
+                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -849,7 +849,7 @@ class DraftUsersEvaluationContoller extends Controller
                         ],
                         [
                             'score'                 => $validated['ethicalsScore' . $i] ?: 0,
-                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
+                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -861,7 +861,7 @@ class DraftUsersEvaluationContoller extends Controller
                         ],
                         [
                             'score'                 => $validated['managerialSkillsScore' . $i] ?: 0,
-                            'comment'               => $validated['managerialSkillsExplanation' . $i] ?: null,
+                            'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
                         ]
                     );
                 }
