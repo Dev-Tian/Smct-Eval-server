@@ -40,7 +40,7 @@ class DraftUsersEvaluationContoller extends Controller
                 $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
                 if($approverModel){
-                    $status = EvalStatus::pending_approval_1;
+                    // $status = EvalStatus::pending_approval_1;
                     $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
                     $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
                 }
@@ -203,7 +203,7 @@ class DraftUsersEvaluationContoller extends Controller
                 $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
                 if($approverModel){
-                    $status = EvalStatus::pending_approval_1;
+                    // $status = EvalStatus::pending_approval_1;
                     $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
                     $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
                 }
@@ -378,7 +378,7 @@ class DraftUsersEvaluationContoller extends Controller
                 $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
                 if($approverModel){
-                    $status = EvalStatus::pending_approval_1;
+                    // $status = EvalStatus::pending_approval_1;
                     $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
                     $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
                 }
@@ -570,7 +570,7 @@ class DraftUsersEvaluationContoller extends Controller
                 $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
                 if($approverModel){
-                    $status = EvalStatus::pending_approval_1;
+                    // $status = EvalStatus::pending_approval_1;
                     $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
                     $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
                 }
@@ -735,7 +735,7 @@ class DraftUsersEvaluationContoller extends Controller
                 $approverModel = $this->getApprovers($auth_user_evaluator->id);
 
                 if($approverModel){
-                    $status = EvalStatus::pending_approval_1;
+                    // $status = EvalStatus::pending_approval_1;
                     $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
                     $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
                 }
