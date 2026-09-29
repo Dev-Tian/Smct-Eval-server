@@ -315,7 +315,7 @@ class DraftUsersEvaluationContoller extends Controller
                             'question_number'       => $i,
                         ],
                         [
-                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
+                            'score'                 => $validated['ethicalScore' . $i] ?: 0,
                             'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
@@ -491,7 +491,7 @@ class DraftUsersEvaluationContoller extends Controller
                             'question_number'       => $i,
                         ],
                         [
-                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
+                            'score'                 => $validated['ethicalScore' . $i] ?: 0,
                             'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
@@ -682,7 +682,7 @@ class DraftUsersEvaluationContoller extends Controller
                             'question_number'       => $i,
                         ],
                         [
-                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
+                            'score'                 => $validated['ethicalScore' . $i] ?: 0,
                             'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
@@ -847,7 +847,7 @@ class DraftUsersEvaluationContoller extends Controller
                             'question_number'       => $i,
                         ],
                         [
-                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
+                            'score'                 => $validated['ethicalScore' . $i] ?: 0,
                             'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
