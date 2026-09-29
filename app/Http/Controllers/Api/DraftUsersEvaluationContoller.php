@@ -589,7 +589,6 @@ class DraftUsersEvaluationContoller extends Controller
                     };
                 }
 
-
                 $submission = UsersEvaluation::firstOrCreate(
                     [
                         'employee_id'                   => $user->id,

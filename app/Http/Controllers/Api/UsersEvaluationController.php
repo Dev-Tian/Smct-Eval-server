@@ -32,7 +32,7 @@ class UsersEvaluationController extends Controller
             $branches = array_merge(explode(',',$request->input('branch'))) ;
         }
 
-        // $isHr = Auth::user()->hasRole('hr');
+        $isHr = Auth::user()->hasRole('hr');
 
         $all_evaluations = UsersEvaluation::query()
             ->with(
@@ -60,7 +60,7 @@ class UsersEvaluationController extends Controller
                     "created_at",
                 ]
             )
-            // ->when($isHr, fn($q) => $q->whereIn('status', [EvalStatus::pending, EvalStatus::completed]))
+            ->when($isHr, fn($q) => $q->whereNot('status', [EvalStatus::draft]))
             ->search($search)
             ->when($status,  fn($q) => $q->where('status', $status))
             ->when($quarter, fn($q) => $q->where(fn($sub) => $sub->where('reviewTypeRegular', $quarter)->orWhere('reviewTypeProbationary', $quarter)))
@@ -279,7 +279,7 @@ class UsersEvaluationController extends Controller
             //         fn($q) => $q->where('status', "pending_approval_2")->where('approver2_id', $user->id)
             //     )
             // )
-            ->whereIn('status',[EvalStatus::pending, EvalStatus::completed])
+            ->whereIn('status',[EvalStatus::pending, EvalStatus::completed, EvalStatus::draft])
             ->where('evaluator_id', $user->id)
             ->search($search)
             ->when($status, fn($q) => $q->where('status', $status))
