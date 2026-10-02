@@ -379,7 +379,7 @@ class DraftUsersEvaluationContoller extends Controller
 
                 if($approverModel){
                     // $status = EvalStatus::pending_approval_1;
-                    $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
+                    $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;   
                     $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
                 }
 

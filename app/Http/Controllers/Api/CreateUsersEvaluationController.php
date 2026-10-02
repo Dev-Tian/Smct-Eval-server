@@ -330,8 +330,8 @@ class CreateUsersEvaluationController extends Controller
                             'question_number'       => $i,
                         ],
                         [
-                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
-                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
+                            'score'                 => $validated['ethicalScore' . $i] ?: 0,
+                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -343,7 +343,7 @@ class CreateUsersEvaluationController extends Controller
                         ],
                         [
                             'score'                 => $validated['managerialSkillsScore' . $i] ?: 0,
-                            'comment'               => $validated['managerialSkillsExplanation' . $i] ?: null,
+                            'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -509,8 +509,8 @@ class CreateUsersEvaluationController extends Controller
                             'question_number'       => $i,
                         ],
                         [
-                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
-                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
+                            'score'                 => $validated['ethicalScore' . $i] ?: 0,
+                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -522,7 +522,7 @@ class CreateUsersEvaluationController extends Controller
                         ],
                         [
                             'score'                 => $validated['customerServiceScore' . $i] ?: 0,
-                            'comment'               => $validated['customerServiceExplanation' . $i] ?: null,
+                            'explanation'           => $validated['customerServiceExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -534,7 +534,7 @@ class CreateUsersEvaluationController extends Controller
                         ],
                         [
                             'score'                 => $validated['managerialSkillsScore' . $i] ?: 0,
-                            'comment'               => $validated['managerialSkillsExplanation' . $i] ?: null,
+                            'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -704,8 +704,8 @@ class CreateUsersEvaluationController extends Controller
                             'question_number'       => $i,
                         ],
                         [
-                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
-                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
+                            'score'                 => $validated['ethicalScore' . $i] ?: 0,
+                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -870,8 +870,8 @@ class CreateUsersEvaluationController extends Controller
                             'question_number'       => $i,
                         ],
                         [
-                            'score'                 => $validated['ethicalsScore' . $i] ?: 0,
-                            'comment'               => $validated['ethicalExplanation' . $i] ?: null,
+                            'score'                 => $validated['ethicalScore' . $i] ?: 0,
+                            'explanation'           => $validated['ethicalExplanation' . $i] ?: null,
                         ]
                     );
                 }
@@ -883,7 +883,7 @@ class CreateUsersEvaluationController extends Controller
                         ],
                         [
                             'score'                 => $validated['managerialSkillsScore' . $i] ?: 0,
-                            'comment'               => $validated['managerialSkillsExplanation' . $i] ?: null,
+                            'explanation'           => $validated['managerialSkillsExplanation' . $i] ?: null,
                         ]
                     );
                 }
