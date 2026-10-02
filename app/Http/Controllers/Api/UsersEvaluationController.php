@@ -60,7 +60,18 @@ class UsersEvaluationController extends Controller
                     "created_at",
                 ]
             )
-            ->when($isHr, fn($q) => $q->whereNot('status', [EvalStatus::draft, EvalStatus::rejected]))
+            ->when($isHr,
+                fn($q)
+                =>
+                $q->where(
+                    fn($q) => $q->whereNot('evaluator_id', Auth::id())
+                                ->whereNotIn('status', [EvalStatus::draft, EvalStatus::rejected])
+                        )
+                  ->orWhere(
+                    fn($q) => $q->where('evaluator_id', Auth::id())
+                                ->whereNot('status', EvalStatus::rejected)
+                        )
+            )
             ->search($search)
             ->when($status,  fn($q) => $q->where('status', $status))
             ->when($quarter, fn($q) => $q->where(fn($sub) => $sub->where('reviewTypeRegular', $quarter)->orWhere('reviewTypeProbationary', $quarter)))
