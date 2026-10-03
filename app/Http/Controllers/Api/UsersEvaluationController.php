@@ -402,7 +402,7 @@ class UsersEvaluationController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified resource.gi res
      */
     public function edit(string $id)
     {
@@ -451,7 +451,7 @@ class UsersEvaluationController extends Controller
     public function destroy(UsersEvaluation $usersEvaluation)
     {
         $authUser = Auth::user();
-        if($authUser->roles()->where('name', 'admin')->exists() || $authUser->roles()->where('name', 'hr')->exists()){
+        if($authUser->roles()->where('name', 'admin')->orWhere('name', 'hr')->exists()){
             $usersEvaluation->delete();
 
             return response()->json(
