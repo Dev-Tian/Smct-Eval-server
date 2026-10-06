@@ -1159,7 +1159,7 @@ class UserController extends Controller
         if($user->evaluations()->exists() || $user->doesEvaluated()->exists()){
             return response()->json(
                 [
-                    'message'   =>  'Cannot delete user due to user has/have evaluation/s'
+                    'message'   =>  'Cannot delete this user because they are associated with existing evaluations.'
                 ]
                 ,409
             );
