@@ -118,9 +118,26 @@ class DepartmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Department $department)
     {
-        //
+        $validate = $request->validate(
+            [
+                'department_name'     => ['required', 'string']
+            ]
+        );
+
+        $department->update(
+            [
+                'department_name'     => $validate['department_name']
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'       =>  'Added Successfully'
+            ],
+            201
+        );
     }
 
     /**

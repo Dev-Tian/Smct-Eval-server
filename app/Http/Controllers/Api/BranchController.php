@@ -142,9 +142,32 @@ class BranchController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Branch $branch)
     {
-        //
+        $validate = $request->validate(
+            [
+                'branch_code'        => ['required', 'string', 'regex:/^[A-Z0-9\- ]+$/', Rule::unique('branches', 'branch_code')->ignore($branch->id)],
+                'branch_name'        => ['required', 'string'],
+                'branch'             => ['required', 'string'],
+                'acronym'            => ['required', 'string', 'regex:/^[A-Z]+$/']
+            ]
+        );
+
+        $branch->update(
+            [
+                'branch_code'        => $validate['branch_code'],
+                'branch_name'        => $validate['branch_name'],
+                'branch'             => $validate['branch'],
+                'acronym'            => $validate['acronym']
+            ]
+        );
+
+        return response()->json(
+            [
+                'message'   => "Branch Updated Successfully"
+            ]
+        );
+
     }
 
     /**

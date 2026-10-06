@@ -140,6 +140,7 @@ Route::middleware('auth:sanctum')->group(
                 Route::get('getTotalEmployeesBranch', 'getTotalEmployeesBranch');
                 Route::get('branch/{branch}', 'show');
                 Route::post('addBranch', 'store');
+                Route::post('updateBranch/{branch}', 'update');
                 Route::post('deleteBranch/{branch}', 'destroy');
             }
         );
@@ -157,6 +158,7 @@ Route::middleware('auth:sanctum')->group(
             function () {
                 Route::get('getTotalEmployeesDepartments', 'getTotalEmployeesDepartments');
                 Route::post('addDepartment', 'store');
+                Route::post('updateDepartment/{department}', 'update');
                 Route::post('deleteDepartment/{department}', 'destroy');
             }
         );
