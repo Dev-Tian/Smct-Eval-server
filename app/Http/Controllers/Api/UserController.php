@@ -1156,14 +1156,22 @@ class UserController extends Controller
     //destroy || delete
     public function deleteUser(User $user)
     {
-        // UsersEvaluation::where('employee_id', $user->id)->orWhere('evaluator_id', $user->id)->delete();
+        if($user->evaluations()->exists() || $user->doesEvaluated()->exists()){
+            return response()->json(
+                [
+                    'message'   =>  'Cannot delete user due to user has/have evaluation/s'
+                ]
+                ,409
+            );
+        }
+
         $user->delete();
 
         return response()->json(
             [
                 'message' => 'Deleted Successfully',
             ]
-            ,204
+            ,200
         );
     }
 }
