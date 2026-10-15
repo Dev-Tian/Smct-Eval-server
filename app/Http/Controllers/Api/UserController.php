@@ -725,9 +725,11 @@ class UserController extends Controller
                                 'roles:id,name',
                                 'assignedEvaluators' => function ($query) {
                                     $query->select('users.id', 'fname', 'lname', 'email')
-                                        ->with([
-                                            'assigned_as_approvers:id,fname,lname,email'
-                                        ]);
+                                        ->with(
+                                            [
+                                                'assigned_as_approvers:id,fname,lname,email'
+                                            ]
+                                        );
                                 },
                             ]
                         )

@@ -126,7 +126,6 @@ class User extends Authenticatable
         return $this->fname . " " . $this->lname;
     }
 
-
     #[Scope]
     public function search(Builder $query, ?string $term):Builder
     {
