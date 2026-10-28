@@ -31,7 +31,7 @@ class AutoSign extends Command
         UsersEvaluation::where(
                             fn($q)
                             =>
-                            $q->where('created_at' , '<=', now()->subDays(6))
+                            $q->where('updated_at' , '<=', now()->subDays(6))
                                 ->where('status', 'pending')
                                 ->whereNull('employeeApprovedAt')
                             )
