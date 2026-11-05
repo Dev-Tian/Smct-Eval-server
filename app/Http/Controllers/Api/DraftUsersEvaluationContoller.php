@@ -59,17 +59,18 @@ class DraftUsersEvaluationContoller extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::firstOrCreate(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'BranchRankNFile',
-                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
-                        'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
-                        'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
-                        'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                        'status'                        => $status
                     ],
                     [
+                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                       'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
+                       'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
+                       'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
@@ -82,7 +83,6 @@ class DraftUsersEvaluationContoller extends Controller
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                         'remarks'                       => $validated['remarks'] ?: null,
                         'evaluatorApprovedAt'           => now(),
-                        'status'                        => $status
                     ]
                 );
 
@@ -222,17 +222,18 @@ class DraftUsersEvaluationContoller extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::firstOrCreate(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'BranchBasicAreaManager',
+                        'status'                        => $status
+                    ],
+                    [
                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
-                    ],
-                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
@@ -245,7 +246,6 @@ class DraftUsersEvaluationContoller extends Controller
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                         'remarks'                       => $validated['remarks'] ?: null,
                         'evaluatorApprovedAt'           => now(),
-                        'status'                        => $status
                     ]
                 );
 
@@ -398,17 +398,18 @@ class DraftUsersEvaluationContoller extends Controller
                 }
 
 
-                $submission = UsersEvaluation::firstOrCreate(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'BranchBasic',
+                        'status'                        => $status
+                    ],
+                    [
                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
-                    ],
-                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
@@ -421,7 +422,6 @@ class DraftUsersEvaluationContoller extends Controller
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                         'remarks'                       => $validated['remarks'] ?: null,
                         'evaluatorApprovedAt'           => now(),
-                        'status'                        => $status
                     ]
                 );
 
@@ -589,17 +589,18 @@ class DraftUsersEvaluationContoller extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::firstOrCreate(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'HoRankNFile',
+                        'status'                        => $status
+                    ],
+                    [
                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
-                    ],
-                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
@@ -612,7 +613,6 @@ class DraftUsersEvaluationContoller extends Controller
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                         'remarks'                       => $validated['remarks'] ?: null,
                         'evaluatorApprovedAt'           => now(),
-                        'status'                        => $status
                     ]
                 );
 
@@ -754,17 +754,18 @@ class DraftUsersEvaluationContoller extends Controller
                 }
 
 
-                $submission = UsersEvaluation::firstOrCreate(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'HoBasic',
+                        'status'                        => $status
+                    ],
+                    [
                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
-                    ],
-                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
@@ -777,7 +778,6 @@ class DraftUsersEvaluationContoller extends Controller
                         'priorityArea3'                 => $validated['priorityArea3'] ?: null,
                         'remarks'                       => $validated['remarks'] ?: null,
                         'evaluatorApprovedAt'           => now(),
-                        'status'                        => $status
                     ]
                 );
 
