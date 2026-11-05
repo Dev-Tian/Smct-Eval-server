@@ -754,17 +754,17 @@ class DraftUsersEvaluationContoller extends Controller
                 }
 
 
-                $submission = UsersEvaluation::firstOrCreate(
+                $submission = UsersEvaluation::updateOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'HoBasic',
+                    ],
+                    [
                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
-                    ],
-                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
