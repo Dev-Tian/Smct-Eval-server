@@ -64,12 +64,12 @@ class DraftUsersEvaluationContoller extends Controller
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'BranchRankNFile',
-                    ],
-                    [
-                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
@@ -227,12 +227,12 @@ class DraftUsersEvaluationContoller extends Controller
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'BranchBasicAreaManager',
-                    ],
-                    [
                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
@@ -403,12 +403,12 @@ class DraftUsersEvaluationContoller extends Controller
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'BranchBasic',
-                    ],
-                    [
                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
@@ -594,12 +594,12 @@ class DraftUsersEvaluationContoller extends Controller
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'HoRankNFile',
-                    ],
-                    [
                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
@@ -759,12 +759,12 @@ class DraftUsersEvaluationContoller extends Controller
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'HoBasic',
-                    ],
-                    [
                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
+                    ],
+                    [
                         'approver1_id'                  => $approver1,
                         'approver2_id'                  => $approver2,
                         'employee_branch_code'          => $user->branch?->branch_code,
