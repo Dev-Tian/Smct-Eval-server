@@ -59,7 +59,7 @@ class DraftUsersEvaluationContoller extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::updateOrCreate(
+                $submission = UsersEvaluation::firstOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
@@ -222,7 +222,7 @@ class DraftUsersEvaluationContoller extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::updateOrCreate(
+                $submission = UsersEvaluation::firstOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
@@ -398,7 +398,7 @@ class DraftUsersEvaluationContoller extends Controller
                 }
 
 
-                $submission = UsersEvaluation::updateOrCreate(
+                $submission = UsersEvaluation::firstOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
@@ -589,7 +589,7 @@ class DraftUsersEvaluationContoller extends Controller
                     };
                 }
 
-                $submission = UsersEvaluation::updateOrCreate(
+                $submission = UsersEvaluation::firstOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
@@ -754,7 +754,7 @@ class DraftUsersEvaluationContoller extends Controller
                 }
 
 
-                $submission = UsersEvaluation::updateOrCreate(
+                $submission = UsersEvaluation::firstOrCreate(
                     [
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
