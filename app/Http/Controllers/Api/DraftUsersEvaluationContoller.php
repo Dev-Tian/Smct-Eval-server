@@ -64,7 +64,7 @@ class DraftUsersEvaluationContoller extends Controller
                         'employee_id'                   => $user->id,
                         'evaluator_id'                  => $auth_user_evaluator->id,
                         'evaluationType'                => 'BranchRankNFile',
-                        'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
+                         'reviewTypeProbationary'        => $validated['reviewTypeProbationary'] ?: null,
                         'reviewTypeRegular'             => $validated['reviewTypeRegular'] ?: null,
                         'reviewTypeOthersImprovement'   => $validated['reviewTypeOthersImprovement'] ?: null,
                         'reviewTypeOthersCustom'        => $validated['reviewTypeOthersCustom'] ?: null,
@@ -379,7 +379,7 @@ class DraftUsersEvaluationContoller extends Controller
 
                 if($approverModel){
                     // $status = EvalStatus::pending_approval_1;
-                    $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;   
+                    $approver1 = $approverModel->firstWhere('sequence', 1)?->approver_id;
                     $approver2 = $approverModel->firstWhere('sequence', 2)?->approver_id;
                 }
 
