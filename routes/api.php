@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\DraftUsersEvaluationContoller;
 use App\Http\Controllers\Api\EmployeeDashboardController;
 use App\Http\Controllers\Api\EvaluatorDashboardController;
 use App\Http\Controllers\Api\HrDashboardController;
+use App\Http\Controllers\Api\LogsController;
 use App\Http\Controllers\Api\MemorandumViolationController;
 use App\Http\Controllers\Api\NotificationsController;
 use App\Http\Controllers\Api\OtpController;
@@ -22,7 +23,6 @@ use App\Http\Resources\ProfileResource;
 use Illuminate\Support\Facades\Auth;
 
 //public routes
-
 //login and register
 Route::controller(UserController::class)->group(function () {
     Route::post('login', 'userLogin');
@@ -59,6 +59,8 @@ Route::middleware('auth:sanctum')->group(
     function () {
         Route::controller(UserController::class)->group(
             function () {
+                Route::apiResource('logs', LogsController::class);
+
                 // Route::get('getAllUsers', 'getAllUsers');
                 Route::get('getEvaluatorsByBranch/{user}', 'getEvaluatorsByBranch');
                 Route::get('getAllActiveUsers', 'getAllActiveUsers');

@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\Department;
+use App\Models\Logs;
 use App\Models\Position;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Notifications\EvalNotifications;
 use Carbon\Carbon;
+use DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
@@ -1167,7 +1169,20 @@ class UserController extends Controller
             );
         }
 
-        $user->delete();
+         DB::transaction(
+                function () use ($user) {
+                    $info = "A User name ".$user->fname." ".$user->lname." has been deleted.";
+                    $user->delete();
+
+                    Logs::create(
+                        [
+                            'deleted_by'    =>  Auth::id(),
+                            'info'          =>  $info
+                        ]
+                    );
+                }
+            );
+
 
         return response()->json(
             [

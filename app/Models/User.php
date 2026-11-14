@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Log;
 
 class User extends Authenticatable
 {
@@ -119,6 +120,11 @@ class User extends Authenticatable
     public function employeeLastEvaluation(): HasOne
     {
         return $this->hasOne(UsersEvaluation::class, 'employee_id')->latestOfMany('created_at');
+    }
+
+    public function deletedEvaluations(): HasMany
+    {
+        return $this->hasMany(Log::class, 'deleted_by');
     }
 
     public function getFullNameAttribute(): string

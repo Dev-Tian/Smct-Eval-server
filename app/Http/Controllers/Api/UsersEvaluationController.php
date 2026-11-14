@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enum\EvalStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Logs;
 use App\Models\User;
 use App\Models\UsersEvaluation;
 use App\Notifications\EvalNotifications;
@@ -455,11 +456,45 @@ class UsersEvaluationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    private function checkQuarter(UsersEvaluation $eval)
+    {
+        if (!empty($eval->reviewTypeProbationary)) {
+            return "Month : ".$eval->reviewTypeProbationary;
+        } elseif (!empty($eval->reviewTypeRegular)) {
+            return $eval->reviewTypeRegular->value;
+        } elseif ($eval->reviewTypeOthersImprovement == true) {
+            return "Others (Performance Improvement)";
+        }elseif(!empty($eval->reviewTypeOthersCustom)){
+            return "Others: " . $eval->reviewTypeOthersCustom;
+        }
+
+        return 'N/A';
+    }
+
     public function destroy(UsersEvaluation $usersEvaluation)
     {
         $authUser = Auth::user();
         if($authUser->roles()->where('name', 'admin')->orWhere('name', 'hr')->exists()){
-            $usersEvaluation->delete();
+            DB::transaction(
+                function () use ($usersEvaluation) {
+                    $info = sprintf(
+                        "An evaluation has been deleted.\n\nEvaluation Type: %s\nStatus: %s\nQuarter: %s\nEmployee: %s\nEvaluator: %s",
+                        $usersEvaluation->evaluationType,
+                        $usersEvaluation->status,
+                        $this->checkQuarter($usersEvaluation),
+                        "{$usersEvaluation->employee->fname} {$usersEvaluation->employee->lname}",
+                        "{$usersEvaluation->evaluator->fname} {$usersEvaluation->evaluator->lname}"
+                    );
+                    $usersEvaluation->delete();
+
+                    Logs::create(
+                        [
+                            'deleted_by'    =>  Auth::id(),
+                            'info'          =>  $info
+                        ]
+                    );
+                }
+            );
 
             return response()->json(
                 [
