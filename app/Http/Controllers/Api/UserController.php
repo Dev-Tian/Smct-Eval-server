@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enum\LogTypes;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\Department;
@@ -1177,6 +1178,7 @@ class UserController extends Controller
                     Logs::create(
                         [
                             'deleted_by'    =>  Auth::id(),
+                            'type'          =>  LogTypes::DELETED_USER,
                             'info'          =>  $info
                         ]
                     );

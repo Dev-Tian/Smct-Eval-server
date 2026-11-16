@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enum\EvalStatus;
+use App\Enum\LogTypes;
 use App\Http\Controllers\Controller;
 use App\Models\Logs;
 use App\Models\User;
@@ -490,6 +491,7 @@ class UsersEvaluationController extends Controller
                     Logs::create(
                         [
                             'deleted_by'    =>  Auth::id(),
+                            'type'          =>  LogTypes::DELETED_EVALUATION,
                             'info'          =>  $info
                         ]
                     );

@@ -59,7 +59,7 @@ Route::middleware('auth:sanctum')->group(
     function () {
         Route::controller(UserController::class)->group(
             function () {
-                Route::apiResource('logs', LogsController::class);
+                Route::apiResource('activityLogs', LogsController::class);
 
                 // Route::get('getAllUsers', 'getAllUsers');
                 Route::get('getEvaluatorsByBranch/{user}', 'getEvaluatorsByBranch');
