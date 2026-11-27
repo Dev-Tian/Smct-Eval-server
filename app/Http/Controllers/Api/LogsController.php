@@ -18,23 +18,23 @@ class LogsController extends Controller
         $type = $request->input('type');
 
         $logs = Logs::with(['deletedBy' => fn($q)=>$q->select(['id','fname', 'lname'])])
-        ->when(($type && $type != "all"), fn($q) => $q->where('type', $type))
-        ->when($search,
-            fn($q)
-            =>
-            $q->where(
-                fn($w)
-                =>
-                $w->whereAny(['info', 'type'],'LIKE', "%{$search}%")
-                    ->orWhereHas('deletedBy',
+                    ->when(($type && $type != "all"), fn($q) => $q->where('type', $type))
+                    ->when($search,
                         fn($q)
                         =>
-                        $q->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$search}%"])
-                            ->orWhereRaw("CONCAT(lname, ' ', fname) LIKE ?", ["%{$search}%"])
+                        $q->where(
+                            fn($w)
+                            =>
+                            $w->whereAny(['info', 'type'],'LIKE', "%{$search}%")
+                                ->orWhereHas('deletedBy',
+                                    fn($q)
+                                    =>
+                                    $q->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$search}%"])
+                                        ->orWhereRaw("CONCAT(lname, ' ', fname) LIKE ?", ["%{$search}%"])
+                                )
+                        )
                     )
-            )
-        )
-        ->paginate($perPage);
+                    ->paginate($perPage);
 
         return response()->json(
             [
@@ -64,9 +64,11 @@ class LogsController extends Controller
      */
     public function show(Logs $log)
     {
-        return response()->json([
-            'logs' => $log->load(['deletedBy:id,fname,lname'])
-        ]);
+        return response()->json(
+            [
+                'logs' => $log->load(['deletedBy:id,fname,lname'])
+            ]
+        );
     }
 
     /**

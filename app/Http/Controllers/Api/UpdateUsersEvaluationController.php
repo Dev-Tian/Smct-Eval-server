@@ -45,7 +45,7 @@ class UpdateUsersEvaluationController extends Controller
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
                     "Q3"    =>  QuarterDateRange::Q3->range(),
-                    "Q4"    =>  QuarterDateRange::Q4->range(),
+                    "Q4"    =>  [$evalDateFrom, $evalDateTo]
             };
         }
 
@@ -177,7 +177,7 @@ class UpdateUsersEvaluationController extends Controller
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
                     "Q3"    =>  QuarterDateRange::Q3->range(),
-                    "Q4"    =>  QuarterDateRange::Q4->range(),
+                    "Q4"    =>  [$evalDateFrom, $evalDateTo]
             };
         }
 
@@ -300,7 +300,7 @@ class UpdateUsersEvaluationController extends Controller
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
                     "Q3"    =>  QuarterDateRange::Q3->range(),
-                    "Q4"    =>  QuarterDateRange::Q4->range(),
+                    "Q4"    =>  [$evalDateFrom, $evalDateTo]
             };
         }
 
@@ -423,7 +423,7 @@ class UpdateUsersEvaluationController extends Controller
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
                     "Q3"    =>  QuarterDateRange::Q3->range(),
-                    "Q4"    =>  QuarterDateRange::Q4->range(),
+                    "Q4"    =>  [$evalDateFrom, $evalDateTo]
             };
         }
 
@@ -537,7 +537,7 @@ class UpdateUsersEvaluationController extends Controller
                     "Q1"    =>  QuarterDateRange::Q1->range(),
                     "Q2"    =>  QuarterDateRange::Q2->range(),
                     "Q3"    =>  QuarterDateRange::Q3->range(),
-                    "Q4"    =>  QuarterDateRange::Q4->range(),
+                    "Q4"    =>  [$evalDateFrom, $evalDateTo]
             };
         }
 
